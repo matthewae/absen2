@@ -128,6 +128,7 @@
                         @endif
                     </div>
 
+                    <!-- Monthly Attendance Card -->
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
                         <div class="flex items-center space-x-3 mb-4">
                             <div class="p-2 bg-blue-100 rounded-lg">
@@ -144,6 +145,7 @@
                         </div>
                     </div>
 
+                    <!-- Leave Requests Card -->
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
                         <div class="flex items-center space-x-3 mb-4">
                             <div class="p-2 bg-purple-100 rounded-lg">
@@ -160,75 +162,96 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            <!-- </div>
         </div>
-    </div>
+    </div> -->
 
-    <!-- Upcoming Assignments -->
-    <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
-        <div class="p-6 border-b border-gray-100">
-            <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-900">Upcoming Assignments</h2>
-                <span class="text-sm text-gray-500">{{ $upcomingAssignments->count() }} tasks</span>
-            </div>
-        </div>
-        <div class="divide-y divide-gray-100">
-            @if($upcomingAssignments->count() > 0)
-                @foreach($upcomingAssignments as $assignment)
-                    <div class="p-6 hover:bg-gray-50 transition-colors duration-200">
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0 mt-1">
-                                <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                                </div>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-medium text-gray-900">{{ $assignment->title }}</h3>
-                                <p class="mt-1 text-sm text-gray-500">{{ $assignment->description }}</p>
-                                <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        <span>{{ $assignment->start_datetime->format('d M Y') }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                        <span>{{ $assignment->start_datetime->format('H:i') }} - {{ $assignment->end_datetime->format('H:i') }}</span>
-                                    </div>
-                                </div>
+                <!-- Assignments and Leave Requests Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Upcoming Assignments -->
+                    <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-semibold text-gray-900">Upcoming Assignments</h2>
+                                <span class="text-sm text-gray-500">{{ $upcomingAssignments->count() }} tasks</span>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-            @endif
-        </div>
-    </div>
-
-    <!-- Recent Leave Requests -->
-    <div class="bg-white shadow rounded-lg p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Recent Leave Requests</h2>
-            <a href="{{ route('staff.leave.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm hover:bg-indigo-700">New Request</a>
-        </div>
-        @if($pendingLeaveRequests->count() > 0)
-            <div class="space-y-4">
-                @foreach($pendingLeaveRequests as $request)
-                    <div class="border rounded-lg p-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $request->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ($request->status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
-                                    {{ ucfirst($request->status) }}
-                                </span>
-                                <p class="mt-2 text-sm text-gray-600">{{ $request->type }}</p>
-                                <p class="text-sm text-gray-500">{{ $request->start_date->format('d M Y') }} - {{ $request->end_date->format('d M Y') }}</p>
-                            </div>
+                        <div class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+                            @if($upcomingAssignments->count() > 0)
+                                @foreach($upcomingAssignments as $assignment)
+                                    <div class="p-6 hover:bg-gray-50 transition-colors duration-200">
+                                        <div class="flex items-start space-x-4">
+                                            <div class="flex-shrink-0 mt-1">
+                                                <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="text-lg font-medium text-gray-900">{{ $assignment->title }}</h3>
+                                                <p class="mt-1 text-sm text-gray-500">{{ $assignment->description }}</p>
+                                                <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                        <span>{{ $assignment->start_datetime->format('d M Y') }}</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                        <span>{{ $assignment->start_datetime->format('H:i') }} - {{ $assignment->end_datetime->format('H:i') }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="p-6 text-center text-gray-500">No upcoming assignments</div>
+                            @endif
                         </div>
                     </div>
-                @endforeach
+
+                    <!-- Recent Leave Requests -->
+                    <div class="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-xl font-semibold text-gray-900">Recent Leave Requests</h2>
+                                <a href="{{ route('staff.leave-requests.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700">New Request</a>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+                            @if($pendingLeaveRequests->count() > 0)
+                                @foreach($pendingLeaveRequests as $request)
+                                    <div class="p-6 hover:bg-gray-50 transition-colors duration-200">
+                                        <div class="flex items-start space-x-4">
+                                            <div class="flex-shrink-0 mt-1">
+                                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $request->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ($request->status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
+                                                        {{ ucfirst($request->status) }}
+                                                    </span>
+                                                    <span class="text-sm font-medium text-gray-900">{{ $request->type }}</span>
+                                                </div>
+                                                <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                        <span>{{ $request->start_date->format('d M Y') }} - {{ $request->end_date->format('d M Y') }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="p-6 text-center text-gray-500">No recent leave requests</div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             </div>
-        @else
-            <p class="text-gray-600">No recent leave requests</p>
-        @endif
+        </div>
     </div>
-</div>
 </body>
 </html>

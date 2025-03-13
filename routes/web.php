@@ -1,8 +1,6 @@
 <?php
 
-use App\Http\Controllers\Staff\ProgressController;
-use App\Http\Controllers\WorkProgressController;
-use App\Http\Controllers\WorkProgressFileController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\StaffLoginController;
 use App\Http\Controllers\Auth\SupervisorLoginController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
@@ -36,56 +34,35 @@ Route::prefix('staff')->name('staff.')->group(function () {
 
     Route::middleware('auth:staff')->group(function () {
         Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
-
-        // Progress routes
-        Route::get('/progress', function() {
-            return redirect()->route('staff.progress.index');
-        })->name('progress');
-
-        Route::prefix('progress')->name('progress.')->group(function () {
-            Route::get('/', [ProgressController::class, 'index'])->name('index');
-            Route::get('/create', [ProgressController::class, 'create'])->name('create');
-            Route::post('/', [ProgressController::class, 'store'])->name('store');
-            Route::get('/{workProgress}', [ProgressController::class, 'show'])->name('show');
-            Route::get('/{file}/download', [ProgressController::class, 'download'])->name('download-file');
-        });
         
-        // Work Progress routes
-        Route::get('/work-progress', function() {
-            return redirect()->route('staff.work-progress.index');
-        })->name('work-progress');
-
-        Route::prefix('work-progress')->name('work-progress.')->group(function () {
-            Route::get('/', [ProgressController::class, 'index'])->name('index');
-            Route::get('/create', [ProgressController::class, 'create'])->name('create');
-            Route::post('/', [ProgressController::class, 'store'])->name('store');
-            Route::get('/{workProgress}', [ProgressController::class, 'show'])->name('show');
-            Route::get('/{file}/download', [ProgressController::class, 'download'])->name('download-file');
-        });
+        // Settings route
+        Route::get('/settings', [\App\Http\Controllers\Staff\SettingsController::class, 'index'])->name('settings');
+        
+        // Profile route
+        Route::get('/profile', [\App\Http\Controllers\Staff\ProfileController::class, 'index'])->name('profile');
+        
+        // Schedule route
+        Route::get('/schedule', [\App\Http\Controllers\Staff\ScheduleController::class, 'index'])->name('schedule');
         
         // Attendance routes
         Route::get('/attendance', [\App\Http\Controllers\Staff\AttendanceController::class, 'index'])->name('attendance');
         Route::post('/attendance/checkin', [\App\Http\Controllers\Staff\AttendanceController::class, 'checkin'])->name('attendance.checkin');
         Route::post('/attendance/checkout', [\App\Http\Controllers\Staff\AttendanceController::class, 'checkout'])->name('attendance.checkout');
-
-        // Schedule routes
-        Route::get('/schedule', [\App\Http\Controllers\Staff\ScheduleController::class, 'index'])->name('schedule');
-
-        // Profile routes
-        Route::get('/profile', [\App\Http\Controllers\Staff\ProfileController::class, 'index'])->name('profile');
-        Route::post('/update-photo', [\App\Http\Controllers\Staff\ProfileController::class, 'updatePhoto'])->name('update-photo');
-
-        // Settings routes
-        Route::get('/settings', [\App\Http\Controllers\Staff\SettingsController::class, 'index'])->name('settings');
-        Route::post('/update-password', [\App\Http\Controllers\Staff\SettingsController::class, 'updatePassword'])->name('update-password');
     
         // Leave request routes
-        Route::prefix('leave')->name('leave.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'index'])->name('index');
-            Route::get('/create', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'create'])->name('create');
-            Route::post('/', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'store'])->name('store');
-            Route::get('/{leaveRequest}', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'show'])->name('show');
-        });
+        Route::get('/leave-requests/create', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'create'])->name('leave-requests.create');
+        Route::post('/leave-requests', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'store'])->name('leave-requests.store');
+        Route::get('/leave-requests', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'index'])->name('leave-requests.index');
+        Route::get('/leave-requests/{leaveRequest}', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'show'])->name('leave-requests.show');
+
+        // Work Progress routes
+        Route::get('/progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('progress.index');
+        Route::get('/progress/create', [\App\Http\Controllers\Staff\WorkProgressController::class, 'create'])->name('progress.create');
+        Route::post('/progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'store'])->name('progress.store');
+        Route::get('/progress/{workProgress}', [\App\Http\Controllers\Staff\WorkProgressController::class, 'show'])->name('progress.show');
+        Route::get('/progress/{workProgress}/edit', [\App\Http\Controllers\Staff\WorkProgressController::class, 'edit'])->name('progress.edit');
+        Route::put('/progress/{workProgress}', [\App\Http\Controllers\Staff\WorkProgressController::class, 'update'])->name('progress.update');
+        Route::delete('/progress/{workProgress}', [\App\Http\Controllers\Staff\WorkProgressController::class, 'destroy'])->name('progress.destroy');
     });
 });
 

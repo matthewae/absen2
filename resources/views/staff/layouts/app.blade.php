@@ -80,7 +80,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('staff.leave.*') ? 'active' : '' }}" href="{{ route('staff.leave.index') }}">
+                    <a class="nav-link {{ request()->routeIs('staff.leave-requests.*') ? 'active' : '' }}" href="{{ route('staff.leave-requests.index') }}">
                         <i class="fas fa-calendar-minus"></i> Leave Requests
                     </a>
                 </li>
