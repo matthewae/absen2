@@ -22,10 +22,10 @@ class AttendanceController extends Controller
             return redirect()->back()->with('error', 'You have already checked in today.');
         }
         
-        // Determine attendance status based on check-in time
-        $now = now();
-        $startTime = now()->setHour(8)->setMinute(0)->setSecond(0); // 8:00 AM
-        $lateTime = now()->setHour(8)->setMinute(30)->setSecond(0); // 8:30 AM
+        // Set timezone to WIB and determine attendance status based on check-in time
+        $now = now()->setTimezone('Asia/Jakarta');
+        $startTime = now()->setTimezone('Asia/Jakarta')->setHour(9)->setMinute(0)->setSecond(0); // 9:00 AM WIB
+        $lateTime = now()->setTimezone('Asia/Jakarta')->setHour(9)->setMinute(30)->setSecond(0); // 9:30 AM WIB
         
         $status = 'present';
         if ($now > $lateTime) {
@@ -56,9 +56,9 @@ class AttendanceController extends Controller
             return redirect()->back()->with('error', 'No check-in record found for today.');
         }
         
-        // Update checkout time
+        // Update checkout time with WIB timezone
         $attendance->update([
-            'check_out' => now(),
+            'check_out' => now()->setTimezone('Asia/Jakarta'),
             'status' => $attendance->status // Maintain the current status
         ]);
         

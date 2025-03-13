@@ -43,7 +43,7 @@ class Attendance extends Model
     public function scopeThisMonth($query)
     {
         return $query->whereMonth('check_in', now()->month)
-                     ->whereYear('check_in', now()->year);
+                        ->whereYear('check_in', now()->year);
     }
 
     public function getWorkDurationAttribute()

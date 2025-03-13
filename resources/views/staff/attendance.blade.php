@@ -6,15 +6,14 @@
     <title>PT. Mandajaya - Staff Attendance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        function updateCurrentTime() {
-            const now = new Date();
-            const wibTime = new Date(now.getTime() + (now.getTimezoneOffset() + 420) * 60000);
-            const timeString = wibTime.toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' });
-            document.getElementById('current-time').textContent = timeString + ' WIB';
-        }
+        // function updateCurrentTime() {
+        //     const now = new Date();
+        //     const timeString = now.toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' });
+        //     document.getElementById('current-time').textContent = timeString + ' WIB';
+        // }
 
-        setInterval(updateCurrentTime, 1000);
-        document.addEventListener('DOMContentLoaded', updateCurrentTime);
+        // setInterval(updateCurrentTime, 1000);
+        // document.addEventListener('DOMContentLoaded', updateCurrentTime);
     </script>
 </head>
 <body class="bg-gray-100">
