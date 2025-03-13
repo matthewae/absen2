@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PT. Mandajaya - Staff Attendance</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function updateCurrentTime() {
+            const now = new Date();
+            const wibTime = new Date(now.getTime() + (now.getTimezoneOffset() + 420) * 60000);
+            const timeString = wibTime.toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' });
+            document.getElementById('current-time').textContent = timeString + ' WIB';
+        }
+
+        setInterval(updateCurrentTime, 1000);
+        document.addEventListener('DOMContentLoaded', updateCurrentTime);
+    </script>
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex">
@@ -78,7 +89,8 @@
                     <div class="flex items-center justify-between">
                         <h2 class="text-xl font-semibold text-gray-800">Attendance Management</h2>
                         <div class="flex items-center space-x-4">
-                            <span class="text-sm text-gray-500">{{ now()->format('l, F j, Y') }}</span>
+                            <span class="text-sm text-gray-500">{{ now()->setTimezone('Asia/Jakarta')->format('l, F j, Y') }}</span>
+                            <span id="current-time" class="text-sm font-medium text-gray-900"></span>
                             <span class="text-sm font-medium text-gray-900">{{ $staff->name }}</span>
                         </div>
                     </div>
@@ -105,7 +117,7 @@
                                     </svg>
                                     <span class="text-sm font-medium">Check-in Time</span>
                                 </div>
-                                <p class="mt-2 text-2xl font-bold text-gray-900">{{ $latestAttendance->check_in->format('H:i') }}</p>
+                                <p class="mt-2 text-2xl font-bold text-gray-900">{{ $latestAttendance->check_in->setTimezone('Asia/Jakarta')->format('H:i') }}</p>
                             </div>
 
                             <div class="p-4 bg-gray-50 rounded-lg">
@@ -152,8 +164,8 @@
                                 @foreach($attendanceHistory as $attendance)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_in->format('Y-m-d') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_in->format('H:i') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_out ? $attendance->check_out->format('H:i') : '-' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_in->setTimezone('Asia/Jakarta')->format('H:i') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_out ? $attendance->check_out->setTimezone('Asia/Jakarta')->format('H:i') : '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $attendance->check_out ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                             {{ $attendance->check_out ? 'Completed' : 'On Duty' }}

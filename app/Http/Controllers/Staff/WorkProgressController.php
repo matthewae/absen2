@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Validator;
 
 class WorkProgressController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->check() || !auth()->user()->staff) {
+                return redirect()->route('login');
+            }
+            return $next($request);
+        });
+    }
+
     public function index()
     {
         $workProgresses = WorkProgress::where('staff_id', auth()->user()->staff->id)

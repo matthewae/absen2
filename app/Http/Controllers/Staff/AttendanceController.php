@@ -56,11 +56,7 @@ class AttendanceController extends Controller
             return redirect()->back()->with('error', 'No check-in record found for today.');
         }
         
-        // Update checkout time and status
-        if (!$attendance->is_work_submitted) {
-            return redirect()->back()->with('error', 'Please submit your work progress before checking out.');
-        }
-
+        // Update checkout time
         $attendance->update([
             'check_out' => now(),
             'status' => $attendance->status // Maintain the current status
