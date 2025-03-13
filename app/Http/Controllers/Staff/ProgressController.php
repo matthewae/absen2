@@ -29,10 +29,10 @@ class ProgressController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'staff_id' => 'required|exists:staff,id',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'files.*' => 'nullable|file|max:10240'
+            'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian'])],
+            'company_name' => 'required|string|max:255',
+            'work_description' => 'required|string|min:100',
+            'files.*' => 'required|file|max:153600' // 150MB max per file
         ]);
 
         if ($validator->fails()) {
@@ -41,16 +41,23 @@ class ProgressController extends Controller
                 ->withInput();
         }
 
+        if (!auth()->check() || !auth()->user()->staff) {
+            return back()
+                ->withErrors(['error' => 'Unauthorized. Staff record not found.'])
+                ->withInput();
+        }
+
         $workProgress = WorkProgress::create([
-            'staff_id' => $request->staff_id,
-            'title' => $request->title,
-            'description' => $request->description,
+            'staff_id' => auth()->user()->staff->id,
+            'project_topic' => $request->project_topic,
+            'company_name' => $request->company_name,
+            'work_description' => $request->work_description,
             'status' => 'pending'
         ]);
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
-                $path = $file->store('work-progress/' . $request->staff_id, 'public');
+                $path = $file->store('work-progress/' . auth()->user()->staff->id, 'public');
                 
                 WorkProgressFile::create([
                     'work_progress_id' => $workProgress->id,

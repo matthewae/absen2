@@ -13,9 +13,9 @@ class WorkProgressFile extends Model
 
     protected $fillable = [
         'work_progress_id',
-        'original_name',
+        'filename',
         'file_path',
-        'mime_type',
+        'file_type',
         'file_size'
     ];
 
