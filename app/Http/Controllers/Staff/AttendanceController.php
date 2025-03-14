@@ -15,7 +15,7 @@ class AttendanceController extends Controller
         
         // Check if staff has already checked in today
         $existingAttendance = Attendance::where('staff_id', $staff->id)
-            ->whereDate('check_in', today())
+            ->whereDate('check_in', now()->setTimezone('Asia/Jakarta')->toDateString())
             ->first();
             
         if ($existingAttendance) {
@@ -24,8 +24,8 @@ class AttendanceController extends Controller
         
         // Set timezone to WIB and determine attendance status based on check-in time
         $now = now()->setTimezone('Asia/Jakarta');
-        $startTime = now()->setTimezone('Asia/Jakarta')->setHour(9)->setMinute(0)->setSecond(0); // 9:00 AM WIB
-        $lateTime = now()->setTimezone('Asia/Jakarta')->setHour(9)->setMinute(30)->setSecond(0); // 9:30 AM WIB
+        $startTime = $now->copy()->setHour(9)->setMinute(0)->setSecond(0); // 9:00 AM WIB
+        $lateTime = $now->copy()->setHour(9)->setMinute(30)->setSecond(0); // 9:30 AM WIB
         
         $status = 'present';
         if ($now > $lateTime) {

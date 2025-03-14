@@ -74,7 +74,29 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
     Route::post('/login', [SupervisorLoginController::class, 'login']);
     Route::post('/logout', [SupervisorLoginController::class, 'logout'])->name('logout');
 
-    Route::middleware('auth:supervisor')->group(function () {
+    Route::middleware(['auth:supervisor'])->group(function () {
         Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/profile', [\App\Http\Controllers\SupervisorController::class, 'profile'])->name('profile');
+        Route::get('/staff', [SupervisorDashboardController::class, 'viewStaffList'])->name('staff-list');
+        Route::get('/staff/{staff}/attendance', [SupervisorDashboardController::class, 'viewStaffAttendance'])->name('staff.attendance');
+        Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
+        Route::get('/leave-requests/{leaveRequest}', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('review-leave-request');
+        Route::get('/leave-requests/{leaveRequest}/review', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('leave-requests.review');
+        Route::post('/leave-requests/{leaveRequest}/approve', [SupervisorDashboardController::class, 'approveLeaveRequest'])->name('leave-requests.approve');
+        Route::post('/leave-requests/{leaveRequest}/reject', [SupervisorDashboardController::class, 'rejectLeaveRequest'])->name('leave-requests.reject');
+
+        // Assignment routes
+        Route::get('/assignments/create', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'create'])->name('assignments.create');
+        Route::post('/assignments', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'store'])->name('assignments.store');
+        Route::get('/assignments', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'index'])->name('assignments.index');
+        Route::get('/assignments/{assignment}', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'show'])->name('assignments.show');
+        Route::get('/assignments/{assignment}/edit', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'edit'])->name('assignments.edit');
+        Route::put('/assignments/{assignment}', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'update'])->name('assignments.update');
+        Route::delete('/assignments/{assignment}', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'destroy'])->name('assignments.destroy');
+        // Work Progress routes
+        Route::get('/work-progress', [\App\Http\Controllers\Supervisor\WorkProgressController::class, 'index'])->name('work-progress');
+
+        Route::get('/settings', [\App\Http\Controllers\Supervisor\SettingsController::class, 'showSettings'])->name('settings');
+        Route::put('/settings/update-password', [\App\Http\Controllers\Supervisor\SettingsController::class, 'updatePassword'])->name('update-password');
     });
 });

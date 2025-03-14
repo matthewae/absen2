@@ -5,16 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PT. Mandajaya - Staff Attendance</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // function updateCurrentTime() {
-        //     const now = new Date();
-        //     const timeString = now.toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit' });
-        //     document.getElementById('current-time').textContent = timeString + ' WIB';
-        // }
-
-        // setInterval(updateCurrentTime, 1000);
-        // document.addEventListener('DOMContentLoaded', updateCurrentTime);
-    </script>
+    
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex">

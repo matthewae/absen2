@@ -28,13 +28,8 @@ class SupervisorLoginController extends Controller
         $supervisor = Supervisor::where('supervisor_id', $request->supervisor_id)->first();
 
         if ($supervisor && $supervisor->password === $request->password) {
-            Auth::guard('supervisor')->login($supervisor);
-            if ($request->remember) {
-                Auth::guard('supervisor')->viaRemember();
-            }
-            'supervisor_id' => $request->supervisor_id,
-            'password' => $request->password
-        ], $request->remember)) {
+            Auth::guard('supervisor')->login($supervisor, $request->remember);
+
             return redirect()->intended(route('supervisor.dashboard'));
         }
 
