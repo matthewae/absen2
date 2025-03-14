@@ -18,8 +18,9 @@ class AssignmentController extends Controller
             ->with(['staff'])
             ->latest()
             ->paginate(10);
+        $staff = $supervisor->staff()->get();
 
-        return view('supervisor.assignments.index', compact('assignments'));
+        return view('supervisor.assignments.index', compact('assignments', 'staff'));
     }
 
     public function create()
