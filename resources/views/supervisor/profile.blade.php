@@ -50,7 +50,7 @@
         }
         .profile-avatar {
             width: 200px;
-            height: 150px;
+            height: 250px;
             border-radius: 8px;
             background-color: #e9ecef;
             display: flex;
@@ -111,12 +111,28 @@
             <div class="row align-items-center">
                 <div class="col-auto">
                     <div class="profile-avatar">
-                        <i class="bi bi-person"></i>
+                        @if($supervisor->profile_picture)
+                            <img src="{{ asset('storage/' . $supervisor->profile_picture) }}" alt="Profile Picture" class="img-fluid" style="width: 200px; height: 250px; object-fit: cover; border-radius: 8px;">
+                        @else
+                            <i class="bi bi-person"></i>
+                        @endif
                     </div>
+                    <form action="{{ route('supervisor.update-photo') }}" method="POST" enctype="multipart/form-data" class="mt-2">
+                        @csrf
+                        <div class="input-group">
+                            <input type="file" class="form-control form-control-sm" name="profile_picture" accept="image/*" required>
+                            <button type="submit" class="btn btn-primary btn-sm">Update Photo</button>
+                        </div>
+                        @error('profile_picture')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                        @enderror
+                    </form>
                 </div>
                 <div class="col">
-                    <h2 class="mb-1">{{ $supervisor->name }}</h2>
-                    <p class="text-muted mb-0">{{ $supervisor->department }}</p>
+                    <div class="ps-4">
+                        <h2 class="mb-2 fw-bold">{{ $supervisor->name }}</h2>
+                        <p class="text-muted mb-0 fs-5">{{ $supervisor->department }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,10 +158,10 @@
                         <div class="info-label">Department</div>
                         <div class="info-value">{{ $supervisor->department }}</div>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <div class="info-label">Supervisor ID</div>
                         <div class="info-value">{{ $supervisor->supervisor_id }}</div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

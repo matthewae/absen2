@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('department');
             $table->string('phone_number')->nullable();
             $table->string('profile_picture')->nullable();
+            $table->string('profile_picture_path')->nullable();
+            $table->string('profile_picture_mime')->nullable();
+            $table->integer('profile_picture_size')->nullable();
+            $table->timestamp('profile_picture_updated_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

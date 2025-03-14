@@ -77,6 +77,7 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
     Route::middleware(['auth:supervisor'])->group(function () {
         Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
         Route::get('/profile', [\App\Http\Controllers\SupervisorController::class, 'profile'])->name('profile');
+        Route::post('/profile/update-photo', [\App\Http\Controllers\SupervisorController::class, 'updatePhoto'])->name('update-photo');
         Route::get('/staff', [SupervisorDashboardController::class, 'viewStaffList'])->name('staff-list');
         Route::get('/staff/{staff}/attendance', [SupervisorDashboardController::class, 'viewStaffAttendance'])->name('staff.attendance');
         Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
