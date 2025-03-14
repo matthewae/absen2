@@ -95,7 +95,9 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
         Route::put('/assignments/{assignment}', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'update'])->name('assignments.update');
         Route::delete('/assignments/{assignment}', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'destroy'])->name('assignments.destroy');
         // Work Progress routes
-        Route::get('/work-progress', [\App\Http\Controllers\Supervisor\WorkProgressController::class, 'index'])->name('work-progress');
+        Route::get('/work-progress', [\App\Http\Controllers\Supervisor\WorkProgressController::class, 'index'])->name('work-progress.index');
+        Route::get('/work-progress/{staff}', [\App\Http\Controllers\Supervisor\WorkProgressController::class, 'show'])->name('work-progress.show');
+        Route::post('/work-progress/{progress}/approve', [\App\Http\Controllers\Supervisor\WorkProgressController::class, 'approve'])->name('work-progress.approve');
 
         Route::get('/settings', [\App\Http\Controllers\Supervisor\SettingsController::class, 'showSettings'])->name('settings');
         Route::put('/settings/update-password', [\App\Http\Controllers\Supervisor\SettingsController::class, 'updatePassword'])->name('update-password');

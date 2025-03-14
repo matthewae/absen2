@@ -67,8 +67,9 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('supervisor.work-progress') }}" class="nav-link">
-                    <i class="fas fa-tasks"></i> Work Progress
+                <a href="{{ route('supervisor.work-progress.index') }}" class="nav-link">
+                    <i class="fas fa-tasks"></i>
+                    Work Progress
                 </a>
             </li>
         </ul>
