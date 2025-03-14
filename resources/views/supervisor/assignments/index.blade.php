@@ -51,7 +51,7 @@
                     <div class="flex items-center justify-between">
                         <h2 class="text-xl font-semibold text-gray-800">Assignments</h2>
                         <div class="flex items-center space-x-4">
-                            <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2">
+                            <button onclick="window.location.href='{{ route('supervisor.assignments.create') }}'" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2">
                                 <i class="fas fa-plus"></i>
                                 <span>New Assignment</span>
                             </button>
@@ -165,5 +165,52 @@
             </div>
         </div>
     </div>
+
+<!-- New Assignment Modal -->
+<div id="assignmentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Create New Assignment</h3>
+            <form action="{{ route('supervisor.assignments.store') }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                    <input type="text" name="title" id="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea name="description" id="description" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="staff_id" class="block text-sm font-medium text-gray-700">Assign To</label>
+                    <select name="staff_id" id="staff_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">Select Staff Member</option>
+                        @foreach($staff as $member)
+                            <option value="{{ $member->id }}">{{ $member->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date</label>
+                    <input type="date" name="due_date" id="due_date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeModal()" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">Create Assignment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openModal() {
+    document.getElementById('assignmentModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('assignmentModal').classList.add('hidden');
+}
+</script>
 </body>
 </html>
