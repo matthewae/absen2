@@ -35,7 +35,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::middleware('auth:staff')->group(function () {
         Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
         
-        // Settings route
+            // Settings route
         Route::get('/settings', [\App\Http\Controllers\Staff\SettingsController::class, 'index'])->name('settings');
         Route::post('/settings/update-password', [\App\Http\Controllers\Staff\SettingsController::class, 'updatePassword'])->name('update-password');
         
@@ -58,6 +58,8 @@ Route::prefix('staff')->name('staff.')->group(function () {
         Route::get('/leave-requests/{leaveRequest}', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'show'])->name('leave-requests.show');
 
         // Work Progress routes
+        Route::get('/work-progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('work-progress.index');
+        Route::get('/work-progress/create', [\App\Http\Controllers\Staff\WorkProgressController::class, 'create'])->name('work-progress.create');
         Route::get('/progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('progress.index');
         Route::get('/progress/create', [\App\Http\Controllers\Staff\WorkProgressController::class, 'create'])->name('progress.create');
         Route::post('/progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'store'])->name('progress.store');
