@@ -138,4 +138,26 @@ class DashboardController extends Controller
         return redirect()->route('supervisor.leave-requests')
             ->with('success', 'Leave request rejected successfully.');
     }
+
+    public function updateLeaveRequest(Request $request, LeaveRequest $leaveRequest)
+    {
+        if ($leaveRequest->staff->supervisor_id !== Auth::guard('supervisor')->id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'status' => 'required|in:approved,rejected',
+            'comments' => 'nullable|string|max:500'
+        ]);
+
+        $leaveRequest->update([
+            'status' => $request->status,
+            'supervisor_comments' => $request->comments,
+            'reviewed_at' => now()
+        ]);
+
+        $statusMessage = ucfirst($request->status);
+        return redirect()->route('supervisor.leave-requests')
+            ->with('success', "Leave request {$statusMessage} successfully.");
+    }
 }

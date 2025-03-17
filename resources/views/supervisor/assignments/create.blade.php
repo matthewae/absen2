@@ -5,94 +5,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Assignment - Supervisor Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f8f9fa;
         }
-        .navbar {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 250px;
             background-color: #1a237e;
             padding: 1rem;
-        }
-        .navbar-brand {
-            color: #fff;
-            font-weight: bold;
+            overflow-y: auto;
+            z-index: 100;
         }
         .nav-link {
-            color: rgba(255,255,255,0.8) !important;
-            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #fff;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+            margin-bottom: 0.5rem;
+            text-decoration: none;
         }
-        .nav-link:hover {
-            color: #fff !important;
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
         }
-        .nav-link.active {
-            color: #fff !important;
-            font-weight: bold;
+        .nav-link i {
+            margin-right: 0.75rem;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
         }
         .header {
             background-color: #fff;
             padding: 15px 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            border-radius: 8px;
         }
         .form-container {
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 25px;
-            margin: 20px auto;
-            max-width: 1200px;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body class="bg-light">
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">PT. Mandajaya</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('supervisor.dashboard') }}">
-                            <i class='bx bxs-dashboard'></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('supervisor.assignments.index') }}">
-                            <i class='bx bxs-task'></i> Assignments
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('supervisor.staff-list') }}">
-                            <i class='bx bxs-user-detail'></i> Staff
-                        </a>
-                    </li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <span class="text-white me-3">{{ Auth::user()->name }}</span>
-                    <form action="{{ route('supervisor.logout') }}" method="POST" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
-                    </form>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4 class="text-white mb-4">PT. Mandajaya</h4>
+        <nav>
+            <a class="nav-link" href="{{ route('supervisor.dashboard') }}">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+            <a class="nav-link active" href="{{ route('supervisor.assignments.index') }}">
+                <i class="fas fa-tasks"></i> Assignments
+            </a>
+            <a class="nav-link" href="{{ route('supervisor.staff-list') }}">
+                <i class="fas fa-users"></i> Staff
+            </a>
+        </nav>
+        <div class="mt-auto pt-3 border-top">
+            <div class="text-white mb-2">{{ Auth::user()->name }}</div>
+            <form action="{{ route('supervisor.logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
+            </form>
+        </div>
+    </div>
                 </div>
             </div>
         </div>
-    </nav>
 
     <!-- Main Content -->
-    <div class="container">
+    <div class="main-content">
         <!-- Header -->
         <div class="header d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Create New Assignment</h4>
             <div class="d-flex align-items-center">
                 <span class="me-3">{{ Auth::user()->name }}</span>
-                <!-- <form action="{{ route('supervisor.logout') }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
-                </form> -->
             </div>
         </div>
 
@@ -201,11 +200,12 @@
             const toggleBtn = document.createElement('button');
             toggleBtn.className = 'btn btn-primary d-md-none position-fixed';
             toggleBtn.style.cssText = 'top: 10px; left: 10px; z-index: 1000;';
-            toggleBtn.innerHTML = '<i class="bx bx-menu"></i>';
+            toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
             document.body.appendChild(toggleBtn);
 
             toggleBtn.addEventListener('click', function() {
-                document.querySelector('.sidebar').classList.toggle('active');
+                const sidebar = document.querySelector('.sidebar');
+                sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 'translateX(-250px)' : 'translateX(0px)';
             });
         });
     </script>
