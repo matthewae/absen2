@@ -80,6 +80,7 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
         Route::post('/profile/update-photo', [\App\Http\Controllers\SupervisorController::class, 'updatePhoto'])->name('update-photo');
         Route::get('/staff', [SupervisorDashboardController::class, 'viewStaffList'])->name('staff-list');
         Route::get('/staff/{staff}/attendance', [SupervisorDashboardController::class, 'viewStaffAttendance'])->name('staff.attendance');
+        Route::post('/staff/{staff}/attendance/export', [\App\Http\Controllers\Supervisor\AttendanceController::class, 'export'])->name('staff.attendance.export');
         Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
         Route::get('/leave-requests/{leaveRequest}', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('review-leave-request');
         Route::get('/leave-requests/{leaveRequest}/review', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('leave-requests.review');

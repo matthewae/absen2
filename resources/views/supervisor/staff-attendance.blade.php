@@ -117,9 +117,12 @@
                         <div class="flex justify-between items-center">
                             <h3 class="text-lg font-medium text-gray-700">Attendance Details</h3>
                             <div class="flex space-x-2">
-                                <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+                                <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
                                     <i class="fas fa-download mr-2"></i> Export Records
                                 </button>
+                            </form>
                             </div>
                         </div>
 
