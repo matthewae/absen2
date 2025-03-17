@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2c3e50;
+            --primary-color: #1a237e;
             --secondary-color: #34495e;
             --accent-color: #3498db;
             --light-bg: #f8f9fa;
@@ -135,8 +135,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('staff.leave.*') ? 'active' : '' }}" href="{{ route('staff.leave.index') }}">
-                        <i class="fas fa-calendar-minus"></i> Leave Requests
+                    <a class="nav-link {{ request()->routeIs('staff.leave-requests.index') ? 'active' : '' }}" href="{{ route('staff.leave-requests.index') }}">
+                        <i class="fas fa-calendar-times"></i> Leave Requests
                     </a>
                 </li>
             </ul>

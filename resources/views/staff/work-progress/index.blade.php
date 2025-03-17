@@ -18,7 +18,7 @@
             z-index: 100;
             padding: 48px 0 0;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            background-color: #2c3e50;
+            background-color: #1a237e;
             width: 250px;
         }
         .sidebar-sticky {

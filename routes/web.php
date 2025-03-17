@@ -60,6 +60,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
         // Work Progress routes
         Route::get('/work-progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('work-progress.index');
         Route::get('/work-progress/create', [\App\Http\Controllers\Staff\WorkProgressController::class, 'create'])->name('work-progress.create');
+        Route::post('/work-progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'store'])->name('work-progress.store');
         Route::get('/progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('progress.index');
         Route::get('/progress/create', [\App\Http\Controllers\Staff\WorkProgressController::class, 'create'])->name('progress.create');
         Route::post('/progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'store'])->name('progress.store');
@@ -78,6 +79,7 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
 
     Route::middleware(['auth:supervisor'])->group(function () {
         Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/staff', [\App\Http\Controllers\Supervisor\StaffController::class, 'index'])->name('staff.index');
         Route::get('/profile', [\App\Http\Controllers\SupervisorController::class, 'profile'])->name('profile');
         Route::post('/profile/update-photo', [\App\Http\Controllers\SupervisorController::class, 'updatePhoto'])->name('update-photo');
         Route::get('/staff', [SupervisorDashboardController::class, 'viewStaffList'])->name('staff-list');
