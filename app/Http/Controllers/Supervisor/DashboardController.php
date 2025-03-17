@@ -57,8 +57,7 @@ class DashboardController extends Controller
     public function viewStaffList()
     {
         $supervisor = Auth::guard('supervisor')->user();
-        $staff = Staff::where('supervisor_id', $supervisor->id)
-            ->with(['attendances' => function($query) {
+        $staff = Staff::with(['attendances' => function($query) {
                 $query->whereDate('check_in', today());
             }])
             ->get();
