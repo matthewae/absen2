@@ -167,7 +167,7 @@
                                 <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
                                     <h3 class="font-medium text-gray-900">{{ $assignment->title }}</h3>
                                     <p class="text-sm text-gray-500 mt-1">{{ $assignment->description }}</p>
-                                    <div class="mt-2 text-xs text-gray-500">Due: {{ $assignment->due_date->format('M d, Y') }}</div>
+                                    <div class="mt-2 text-xs text-gray-500">Due: {{ $assignment->due_date ? $assignment->due_date->format('M d, Y') : 'No due date' }}</div>
                                 </div>
                             @endforeach
                         </div>

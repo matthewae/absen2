@@ -13,18 +13,12 @@ class WorkProgressController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(function ($request, $next) {
-            if (!auth()->check() || !auth()->user()->staff) {
-                return redirect()->route('login');
-            }
-            return $next($request);
-        });
+        // Authentication is handled at dashboard level
     }
 
     public function index()
     {
-        $workProgresses = WorkProgress::where('staff_id', auth()->user()->staff->id)
-            ->with('files')
+        $workProgresses = WorkProgress::with('files')
             ->latest()
             ->paginate(10);
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Supervisor;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Supervisor;
 
 class SupervisorSettingsController extends Controller
 {
@@ -18,7 +18,7 @@ class SupervisorSettingsController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'password' => 'required|string|min:8|confirmed',
+            'new_password' => 'required|string|min:8|confirmed',
         ]);
 
         $supervisor = Auth::guard('supervisor')->user();
@@ -27,9 +27,9 @@ class SupervisorSettingsController extends Controller
             return back()->withErrors(['current_password' => 'The current password is incorrect.']);
         }
 
-        $supervisor->password = Hash::make($request->password);
+        $supervisor->password = Hash::make($request->new_password);
         $supervisor->save();
 
-        return back()->with('status', 'Password updated successfully!');
+        return back()->with('success', 'Password updated successfully!');
     }
 }
