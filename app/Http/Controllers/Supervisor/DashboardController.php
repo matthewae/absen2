@@ -81,12 +81,15 @@ class DashboardController extends Controller
     public function viewLeaveRequests()
     {
         $supervisor = Auth::guard('supervisor')->user();
-        $leaveRequests = LeaveRequest::whereHas('staff', function($query) use ($supervisor) {
-            $query->where('supervisor_id', $supervisor->id);
-        })
-        ->with(['staff'])
-        ->latest()
-        ->paginate(10);
+        $status = request('status', 'all');
+        
+        $query = LeaveRequest::with(['staff'])->latest();
+        
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+        
+        $leaveRequests = $query->paginate(10);
 
         return view('supervisor.leave-requests', compact('supervisor', 'leaveRequests'));
     }
