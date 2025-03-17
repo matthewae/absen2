@@ -25,17 +25,19 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $staffAttendanceToday = Staff::where('supervisor_id', $supervisor->id)
-            ->whereHas('attendances', function($query) use ($today) {
+        $staffAttendanceToday = Staff::with(['attendances' => function($query) use ($today) {
                 $query->whereDate('check_in', $today);
-            })
-            ->with(['attendances' => function($query) use ($today) {
-                $query->whereDate('check_in', $today);
-            }])
-            ->get();
+                }])
+            ->orderBy('name')
+            ->get()
+            ->map(function($staff) {
+                $todayAttendance = $staff->attendances->first();
+                $staff->attendance_status = $todayAttendance ? 'present' : 'absent';
+                $staff->check_in_time = $todayAttendance ? $todayAttendance->check_in->format('H:i') : null;
+                return $staff;
+            });
 
-        $staffOnLeave = Staff::where('supervisor_id', $supervisor->id)
-            ->whereHas('leaveRequests', function($query) use ($today) {
+        $staffOnLeave = Staff::whereHas('leaveRequests', function($query) use ($today) {
                 $query->where('status', 'approved')
                     ->where('start_date', '<=', $today)
                     ->where('end_date', '>=', $today);
@@ -55,9 +57,11 @@ class DashboardController extends Controller
     public function viewStaffList()
     {
         $supervisor = Auth::guard('supervisor')->user();
-        $staff = Staff::with(['attendances' => function($query) {
-            $query->whereDate('check_in', today());
-        }])->get();
+        $staff = Staff::where('supervisor_id', $supervisor->id)
+            ->with(['attendances' => function($query) {
+                $query->whereDate('check_in', today());
+            }])
+            ->get();
 
         return view('supervisor.staff-list', compact('staff'));
     }

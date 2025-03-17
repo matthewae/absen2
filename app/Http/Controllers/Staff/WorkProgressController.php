@@ -8,6 +8,7 @@ use App\Models\WorkProgressFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class WorkProgressController extends Controller
 {
@@ -43,8 +44,13 @@ class WorkProgressController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        $staff = auth()->user()->staff;
+        if (!$staff) {
+            return back()->with('error', 'No staff record found for your account. Please contact your supervisor.');
+        }
+
         $workProgress = WorkProgress::create([
-            'staff_id' => auth()->user()->staff->id,
+            'staff_id' => $staff->id,
             'project_topic' => $request->project_topic,
             'company_name' => $request->company_name,
             'work_description' => $request->work_description,
