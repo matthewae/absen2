@@ -49,30 +49,31 @@ class WorkProgressController extends Controller
             return back()->with('error', 'No staff record found for your account. Please contact your supervisor.');
         }
 
-        $workProgress = WorkProgress::create([
-            'staff_id' => $staff->id,
-            'project_topic' => $request->project_topic,
-            'company_name' => $request->company_name,
-            'work_description' => $request->work_description,
-            'status' => 'pending'
-        ]);
-
         if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                $path = $file->store('work-progress/' . auth()->user()->staff->id, 'public');
-                
-                WorkProgressFile::create([
-                    'work_progress_id' => $workProgress->id,
-                    'file_path' => $path,
-                    'original_name' => $file->getClientOriginalName(),
-                    'mime_type' => $file->getMimeType(),
-                    'file_size' => $file->getSize()
-                ]);
-            }
+            $file = $request->file('files')[0]; // Get the first file
+            $path = $file->store('work-progress/' . $staff->id, 'public');
+            
+            $workProgress = WorkProgress::create([
+                'staff_id' => $staff->id,
+                'user_id' => auth()->id(),
+                'project_topic' => $request->project_topic,
+                'company_name' => $request->company_name,
+                'work_description' => $request->work_description,
+                'status' => 'pending',
+                'title' => $request->project_topic . ' - ' . $request->company_name,
+                'description' => $request->work_description,
+                'start_date' => now(),
+                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $path,
+                'file_type' => $file->getMimeType(),
+                'file_size' => $file->getSize()
+            ]);
+
+            return redirect()->route('staff.work-progress.index')
+                ->with('success', 'Work progress submitted successfully.');
         }
 
-        return redirect()->route('staff.work-progress.index')
-            ->with('success', 'Work progress submitted successfully.');
+        return back()->with('error', 'Please upload at least one file.');
     }
 
     public function show(WorkProgress $workProgress)

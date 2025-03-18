@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkProgress extends Model
@@ -30,7 +29,8 @@ class WorkProgress extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'deleted_at' => 'datetime'
+        'deleted_at' => 'datetime',
+        'file_size' => 'integer'
     ];
 
     public function user(): BelongsTo
@@ -38,8 +38,13 @@ class WorkProgress extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function files(): HasMany
+    public function files()
     {
         return $this->hasMany(WorkProgressFile::class);
+    }
+
+    public function staff(): BelongsTo
+    {
+        return $this->belongsTo(Staff::class);
     }
 }

@@ -26,7 +26,7 @@ class AssignmentController extends Controller
     public function create()
     {
         $supervisor = Auth::guard('supervisor')->user();
-        $staff = $supervisor->staff()->get();
+        $staff = Staff::all();
         return view('supervisor.assignments.create', compact('staff'));
     }
 

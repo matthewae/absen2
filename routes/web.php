@@ -58,6 +58,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
         Route::get('/leave-requests/{leaveRequest}', [\App\Http\Controllers\Staff\LeaveRequestController::class, 'show'])->name('leave-requests.show');
 
         // Work Progress routes
+        Route::get('/work-progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('progress.index');
         Route::get('/work-progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('work-progress.index');
         Route::get('/work-progress/create', [\App\Http\Controllers\Staff\WorkProgressController::class, 'create'])->name('work-progress.create');
         Route::post('/work-progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'store'])->name('work-progress.store');

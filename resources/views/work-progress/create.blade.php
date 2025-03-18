@@ -16,17 +16,26 @@
                         @csrf
 
                         <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required>
-                            @error('title')
+                            <label for="project_topic" class="form-label">Project Topic</label>
+                            <input type="text" class="form-control @error('project_topic') is-invalid @enderror" id="project_topic" name="project_topic" value="{{ old('project_topic') }}" required>
+                            @error('project_topic')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4" required>{{ old('description') }}</textarea>
-                            @error('description')
+                            <label for="company_name" class="form-label">Company Name</label>
+                            <input type="text" class="form-control @error('company_name') is-invalid @enderror" id="company_name" name="company_name" value="{{ old('company_name') }}" required>
+                            @error('company_name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="work_description" class="form-label">Work Description</label>
+                            <textarea class="form-control @error('work_description') is-invalid @enderror" id="work_description" name="work_description" rows="4" required>{{ old('work_description') }}</textarea>
+                            <div class="form-text">Please provide at least 100 characters of description.</div>
+                            @error('work_description')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
