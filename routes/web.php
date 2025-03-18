@@ -79,22 +79,21 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
     Route::post('/login', [SupervisorLoginController::class, 'login']);
     Route::post('/logout', [SupervisorLoginController::class, 'logout'])->name('logout');
 
-    Route::middleware(['auth:supervisor'])->group(function () {
-        Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/staff', [\App\Http\Controllers\Supervisor\StaffController::class, 'index'])->name('staff.index');
-        Route::get('/profile', [\App\Http\Controllers\SupervisorController::class, 'profile'])->name('profile');
-        Route::post('/profile/update-photo', [\App\Http\Controllers\SupervisorController::class, 'updatePhoto'])->name('update-photo');
-        Route::get('/staff', [SupervisorDashboardController::class, 'viewStaffList'])->name('staff-list');
-        Route::get('/staff/{staff}/attendance', [SupervisorDashboardController::class, 'viewStaffAttendance'])->name('staff.attendance');
-        Route::post('/staff/{staff}/attendance/export', [\App\Http\Controllers\Supervisor\AttendanceController::class, 'export'])->name('staff.attendance.export');
-        Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
-        Route::get('/leave-requests/{leaveRequest}', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('review-leave-request');
-        Route::get('/leave-requests/{leaveRequest}/review', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('leave-requests.review');
+    Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/staff', [\App\Http\Controllers\Supervisor\StaffController::class, 'index'])->name('staff.index');
+    Route::get('/profile', [\App\Http\Controllers\SupervisorController::class, 'profile'])->name('profile');
+    Route::post('/profile/update-photo', [\App\Http\Controllers\SupervisorController::class, 'updatePhoto'])->name('update-photo');
+    Route::get('/staff', [SupervisorDashboardController::class, 'viewStaffList'])->name('staff-list');
+    Route::get('/staff/{staff}/attendance', [SupervisorDashboardController::class, 'viewStaffAttendance'])->name('staff.attendance');
+    Route::post('/staff/{staff}/attendance/export', [\App\Http\Controllers\Supervisor\AttendanceController::class, 'export'])->name('staff.attendance.export');
+    Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
+    Route::get('/leave-requests/{leaveRequest}', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('review-leave-request');
+    Route::get('/leave-requests/{leaveRequest}/review', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('leave-requests.review');
 
-        // Leave request approval routes
-        Route::post('/leave-requests/{leaveRequest}/approve', [SupervisorDashboardController::class, 'approveLeaveRequest'])->name('leave-requests.approve');
-        Route::post('/leave-requests/{leaveRequest}/reject', [SupervisorDashboardController::class, 'rejectLeaveRequest'])->name('leave-requests.reject');
-        Route::put('/leave-requests/{leaveRequest}', [SupervisorDashboardController::class, 'updateLeaveRequest'])->name('leave-requests.update');
+    // Leave request approval routes
+    Route::post('/leave-requests/{leaveRequest}/approve', [SupervisorDashboardController::class, 'approveLeaveRequest'])->name('leave-requests.approve');
+    Route::post('/leave-requests/{leaveRequest}/reject', [SupervisorDashboardController::class, 'rejectLeaveRequest'])->name('leave-requests.reject');
+    Route::put('/leave-requests/{leaveRequest}', [SupervisorDashboardController::class, 'updateLeaveRequest'])->name('leave-requests.update');
 
         // Assignment routes
         Route::get('/assignments/create', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'create'])->name('assignments.create');
@@ -113,4 +112,4 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
         Route::get('/settings', [\App\Http\Controllers\Supervisor\SettingsController::class, 'showSettings'])->name('settings');
         Route::put('/settings/update-password', [\App\Http\Controllers\Supervisor\SettingsController::class, 'updatePassword'])->name('update-password');
     });
-});
+;
