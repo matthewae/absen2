@@ -72,6 +72,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
     });
 });
 
+
 // Supervisor Routes
 Route::prefix('supervisor')->name('supervisor.')->group(function () {
     Route::get('/login', [SupervisorLoginController::class, 'showLoginForm'])->name('login');
@@ -89,6 +90,8 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
         Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
         Route::get('/leave-requests/{leaveRequest}', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('review-leave-request');
         Route::get('/leave-requests/{leaveRequest}/review', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('leave-requests.review');
+
+        // Leave request approval routes
         Route::post('/leave-requests/{leaveRequest}/approve', [SupervisorDashboardController::class, 'approveLeaveRequest'])->name('leave-requests.approve');
         Route::post('/leave-requests/{leaveRequest}/reject', [SupervisorDashboardController::class, 'rejectLeaveRequest'])->name('leave-requests.reject');
         Route::put('/leave-requests/{leaveRequest}', [SupervisorDashboardController::class, 'updateLeaveRequest'])->name('leave-requests.update');
@@ -101,6 +104,7 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
         Route::get('/assignments/{assignment}/edit', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'edit'])->name('assignments.edit');
         Route::put('/assignments/{assignment}', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'update'])->name('assignments.update');
         Route::delete('/assignments/{assignment}', [\App\Http\Controllers\Supervisor\AssignmentController::class, 'destroy'])->name('assignments.destroy');
+
         // Work Progress routes
         Route::get('/work-progress', [\App\Http\Controllers\Supervisor\WorkProgressController::class, 'index'])->name('work-progress.index');
         Route::get('/work-progress/{staff}', [\App\Http\Controllers\Supervisor\WorkProgressController::class, 'show'])->name('work-progress.show');

@@ -54,7 +54,7 @@
                     </button>
                 </form>
 
-                <form action="{{ route('supervisor.reject-leave-request', $leaveRequest) }}" method="POST" class="space-y-4">
+                <form action="{{ route('supervisor.leave-requests.reject', $leaveRequest) }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
                         <label for="reject_comment" class="block text-sm font-medium text-gray-700">Reason for Rejection <span class="text-red-500">*</span></label>

@@ -106,7 +106,11 @@ class DashboardController extends Controller
     public function approveLeaveRequest(Request $request, LeaveRequest $leaveRequest)
     {
         $supervisor = Auth::guard('supervisor')->user();
-        if (!$supervisor || $leaveRequest->staff->supervisor_id !== $supervisor->id) {
+        if (!$supervisor) {
+            abort(401, 'Please login first.');
+        }
+        
+        if ($leaveRequest->staff->supervisor_id !== $supervisor->id) {
             abort(403, 'You are not authorized to approve this leave request.');
         }
 
@@ -127,8 +131,13 @@ class DashboardController extends Controller
 
     public function rejectLeaveRequest(Request $request, LeaveRequest $leaveRequest)
     {
-        if ($leaveRequest->staff->supervisor_id !== Auth::guard('supervisor')->id()) {
-            abort(403);
+        $supervisor = Auth::guard('supervisor')->user();
+        if (!$supervisor) {
+            abort(401, 'Please login first.');
+        }
+        
+        if ($leaveRequest->staff->supervisor_id !== $supervisor->id) {
+            abort(403, 'You are not authorized to reject this leave request.');
         }
 
         $request->validate([
@@ -148,8 +157,13 @@ class DashboardController extends Controller
 
     public function updateLeaveRequest(Request $request, LeaveRequest $leaveRequest)
     {
-        if ($leaveRequest->staff->supervisor_id !== Auth::guard('supervisor')->id()) {
-            abort(403);
+        $supervisor = Auth::guard('supervisor')->user();
+        if (!$supervisor) {
+            abort(401, 'Please login first.');
+        }
+        
+        if ($leaveRequest->staff->supervisor_id !== $supervisor->id) {
+            abort(403, 'You are not authorized to update this leave request.');
         }
 
         $request->validate([
