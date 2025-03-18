@@ -43,7 +43,7 @@
         <div class="space-y-4">
             <h3 class="text-lg font-medium text-gray-700">Your Response</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <form action="{{ route('supervisor.approve-leave-request', $leaveRequest) }}" method="POST" class="space-y-4">
+                <form action="{{ route('supervisor.leave-requests.approve', $leaveRequest) }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
                         <label for="approve_comment" class="block text-sm font-medium text-gray-700">Comment (Optional)</label>

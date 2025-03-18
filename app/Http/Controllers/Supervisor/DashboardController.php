@@ -105,8 +105,9 @@ class DashboardController extends Controller
 
     public function approveLeaveRequest(Request $request, LeaveRequest $leaveRequest)
     {
-        if ($leaveRequest->staff->supervisor_id !== Auth::guard('supervisor')->id()) {
-            abort(403);
+        $supervisor = Auth::guard('supervisor')->user();
+        if (!$supervisor || $leaveRequest->staff->supervisor_id !== $supervisor->id) {
+            abort(403, 'You are not authorized to approve this leave request.');
         }
 
         $request->validate([
@@ -116,7 +117,7 @@ class DashboardController extends Controller
         $leaveRequest->update([
             'status' => 'approved',
             'supervisor_comment' => $request->supervisor_comment,
-            'approved_by' => Auth::guard('supervisor')->id(),
+            'approved_by' => $supervisor->id,
             'approved_at' => now()
         ]);
 
