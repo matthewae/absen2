@@ -43,13 +43,13 @@ class Supervisor extends Authenticatable
 
     public function getDepartmentStaffCount()
     {
-        return $this->staff()->where('department', $this->department)->count();
+        return $this->staff()->count();
     }
 
     public function getPendingLeaveRequests()
     {
         return LeaveRequest::whereHas('staff', function($query) {
             $query->where('supervisor_id', $this->id);
-        })->where('status', 'pending')->get();
+        })->where('status', 'pending')->count();
     }
 }

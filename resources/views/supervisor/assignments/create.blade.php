@@ -74,7 +74,7 @@
             </a>
         </nav>
         <div class="mt-auto pt-3 border-top">
-            <div class="text-white mb-2">{{ Auth::user()->name }}</div>
+            <div class="text-white mb-2">{{ Auth::user() ? Auth::user()->name : 'Unknown User' }}</div>
             <form action="{{ route('supervisor.logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
@@ -91,7 +91,7 @@
         <div class="header d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Create New Assignment</h4>
             <div class="d-flex align-items-center">
-                <span class="me-3">{{ Auth::user()->name }}</span>
+                <span class="me-3">{{ Auth::user() ? Auth::user()->name : 'Unknown User' }}</span>
             </div>
         </div>
 

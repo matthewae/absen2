@@ -88,7 +88,11 @@ class DashboardController extends Controller
         $supervisor = Auth::guard('supervisor')->user();
         $status = request('status', 'all');
         
-        $query = LeaveRequest::with(['staff'])->latest();
+        $query = LeaveRequest::with(['staff'])
+            ->whereHas('staff', function($query) use ($supervisor) {
+                $query->where('supervisor_id', $supervisor->id);
+            })
+            ->latest();
         
         if ($status !== 'all') {
             $query->where('status', $status);
