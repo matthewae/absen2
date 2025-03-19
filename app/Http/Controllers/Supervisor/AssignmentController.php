@@ -1,120 +1,64 @@
 <?php
 
-namespace App\Http\Controllers\Supervisor;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Assignment;
-use App\Models\Staff;
+use App\Models\Supervisor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
-class AssignmentController extends Controller
+class SupervisorController extends Controller
 {
-    public function index()
+    public function profile()
     {
-        $supervisor = Auth::guard('supervisor')->user();
-        $assignments = $supervisor->assignments()
-            ->with(['staff'])
-            ->latest()
-            ->paginate(10);
-        $staff = $supervisor->staff()->get();
-
-        return view('supervisor.assignments.index', compact('assignments', 'staff'));
+        $supervisor = auth()->user();
+        return view('supervisor.profile', [
+            'supervisor' => $supervisor,
+            'title' => 'Profile'
+        ]);
     }
 
-    public function create()
-    {
-        $supervisor = Auth::guard('supervisor')->user();
-        $staff = Staff::all();
-        return view('supervisor.assignments.create', compact('staff'));
-    }
-
-    public function store(Request $request)
+    public function updatePhoto(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'staff_id' => 'required|exists:staff,id',
-            'start_datetime' => 'required|date',
-            'end_datetime' => 'required|date|after:start_datetime',
-            'priority' => 'required|in:low,medium,high'
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $supervisor = Auth::guard('supervisor')->user();
-        $assignment = new Assignment($request->all());
-        $assignment->supervisor_id = $supervisor->id;
-        $assignment->save();
+        try {
+            $supervisor = auth()->user();
 
-        return redirect()->route('supervisor.assignments.index')
-            ->with('success', 'Assignment created successfully.');
-    }
+            if ($request->hasFile('profile_picture')) {
+                // Delete old profile picture if exists
+                if ($supervisor->profile_picture) {
+                    Storage::disk('public')->delete($supervisor->profile_picture);
+                }
 
-    public function show(Assignment $assignment)
-    {
-        if ($assignment->supervisor_id !== Auth::guard('supervisor')->id()) {
-            abort(403);
+                // Store new profile picture
+                $file = $request->file('profile_picture');
+                $filename = 'supervisor_' . $supervisor->id . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('profile-pictures', $filename, 'public');
+
+                // Update supervisor profile
+                $supervisor->profile_picture = $path;
+                $supervisor->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Profile picture updated successfully',
+                    'path' => Storage::url($path)
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No file uploaded'
+            ], 400);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating profile picture: ' . $e->getMessage()
+            ], 500);
         }
-
-        return view('supervisor.assignments.show', compact('assignment'));
-    }
-
-    public function edit(Assignment $assignment)
-    {
-        if ($assignment->supervisor_id !== Auth::guard('supervisor')->id()) {
-            abort(403);
-        }
-
-        $supervisor = Auth::guard('supervisor')->user();
-        $staff = $supervisor->staff()->get();
-        
-        return view('supervisor.assignments.edit', compact('assignment', 'staff'));
-    }
-
-    public function update(Request $request, Assignment $assignment)
-    {
-        if ($assignment->supervisor_id !== Auth::guard('supervisor')->id()) {
-            abort(403);
-        }
-
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'staff_id' => 'required|exists:staff,id',
-            'start_datetime' => 'required|date',
-            'end_datetime' => 'required|date|after:start_datetime',
-            'priority' => 'required|in:low,medium,high',
-            'status' => 'required|in:pending,in_progress,completed'
-        ]);
-
-        $assignment->update($request->all());
-
-        return redirect()->route('supervisor.assignments.index')
-            ->with('success', 'Assignment updated successfully.');
-    }
-
-    public function destroy(Assignment $assignment)
-    {
-        if ($assignment->supervisor_id !== Auth::guard('supervisor')->id()) {
-            abort(403);
-        }
-
-        $assignment->delete();
-
-        return redirect()->route('supervisor.assignments.index')
-            ->with('success', 'Assignment deleted successfully.');
-    }
-
-    public function downloadAttachment(Assignment $assignment)
-    {
-        if ($assignment->supervisor_id !== Auth::guard('supervisor')->id()) {
-            abort(403);
-        }
-
-        if (!$assignment->attachment) {
-            abort(404, 'No attachment found.');
-        }
-
-        return Storage::download($assignment->attachment);
     }
 }
