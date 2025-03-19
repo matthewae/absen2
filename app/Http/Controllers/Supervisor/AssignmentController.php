@@ -1,14 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Supervisor;
 
 use App\Models\Supervisor;
+use App\Models\Assignment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
 
-class SupervisorController extends Controller
+class AssignmentController extends Controller
 {
+    public function index()
+    {
+        $assignments = Assignment::with(['staff'])->latest()->paginate(10);
+        return view('supervisor.assignments.index', compact('assignments'));
+    }
+
     public function profile()
     {
         $supervisor = auth()->user();
