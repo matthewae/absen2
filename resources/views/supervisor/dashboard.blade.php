@@ -23,7 +23,7 @@
                     </svg>
                     Dashboard
                 </a>
-                <a href="{{ route('supervisor.staff-list') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700 transition-colors duration-200">
+                <a href="{{ route('supervisor.staff.index') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700 transition-colors duration-200">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
@@ -115,7 +115,7 @@
                 <div class="bg-white shadow rounded-xl p-6 mb-8">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold text-gray-800">Today's Staff Attendance</h2>
-                        <a href="{{ route('supervisor.staff-list') }}" class="text-indigo-600 hover:text-indigo-900">View All Staff</a>
+                        <a href="{{ route('supervisor.staff.index') }}" class="text-indigo-600 hover:text-indigo-900">View All Staff</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
