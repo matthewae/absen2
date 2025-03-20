@@ -21,7 +21,9 @@ class ScheduleController extends Controller
                     'title' => $assignment->title,
                     'start' => $assignment->start_datetime,
                     'end' => $assignment->end_datetime,
-                    'description' => $assignment->description
+                    'description' => $assignment->description,
+                    'status' => $assignment->status,
+                    'priority' => $assignment->priority
                 ];
             });
 

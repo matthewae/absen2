@@ -49,14 +49,14 @@ class Staff extends Authenticatable
         return $this->hasMany(LeaveRequest::class);
     }
 
-    public function workProgress()
-    {
-        return $this->hasMany(WorkProgress::class);
-    }
-
     public function assignments()
     {
         return $this->hasMany(Assignment::class);
+    }
+
+    public function workProgress()
+    {
+        return $this->hasMany(WorkProgress::class);
     }
 
     public function latestAttendance()

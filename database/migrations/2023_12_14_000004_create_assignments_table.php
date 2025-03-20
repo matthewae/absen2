@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->unsignedBigInteger('supervisor_id');
-            $table->foreign('supervisor_id')->references('id')->on('supervisors')->onDelete('cascade');
+            $table->unsignedBigInteger('supervisor_id')->nullable();
+            $table->foreign('supervisor_id')->references('id')->on('supervisors')->onDelete('set null');
             $table->unsignedBigInteger('staff_id');
             $table->foreign('staff_id')->references('id')->on('staff')->onDelete('cascade');
             $table->dateTime('start_datetime');

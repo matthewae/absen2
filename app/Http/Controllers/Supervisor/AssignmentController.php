@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Supervisor;
 
 use App\Models\Supervisor;
 use App\Models\Assignment;
+use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -16,6 +17,30 @@ class AssignmentController extends Controller
         $assignments = Assignment::with(['staff'])->latest()->paginate(10);
         $staff = \App\Models\Staff::all();
         return view('supervisor.assignments.index', compact('assignments', 'staff'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'staff_id' => 'required|exists:staff,id',
+            'start_datetime' => 'required|date',
+            'end_datetime' => 'required|date|after:start_datetime'
+        ]);
+
+        $assignment = Assignment::create([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'staff_id' => $validated['staff_id'],
+            'supervisor_id' => auth()->id(),
+            'start_datetime' => $validated['start_datetime'],
+            'end_datetime' => $validated['end_datetime'],
+            'status' => 'in_progress'
+        ]);
+
+        return redirect()->route('supervisor.assignments.index')
+            ->with('success', 'Assignment created successfully');
     }
 
     public function profile()
@@ -69,5 +94,11 @@ class AssignmentController extends Controller
                 'message' => 'Error updating profile picture: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function create()
+    {
+        $staff = Staff::all();
+        return view('supervisor.assignments.create', compact('staff'));
     }
 }
