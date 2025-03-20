@@ -23,14 +23,6 @@
                         <i class="fas fa-users w-6"></i>
                         <span>Staff Management</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
-                        <i class="fas fa-calendar-alt w-6"></i>
-                        <span>Schedule</span>
-                    </a>
-                    <a href="#" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
-                        <i class="fas fa-chart-bar w-6"></i>
-                        <span>Reports</span>
-                    </a>
                 </nav>
             </div>
             <div class="absolute bottom-0 w-full p-6">
@@ -94,8 +86,8 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Present Days</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Late Days</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Absent Days</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leave Days</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
@@ -114,9 +106,27 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $staff->department }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">{{ $staff->attendances->where('status', 'present')->count() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">{{ $staff->attendances->where('status', 'absent')->count() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600">{{ $staff->attendances->where('status', 'leave')->count() }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">
+                                        {{ $staff->attendances->filter(function($attendance) {
+                                            return $attendance->status === 'present' && 
+                                                   \Carbon\Carbon::parse($attendance->check_in)->month === now()->month &&
+                                                   \Carbon\Carbon::parse($attendance->check_in)->year === now()->year;
+                                        })->count() }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">
+                                        {{ $staff->attendances->filter(function($attendance) {
+                                            return $attendance->status === 'late' && 
+                                                   \Carbon\Carbon::parse($attendance->check_in)->month === now()->month &&
+                                                   \Carbon\Carbon::parse($attendance->check_in)->year === now()->year;
+                                        })->count() }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">
+                                        {{ $staff->attendances->filter(function($attendance) {
+                                            return $attendance->status === 'absent' && 
+                                                   \Carbon\Carbon::parse($attendance->check_in)->month === now()->month &&
+                                                   \Carbon\Carbon::parse($attendance->check_in)->year === now()->year;
+                                        })->count() }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
                                             @csrf
@@ -133,7 +143,7 @@
 
                     <!-- Export Buttons -->
                     <div class="mt-6 flex justify-end space-x-4">
-                        <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
+                        <form action="{{ route('supervisor.staff.attendance.export-all') }}" method="POST" class="inline">
                             @csrf
                             <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
                                 <i class="fas fa-download mr-2"></i> Export All Staff Records

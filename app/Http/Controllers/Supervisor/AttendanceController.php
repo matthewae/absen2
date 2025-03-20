@@ -13,12 +13,34 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $attendances = Attendance::with(['staff'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $staffMembers = Staff::with(['attendances' => function($query) {
+            $query->whereMonth('check_in', now()->month)
+                  ->whereYear('check_in', now()->year);
+        }])->get();
 
-        $staffMembers = Staff::with('attendances')->get();
         $staff = null; // Initialize $staff variable to avoid undefined variable error
+
+        // Calculate attendance statistics for each staff member
+        $staffMembers->each(function($staff) {
+            $staff->present_count = $staff->attendances()
+                ->where('status', 'present')
+                ->whereDate('check_in', '>=', now()->startOfMonth())
+                ->whereDate('check_in', '<=', now()->endOfMonth())
+                ->count();
+            
+            $staff->absent_count = $staff->attendances()
+                ->where('status', 'absent')
+                ->whereDate('check_in', '>=', now()->startOfMonth())
+                ->whereDate('check_in', '<=', now()->endOfMonth())
+                ->count();
+            
+            $staff->leave_count = $staff->attendances()
+                ->where('status', 'leave')
+                ->whereDate('check_in', '>=', now()->startOfMonth())
+                ->whereDate('check_in', '<=', now()->endOfMonth())
+                ->count();
+        });
+
         return view('supervisor.staff-attendance', compact('staffMembers', 'staff'));
     }
 
@@ -45,10 +67,10 @@ class AttendanceController extends Controller
             foreach ($attendances as $attendance) {
                 $sheet->setCellValue('A' . $row, $staff->name);
                 $sheet->setCellValue('B' . $row, $staff->department);
-                $sheet->setCellValue('C' . $row, $attendance->date);
+                $sheet->setCellValue('C' . $row, $attendance->check_in->format('Y-m-d'));
                 $sheet->setCellValue('D' . $row, ucfirst($attendance->status));
-                $sheet->setCellValue('E' . $row, $attendance->check_in);
-                $sheet->setCellValue('F' . $row, $attendance->check_out);
+                $sheet->setCellValue('E' . $row, $attendance->check_in->format('H:i:s'));
+                $sheet->setCellValue('F' . $row, $attendance->check_out ? $attendance->check_out->format('H:i:s') : '-');
                 $row++;
             }
 
@@ -61,10 +83,10 @@ class AttendanceController extends Controller
                 foreach ($staff->attendances()->orderBy('check_in', 'desc')->get() as $attendance) {
                     $sheet->setCellValue('A' . $row, $staff->name);
                     $sheet->setCellValue('B' . $row, $staff->department);
-                    $sheet->setCellValue('C' . $row, $attendance->date);
+                    $sheet->setCellValue('C' . $row, $attendance->check_in->format('Y-m-d'));
                     $sheet->setCellValue('D' . $row, ucfirst($attendance->status));
-                    $sheet->setCellValue('E' . $row, $attendance->check_in);
-                    $sheet->setCellValue('F' . $row, $attendance->check_out);
+                    $sheet->setCellValue('E' . $row, $attendance->check_in->format('H:i:s'));
+                    $sheet->setCellValue('F' . $row, $attendance->check_out ? $attendance->check_out->format('H:i:s') : '-');
                     $row++;
                 }
             }
@@ -79,14 +101,9 @@ class AttendanceController extends Controller
 
         // Create the Excel file
         $writer = new Xlsx($spreadsheet);
-        
-        // Set headers for download
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
+        $path = storage_path('app/public/' . $filename);
+        $writer->save($path);
 
-        // Save to output
-        $writer->save('php://output');
-        exit;
+        return response()->download($path)->deleteFileAfterSend();
     }
 }
