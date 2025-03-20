@@ -14,7 +14,8 @@ class AssignmentController extends Controller
     public function index()
     {
         $assignments = Assignment::with(['staff'])->latest()->paginate(10);
-        return view('supervisor.assignments.index', compact('assignments'));
+        $staff = \App\Models\Staff::all();
+        return view('supervisor.assignments.index', compact('assignments', 'staff'));
     }
 
     public function profile()
