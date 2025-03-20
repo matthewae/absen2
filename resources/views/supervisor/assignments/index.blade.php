@@ -118,8 +118,8 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $assignment->due_date ? $assignment->due_date->format('M d, Y') : 'No due date' }}</div>
-                                        <div class="text-sm text-gray-500">{{ $assignment->due_date ? $assignment->due_date->diffForHumans() : '' }}</div>
+                                        <div class="text-sm text-gray-900">{{ $assignment->end_datetime ? $assignment->end_datetime->format('M d, Y') : 'No due date' }}</div>
+                                        <div class="text-sm text-gray-500">{{ $assignment->end_datetime ? $assignment->end_datetime->diffForHumans() : '' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
