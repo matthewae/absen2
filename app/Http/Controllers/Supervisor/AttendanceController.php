@@ -6,122 +6,87 @@ use App\Http\Controllers\Controller;
 use App\Models\Staff;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class AttendanceController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         $attendances = Attendance::with(['staff'])
-            ->when($request->date, function($query, $date) {
-                return $query->whereDate('check_in', $date);
-            })
-            ->when($request->staff_id, function($query, $staffId) {
-                return $query->where('staff_id', $staffId);
-            })
-            ->latest()
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        $staff = null;
-        if ($request->staff_id) {
-            $staff = Staff::find($request->staff_id);
-        }
-
-        $monthlyAttendance = Attendance::with(['staff'])
-            ->when($request->staff_id, function($query, $staffId) {
-                return $query->where('staff_id', $staffId);
-            })
-            ->whereMonth('check_in', now()->month)
-            ->whereYear('check_in', now()->year)
-            ->get();
-
-        $staffMembers = Staff::all();
-        return view('supervisor.staff-attendance', compact('attendances', 'staff', 'monthlyAttendance', 'staffMembers'));
+        $staffMembers = Staff::with('attendances')->get();
+        $staff = null; // Initialize $staff variable to avoid undefined variable error
+        return view('supervisor.staff-attendance', compact('staffMembers', 'staff'));
     }
 
-    public function export(Staff $staff)
+    public function export(Request $request, $staffId = null)
     {
-        $attendances = $staff->attendances()
-            ->orderBy('check_in', 'desc')
-            ->get();
-
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Set headers with styling
-        $headers = ['Date', 'Check In', 'Check Out', 'Duration (Hours)', 'Status'];
-        foreach ($headers as $key => $header) {
-            $column = chr(65 + $key); // Convert number to letter (A, B, C, etc.)
-            $sheet->setCellValue($column . '1', $header);
-        }
+        // Set headers
+        $sheet->setCellValue('A1', 'Staff Name');
+        $sheet->setCellValue('B1', 'Department');
+        $sheet->setCellValue('C1', 'Date');
+        $sheet->setCellValue('D1', 'Status');
+        $sheet->setCellValue('E1', 'Check In');
+        $sheet->setCellValue('F1', 'Check Out');
 
-        // Style the header row
-        $headerStyle = [
-            'font' => ['bold' => true],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => 'E2EFDA']
-            ],
-            'borders' => [
-                'allBorders' => [
-                    'borderStyle' => Border::BORDER_THIN
-                ]
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER
-            ]
-        ];
-        $sheet->getStyle('A1:E1')->applyFromArray($headerStyle);
-
-        // Add attendance records
         $row = 2;
-        foreach ($attendances as $attendance) {
-            $duration = $attendance->check_out 
-                ? $attendance->check_in->diffInHours($attendance->check_out) 
-                : '-';
 
-            $sheet->setCellValue('A' . $row, $attendance->check_in->format('Y-m-d'));
-            $sheet->setCellValue('B' . $row, $attendance->check_in->format('H:i'));
-            $sheet->setCellValue('C' . $row, $attendance->check_out ? $attendance->check_out->format('H:i') : '-');
-            $sheet->setCellValue('D' . $row, $duration);
-            $sheet->setCellValue('E' . $row, $attendance->check_out ? 'Completed' : 'On Duty');
+        if ($staffId) {
+            // Export single staff attendance
+            $staff = Staff::findOrFail($staffId);
+            $attendances = $staff->attendances()->orderBy('check_in', 'desc')->get();
 
-            // Style the data rows
-            $dataStyle = [
-                'borders' => [
-                    'allBorders' => [
-                        'borderStyle' => Border::BORDER_THIN
-                    ]
-                ],
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER
-                ]
-            ];
-            $sheet->getStyle('A' . $row . ':E' . $row)->applyFromArray($dataStyle);
+            foreach ($attendances as $attendance) {
+                $sheet->setCellValue('A' . $row, $staff->name);
+                $sheet->setCellValue('B' . $row, $staff->department);
+                $sheet->setCellValue('C' . $row, $attendance->date);
+                $sheet->setCellValue('D' . $row, ucfirst($attendance->status));
+                $sheet->setCellValue('E' . $row, $attendance->check_in);
+                $sheet->setCellValue('F' . $row, $attendance->check_out);
+                $row++;
+            }
 
-            $row++;
+            $filename = $staff->name . '_attendance_record.xlsx';
+        } else {
+            // Export all staff attendance
+            $staffMembers = Staff::with('attendances')->get();
+
+            foreach ($staffMembers as $staff) {
+                foreach ($staff->attendances()->orderBy('check_in', 'desc')->get() as $attendance) {
+                    $sheet->setCellValue('A' . $row, $staff->name);
+                    $sheet->setCellValue('B' . $row, $staff->department);
+                    $sheet->setCellValue('C' . $row, $attendance->date);
+                    $sheet->setCellValue('D' . $row, ucfirst($attendance->status));
+                    $sheet->setCellValue('E' . $row, $attendance->check_in);
+                    $sheet->setCellValue('F' . $row, $attendance->check_out);
+                    $row++;
+                }
+            }
+
+            $filename = 'all_staff_attendance_record.xlsx';
         }
 
         // Auto-size columns
-        foreach (range('A', 'E') as $column) {
-            $sheet->getColumnDimension($column)->setAutoSize(true);
+        foreach (range('A', 'F') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
         // Create the Excel file
-        $fileName = $staff->name . '_attendance_' . now()->format('Y-m-d') . '.xlsx';
         $writer = new Xlsx($spreadsheet);
+        
+        // Set headers for download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
 
-        // Save to temporary file and return response
-        $temp_file = tempnam(sys_get_temp_dir(), 'excel');
-        $writer->save($temp_file);
-
-        return response()->download($temp_file, $fileName, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ])->deleteFileAfterSend(true);
+        // Save to output
+        $writer->save('php://output');
+        exit;
     }
 }

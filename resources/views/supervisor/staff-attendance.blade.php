@@ -133,21 +133,12 @@
 
                     <!-- Export Buttons -->
                     <div class="mt-6 flex justify-end space-x-4">
-                        @if($staff)
-                            <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
-                                    <i class="fas fa-download mr-2"></i> Export Staff Records
-                                </button>
-                            </form>
-                        @else
-                            <form action="{{ route('supervisor.staff.attendance.export-all') }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                                    <i class="fas fa-file-excel mr-2"></i> Export All Staff Records
-                                </button>
-                            </form>
-                        @endif
+                        <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+                                <i class="fas fa-download mr-2"></i> Export All Staff Records
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
