@@ -92,7 +92,8 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
         Route::get('/attendance', [\App\Http\Controllers\Supervisor\AttendanceController::class, 'index'])->name('attendance.index');
         Route::get('/staff/{staff}/attendance', [SupervisorDashboardController::class, 'viewStaffAttendance'])->name('staff.attendance');
         Route::post('/staff/{staff}/attendance/export', [\App\Http\Controllers\Supervisor\AttendanceController::class, 'export'])->name('staff.attendance.export');
-        Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
+        Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests.index');
+        Route::get('/leave-requests/list', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
         Route::get('/leave-requests/{leaveRequest}/review', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('leave-requests.review');
 
         // Leave request approval routes

@@ -101,4 +101,38 @@ class AssignmentController extends Controller
         $staff = Staff::all();
         return view('supervisor.assignments.create', compact('staff'));
     }
+
+    public function show(Assignment $assignment)
+    {
+        $assignment->load('staff');
+        return view('supervisor.assignments.show', compact('assignment'));
+    }
+
+    public function edit(Assignment $assignment)
+    {
+        $staff = Staff::all();
+        return view('supervisor.assignments.edit', compact('assignment', 'staff'));
+    }
+
+    public function update(Request $request, Assignment $assignment)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'staff_id' => 'required|exists:staff,id',
+            'start_datetime' => 'required|date',
+            'end_datetime' => 'required|date|after:start_datetime'
+        ]);
+
+        $assignment->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'staff_id' => $validated['staff_id'],
+            'start_datetime' => $validated['start_datetime'],
+            'end_datetime' => $validated['end_datetime']
+        ]);
+
+        return redirect()->route('supervisor.assignments.show', $assignment)
+            ->with('success', 'Assignment updated successfully');
+    }
 }

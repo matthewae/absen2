@@ -69,12 +69,7 @@
             <a href="{{ route('supervisor.leave-requests.index') }}" class="nav-link">
                 <i class="fas fa-calendar-alt"></i> Leave Requests
             </a>
-            <form method="POST" action="{{ route('logout') }}" class="mt-auto">
-                @csrf
-                <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </form>
+
         </nav>
     </div>
 
