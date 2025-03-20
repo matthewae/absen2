@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $staff->name }}'s Attendance | Supervisor Dashboard</title>
+    <title>{{ $staff ? $staff->name . '\'s' : '' }}Attendance | Supervisor Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <body class="bg-gray-50">
     <div class="flex h-screen">
         <!-- Sidebar -->
@@ -62,6 +63,7 @@
                 <div class="bg-white shadow rounded-lg p-6">
                     <!-- Staff Info Header -->
                     <div class="flex justify-between items-center mb-6">
+                        @if($staff)
                         <div class="flex items-center space-x-4">
                             <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200">
                                 <img src="{{ $staff->photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($staff->name).'&background=6366f1&color=fff' }}" 
@@ -73,107 +75,78 @@
                                 <p class="text-sm text-gray-600 mt-1">{{ $staff->position }} - {{ $staff->department }}</p>
                             </div>
                         </div>
+                        @else
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-800">Staff Attendance Overview</h2>
+                        </div>
+                        @endif
                         <a href="{{ route('supervisor.staff-list') }}" class="flex items-center text-indigo-600 hover:text-indigo-900">
                             <i class="fas fa-arrow-left mr-2"></i>
                             Back to Staff List
                         </a>
                     </div>
 
-                    <!-- Monthly Calendar Overview -->
-                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                        <h3 class="text-lg font-medium text-gray-700 mb-4">Monthly Overview</h3>
-                        <div class="grid grid-cols-7 gap-2">
-                            @php
-                                $currentMonth = now()->month;
-                                $currentYear = now()->year;
-                                $daysInMonth = now()->daysInMonth;
-                                $firstDayOfMonth = now()->startOfMonth()->dayOfWeek;
-                            @endphp
-
-                            @foreach(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
-                                <div class="text-center text-sm font-medium text-gray-500">{{ $day }}</div>
-                            @endforeach
-
-                            @for($i = 0; $i < $firstDayOfMonth; $i++)
-                                <div class="h-12"></div>
-                            @endfor
-
-                            @for($day = 1; $day <= $daysInMonth; $day++)
-                                @php
-                                    $date = sprintf('%d-%02d-%02d', $currentYear, $currentMonth, $day);
-                                    $attendance = $monthlyAttendance[$date] ?? null;
-                                @endphp
-                                <div class="h-12 flex items-center justify-center rounded-lg {{ $attendance ? 'bg-green-100 hover:bg-green-200' : 'bg-white border border-gray-200 hover:border-gray-300' }} transition-colors duration-200 cursor-pointer">
-                                    <div class="text-sm {{ $attendance ? 'text-green-800' : 'text-gray-700' }}">
-                                        {{ $day }}
-                                    </div>
-                                </div>
-                            @endfor
-                        </div>
+                    <!-- Staff List and Attendance Records -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Present Days</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Absent Days</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leave Days</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @foreach($staffMembers as $staff)
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 flex-shrink-0">
+                                                <img class="h-10 w-10 rounded-full" src="{{ $staff->photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($staff->name).'&background=6366f1&color=fff' }}" alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ $staff->name }}</div>
+                                                <div class="text-sm text-gray-500">{{ $staff->email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $staff->department }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">{{ $staff->attendances->where('status', 'present')->count() }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">{{ $staff->attendances->where('status', 'absent')->count() }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600">{{ $staff->attendances->where('status', 'leave')->count() }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="text-indigo-600 hover:text-indigo-900">
+                                                <i class="fas fa-download mr-2"></i>Download Records
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
 
-                    <!-- Attendance Details Table -->
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-medium text-gray-700">Attendance Details</h3>
-                            <div class="flex space-x-2">
-                                <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
+                    <!-- Export Buttons -->
+                    <div class="mt-6 flex justify-end space-x-4">
+                        @if($staff)
+                            <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
                                 @csrf
                                 <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
-                                    <i class="fas fa-download mr-2"></i> Export Records
+                                    <i class="fas fa-download mr-2"></i> Export Staff Records
                                 </button>
                             </form>
-                            </div>
-                        </div>
-
-                        @if($monthlyAttendance->count() > 0)
-                            <div class="overflow-x-auto bg-white rounded-lg shadow">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @foreach($monthlyAttendance as $date => $records)
-                                            @foreach($records as $record)
-                                                <tr class="hover:bg-gray-50">
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {{ \Carbon\Carbon::parse($date)->format('d M Y') }}
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        {{ $record->check_in->format('H:i') }}
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        {{ $record->check_out ? $record->check_out->format('H:i') : '-' }}
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        @if($record->check_out)
-                                                            {{ $record->check_in->diffInHours($record->check_out) }} hours
-                                                        @else
-                                                            -
-                                                        @endif
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $record->check_out ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                                            {{ $record->check_out ? 'Completed' : 'On Duty' }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
                         @else
-                            <div class="text-center py-8 bg-gray-50 rounded-lg">
-                                <i class="fas fa-calendar-times text-4xl text-gray-400 mb-3"></i>
-                                <p class="text-gray-600">No attendance records found for this month</p>
-                            </div>
+                            <form action="{{ route('supervisor.staff.attendance.export-all') }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                                    <i class="fas fa-file-excel mr-2"></i> Export All Staff Records
+                                </button>
+                            </form>
                         @endif
                     </div>
                 </div>

@@ -15,6 +15,35 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class AttendanceController extends Controller
 {
+    public function index(Request $request)
+    {
+        $attendances = Attendance::with(['staff'])
+            ->when($request->date, function($query, $date) {
+                return $query->whereDate('check_in', $date);
+            })
+            ->when($request->staff_id, function($query, $staffId) {
+                return $query->where('staff_id', $staffId);
+            })
+            ->latest()
+            ->paginate(10);
+
+        $staff = null;
+        if ($request->staff_id) {
+            $staff = Staff::find($request->staff_id);
+        }
+
+        $monthlyAttendance = Attendance::with(['staff'])
+            ->when($request->staff_id, function($query, $staffId) {
+                return $query->where('staff_id', $staffId);
+            })
+            ->whereMonth('check_in', now()->month)
+            ->whereYear('check_in', now()->year)
+            ->get();
+
+        $staffMembers = Staff::all();
+        return view('supervisor.staff-attendance', compact('attendances', 'staff', 'monthlyAttendance', 'staffMembers'));
+    }
+
     public function export(Staff $staff)
     {
         $attendances = $staff->attendances()
