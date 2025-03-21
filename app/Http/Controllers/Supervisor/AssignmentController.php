@@ -121,16 +121,47 @@ class AssignmentController extends Controller
             'description' => 'required|string',
             'staff_id' => 'required|exists:staff,id',
             'start_datetime' => 'required|date',
-            'end_datetime' => 'required|date|after:start_datetime'
+            'end_datetime' => 'required|date|after:start_datetime',
+            'priority' => 'required|in:low,medium,high',
+            'status' => 'required|in:pending,in_progress,completed',
+            'submission_notes' => 'nullable|string',
+            'attachment' => 'nullable|file|max:2048'
         ]);
 
-        $assignment->update([
+        // Check if staff assignment is being changed
+        $staffChanged = $assignment->staff_id != $validated['staff_id'];
+
+        $updateData = [
             'title' => $validated['title'],
             'description' => $validated['description'],
             'staff_id' => $validated['staff_id'],
             'start_datetime' => $validated['start_datetime'],
-            'end_datetime' => $validated['end_datetime']
-        ]);
+            'end_datetime' => $validated['end_datetime'],
+            'priority' => $validated['priority'],
+            'status' => $validated['status'],
+            'submission_notes' => $validated['submission_notes'] ?? $assignment->submission_notes,
+            'updated_at' => now() // Force update timestamp to trigger model events
+        ];
+
+        if ($request->hasFile('attachment')) {
+            // Delete old attachment if exists
+            if ($assignment->attachment) {
+                Storage::disk('public')->delete($assignment->attachment);
+            }
+            
+            $file = $request->file('attachment');
+            $filename = 'assignment_' . time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('assignments', $filename, 'public');
+            $updateData['attachment'] = $path;
+        }
+
+        $assignment->update($updateData);
+
+        // Update completed_at timestamp if status is completed
+        if ($validated['status'] === 'completed' && !$assignment->completed_at) {
+            $assignment->completed_at = now();
+            $assignment->save();
+        }
 
         return redirect()->route('supervisor.assignments.show', $assignment)
             ->with('success', 'Assignment updated successfully');

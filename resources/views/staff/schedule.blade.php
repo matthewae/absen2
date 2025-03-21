@@ -149,13 +149,40 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: @json($calendarEvents),
-                eventClick: function(info) {
-                    // Handle event click
-                    alert('Assignment: ' + info.event.title);
+                events: {!! json_encode($calendarEvents) !!},
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
                 }
             });
             calendar.render();
+
+            // Auto-refresh calendar and upcoming assignments every 30 seconds
+            function refreshSchedule() {
+                fetch(window.location.href)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+
+                        // Update calendar events
+                        const newEvents = JSON.parse(doc.querySelector('#calendar').getAttribute('data-events'));
+                        calendar.removeAllEvents();
+                        calendar.addEventSource(newEvents);
+
+                        // Update upcoming assignments
+                        const upcomingAssignmentsContainer = document.querySelector('.divide-y.divide-gray-100');
+                        const newUpcomingAssignments = doc.querySelector('.divide-y.divide-gray-100');
+                        if (upcomingAssignmentsContainer && newUpcomingAssignments) {
+                            upcomingAssignmentsContainer.innerHTML = newUpcomingAssignments.innerHTML;
+                        }
+                    })
+                    .catch(error => console.error('Error refreshing schedule:', error));
+            }
+
+            // Refresh every 30 seconds
+            setInterval(refreshSchedule, 30000);
         });
     </script>
 </body>
