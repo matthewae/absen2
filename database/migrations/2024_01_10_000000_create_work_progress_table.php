@@ -10,8 +10,9 @@ class CreateWorkProgressTable extends Migration
     {
         Schema::create('work_progress', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('staff_id')->constrained()->onDelete('cascade');
+            $table->foreignId('work_progress_id')->nullable()->constrained('work_progress')->onDelete('cascade');
+            $table->string('company_name');
             $table->string('title');
             $table->text('description');
             $table->enum('status', ['pending', 'in_progress', 'completed']);

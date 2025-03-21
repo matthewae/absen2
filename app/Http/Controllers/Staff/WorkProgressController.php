@@ -37,6 +37,7 @@ class WorkProgressController extends Controller
             'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian'])],
             'company_name' => 'required|string|max:255',
             'work_description' => 'required|string|min:100',
+            'status' => ['required', 'string', Rule::in(['pending', 'in_progress', 'completed'])],
             'files.*' => 'required|file|max:153600' // 150MB max per file
         ]);
 
@@ -50,24 +51,29 @@ class WorkProgressController extends Controller
         }
 
         if ($request->hasFile('files')) {
-            $file = $request->file('files')[0]; // Get the first file
-            $path = $file->store('work-progress/' . $staff->id, 'public');
-            
             $workProgress = WorkProgress::create([
                 'staff_id' => $staff->id,
                 'user_id' => auth()->id(),
                 'project_topic' => $request->project_topic,
                 'company_name' => $request->company_name,
                 'work_description' => $request->work_description,
-                'status' => 'pending',
+                'status' => $request->status,
                 'title' => $request->project_topic . ' - ' . $request->company_name,
                 'description' => $request->work_description,
-                'start_date' => now(),
-                'file_name' => $file->getClientOriginalName(),
-                'file_path' => $path,
-                'file_type' => $file->getMimeType(),
-                'file_size' => $file->getSize()
+                'start_date' => now()
             ]);
+
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('work-progress/' . $staff->id, 'public');
+                
+                WorkProgressFile::create([
+                    'work_progress_id' => $workProgress->id,
+                    'original_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'mime_type' => $file->getMimeType(),
+                    'file_size' => $file->getSize()
+                ]);
+            }
 
             return redirect()->route('staff.work-progress.index')
                 ->with('success', 'Work progress submitted successfully.');

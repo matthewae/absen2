@@ -209,6 +209,19 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                            <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
+                                <option value="">Select Status</option>
+                                <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                            </select>
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
                             <label for="files" class="form-label">Upload Files <span class="text-danger">*</span></label>
                             <input type="file" name="files[]" id="files" class="form-control @error('files.*') is-invalid @enderror" multiple required>
                             <small class="text-muted">Maximum file size: 150MB per file</small>
