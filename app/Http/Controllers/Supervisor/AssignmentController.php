@@ -135,4 +135,16 @@ class AssignmentController extends Controller
         return redirect()->route('supervisor.assignments.show', $assignment)
             ->with('success', 'Assignment updated successfully');
     }
+
+    public function destroy(Assignment $assignment)
+    {
+        if ($assignment->supervisor_id !== auth()->id()) {
+            abort(403, 'Unauthorized action');
+        }
+
+        $assignment->delete();
+
+        return redirect()->route('supervisor.assignments.index')
+            ->with('success', 'Assignment deleted successfully');
+    }
 }
