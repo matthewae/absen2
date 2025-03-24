@@ -177,6 +177,11 @@
         <div class="container-fluid">
             <div class="card shadow mb-4">
                 <div class="card-body">
+                @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                     <h2 class="card-title h4 mb-4">Create New Work Progress</h2>
                     <form action="{{ route('staff.work-progress.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf

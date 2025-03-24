@@ -35,11 +35,11 @@ class StaffAttendanceExportController extends Controller
 
         $row = 2;
         foreach ($records as $record) {
-            $sheet->setCellValue('A' . $row, $record->check_in->format('d M Y'));
-            $sheet->setCellValue('B' . $row, $record->check_in->format('H:i'));
-            $sheet->setCellValue('C' . $row, $record->check_out ? $record->check_out->format('H:i') : '-');
-            $sheet->setCellValue('D' . $row, $record->check_out ? $record->check_in->diffInHours($record->check_out) : '-');
-            $sheet->setCellValue('E' . $row, $record->check_out ? 'Completed' : 'On Duty');
+            $sheet->setCellValue('A' . $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($record->check_in));
+            $sheet->setCellValue('B' . $row, \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($record->check_in));
+            $sheet->setCellValue('C' . $row, $record->check_out ? \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($record->check_out) : '-');
+            $sheet->setCellValue('D' . $row, $record->check_out ? number_format($record->check_in->diffInHours($record->check_out), 2) : '-');
+            $sheet->setCellValue('E' . $row, $record->status);
             $row++;
         }
 

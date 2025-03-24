@@ -8,6 +8,7 @@ use App\Models\Attendance;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class AttendanceController extends Controller
 {
@@ -50,54 +51,57 @@ class AttendanceController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set headers
-        $sheet->setCellValue('A1', 'Staff Name');
-        $sheet->setCellValue('B1', 'Department');
-        $sheet->setCellValue('C1', 'Date');
-        $sheet->setCellValue('D1', 'Status');
-        $sheet->setCellValue('E1', 'Check In');
-        $sheet->setCellValue('F1', 'Check Out');
+        $headers = [
+            'A' => 'Staff Name',
+            'B' => 'Department',
+            'C' => 'Date',
+            'D' => 'Status',
+            'E' => 'Check In',
+            'F' => 'Check Out',
+            'G' => 'Duration (Hours)'
+        ];
+
+        foreach ($headers as $col => $header) {
+            $sheet->setCellValue($col . '1', $header);
+        }
+
+        // Style the header row
+        $headerStyle = [
+            'font' => ['bold' => true],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'color' => ['rgb' => 'E0E0E0']],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER]
+        ];
+        $sheet->getStyle('A1:G1')->applyFromArray($headerStyle);
 
         $row = 2;
+        $query = Attendance::with('staff')->orderBy('check_in', 'desc');
 
         if ($staffId) {
-            // Export single staff attendance
-            $staff = Staff::findOrFail($staffId);
-            $attendances = $staff->attendances()->orderBy('check_in', 'desc')->get();
-
-            foreach ($attendances as $attendance) {
-                $sheet->setCellValue('A' . $row, $staff->name);
-                $sheet->setCellValue('B' . $row, $staff->department);
-                $sheet->setCellValue('C' . $row, $attendance->check_in->format('Y-m-d'));
-                $sheet->setCellValue('D' . $row, ucfirst($attendance->status));
-                $sheet->setCellValue('E' . $row, $attendance->check_in->format('H:i:s'));
-                $sheet->setCellValue('F' . $row, $attendance->check_out ? $attendance->check_out->format('H:i:s') : '-');
-                $row++;
-            }
-
-            $filename = $staff->name . '_attendance_record.xlsx';
+            $query->where('staff_id', $staffId);
+            $filename = Staff::find($staffId)->name . '_attendance_record.xlsx';
         } else {
-            // Export all staff attendance
-            $staffMembers = Staff::with('attendances')->get();
-
-            foreach ($staffMembers as $staff) {
-                foreach ($staff->attendances()->orderBy('check_in', 'desc')->get() as $attendance) {
-                    $sheet->setCellValue('A' . $row, $staff->name);
-                    $sheet->setCellValue('B' . $row, $staff->department);
-                    $sheet->setCellValue('C' . $row, $attendance->check_in->format('Y-m-d'));
-                    $sheet->setCellValue('D' . $row, ucfirst($attendance->status));
-                    $sheet->setCellValue('E' . $row, $attendance->check_in->format('H:i:s'));
-                    $sheet->setCellValue('F' . $row, $attendance->check_out ? $attendance->check_out->format('H:i:s') : '-');
-                    $row++;
-                }
-            }
-
             $filename = 'all_staff_attendance_record.xlsx';
         }
 
+        $attendances = $query->get();
+
+        foreach ($attendances as $attendance) {
+            $this->writeAttendanceRow($sheet, $row, $attendance->staff, $attendance);
+            $row++;
+        }
+
         // Auto-size columns
-        foreach (range('A', 'F') as $col) {
+        foreach (range('A', 'G') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
+
+        // Set column formats
+        $sheet->getStyle('C2:C' . ($row-1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
+        $sheet->getStyle('E2:F' . ($row-1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DATETIME);
+        $sheet->getStyle('G2:G' . ($row-1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_00);
+
+        // Set column alignment
+        $sheet->getStyle('A2:G' . ($row-1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
         // Create the Excel file
         $writer = new Xlsx($spreadsheet);
@@ -105,5 +109,30 @@ class AttendanceController extends Controller
         $writer->save($path);
 
         return response()->download($path)->deleteFileAfterSend();
+    }
+
+    private function writeAttendanceRow($sheet, $row, $staff, $attendance)
+    {
+        $sheet->setCellValue('A' . $row, $staff->name);
+        $sheet->setCellValue('B' . $row, $staff->department);
+        $sheet->setCellValue('C' . $row, $attendance->check_in->format('Y-m-d'));
+        $sheet->setCellValue('D' . $row, ucfirst($attendance->status));
+        $sheet->setCellValue('E' . $row, $attendance->check_in->format('Y-m-d H:i:s'));
+        
+        if ($attendance->check_out) {
+            $sheet->setCellValue('F' . $row, $attendance->check_out->format('Y-m-d H:i:s'));
+            // Calculate duration in hours with 2 decimal places
+            $duration = number_format($attendance->check_in->diffInMinutes($attendance->check_out) / 60, 2);
+        } else {
+            $sheet->setCellValue('F' . $row, '-');
+            $duration = '-';
+        }
+        
+        $sheet->setCellValue('G' . $row, $duration);
+    }
+
+    public function exportAll(Request $request)
+    {
+        return $this->export($request);
     }
 }

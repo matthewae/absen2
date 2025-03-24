@@ -51,41 +51,47 @@ class WorkProgressController extends Controller
 
         $staff = auth()->user()->staff;
         if (!$staff) {
+            // dd("test");
             return back()->with('error', 'No staff record found for your account. Please contact your supervisor.');
         }
 
         if (!$request->hasFile('files')) {
             return back()->with('error', 'Please upload at least one file.');
         }
+        
+        $workProgress = WorkProgress::create([
+            'staff_id' => $staff->id,
+            'project_topic' => $request->project_topic,
+            'company_name' => $request->company_name,
+            'work_description' => $request->work_description,
+            'status' => $request->status,
+            'start_date' => now()
+        ]);
 
-        DB::beginTransaction();
-        try {
-            $workProgress = WorkProgress::create([
-                'staff_id' => $staff->id,
-                'project_topic' => $request->project_topic,
-                'company_name' => $request->company_name,
-                'work_description' => $request->work_description,
-                'status' => $request->status,
-                'start_date' => now()
+        $workProgress->save();
+
+        foreach ($request->file('files') as $file) {
+            $path = $file->store('work-progress/' . $staff->id, 'public');
+            
+            WorkProgressFile::create([
+                'work_progress_id' => $workProgress->id,
+                'original_name' => $file->getClientOriginalName(),
+                'file_path' => $path,
+                'mime_type' => $file->getMimeType(),
+                'file_size' => $file->getSize()
             ]);
+        }
 
-            foreach ($request->file('files') as $file) {
-                $path = $file->store('work-progress/' . $staff->id, 'public');
-                
-                WorkProgressFile::create([
-                    'work_progress_id' => $workProgress->id,
-                    'original_name' => $file->getClientOriginalName(),
-                    'file_path' => $path,
-                    'mime_type' => $file->getMimeType(),
-                    'file_size' => $file->getSize()
-                ]);
-            }
+        try {
+            dd("test");
+            DB::beginTransaction();
 
             DB::commit();
             return redirect()->route('staff.work-progress.index')
                 ->with('success', 'Work progress submitted successfully.');
 
         } catch (\Exception $e) {
+            dd($e->getMessage());
             DB::rollBack();
             \Log::error('Error saving work progress:', ['error' => $e->getMessage()]);
             return back()->with('error', 'There was an error submitting your work progress. Please try again later.');
