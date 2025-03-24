@@ -8,6 +8,7 @@ use App\Models\WorkProgressFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class WorkProgressController extends Controller
@@ -35,12 +36,12 @@ class WorkProgressController extends Controller
 
     public function store(Request $request)
     {
-        \Log::info('Form data:', $request->all());
         $validator = Validator::make($request->all(), [
             'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian'])],
             'company_name' => 'required|string|max:255',
             'work_description' => 'required|string|min:100',
             'status' => ['required', 'string', Rule::in(['pending', 'in_progress', 'completed'])],
+            'files' => 'required|array|min:1',
             'files.*' => 'required|file|max:153600' // 150MB max per file
         ]);
 
@@ -53,18 +54,18 @@ class WorkProgressController extends Controller
             return back()->with('error', 'No staff record found for your account. Please contact your supervisor.');
         }
 
+        if (!$request->hasFile('files')) {
+            return back()->with('error', 'Please upload at least one file.');
+        }
+
         DB::beginTransaction();
-    try {
-        if ($request->hasFile('files')) {
+        try {
             $workProgress = WorkProgress::create([
                 'staff_id' => $staff->id,
-                'user_id' => auth()->id(),
                 'project_topic' => $request->project_topic,
                 'company_name' => $request->company_name,
                 'work_description' => $request->work_description,
                 'status' => $request->status,
-                'title' => $request->project_topic . ' - ' . $request->company_name,
-                'description' => $request->work_description,
                 'start_date' => now()
             ]);
 
@@ -81,21 +82,14 @@ class WorkProgressController extends Controller
             }
 
             DB::commit();
-
-            \Log::info('Executed Queries:', \DB::getQueryLog());
-
             return redirect()->route('staff.work-progress.index')
                 ->with('success', 'Work progress submitted successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error saving work progress:', ['error' => $e->getMessage()]);
+            return back()->with('error', 'There was an error submitting your work progress. Please try again later.');
         }
-
-        return back()->with('error', 'Please upload at least one file.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::error('Error saving work progress:', ['message' => $e->getMessage()]);
-        return back()->with('error', 'There was an error submitting your work progress. Please try again later.');
-    }
-
-        return back()->with('error', 'Please upload at least one file.');
     }
 
     public function show(WorkProgress $workProgress)

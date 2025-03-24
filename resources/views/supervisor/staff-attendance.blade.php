@@ -85,9 +85,11 @@
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Present Days</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Late Days</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Absent Days</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Days Present</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
@@ -106,26 +108,46 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $staff->department }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">
-                                        {{ $staff->attendances->filter(function($attendance) {
-                                            return $attendance->status === 'present' && 
-                                                   \Carbon\Carbon::parse($attendance->check_in)->month === now()->month &&
-                                                   \Carbon\Carbon::parse($attendance->check_in)->year === now()->year;
-                                        })->count() }}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        @if($staff->attendances->last())
+                                            {{ \Carbon\Carbon::parse($staff->attendances->last()->check_in)->format('H:i:s') }}
+                                        @else
+                                            -
+                                        @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">
-                                        {{ $staff->attendances->filter(function($attendance) {
-                                            return $attendance->status === 'late' && 
-                                                   \Carbon\Carbon::parse($attendance->check_in)->month === now()->month &&
-                                                   \Carbon\Carbon::parse($attendance->check_in)->year === now()->year;
-                                        })->count() }}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        @if($staff->attendances->last() && $staff->attendances->last()->check_out)
+                                            {{ \Carbon\Carbon::parse($staff->attendances->last()->check_out)->format('H:i:s') }}
+                                        @else
+                                            -
+                                        @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">
-                                        {{ $staff->attendances->filter(function($attendance) {
-                                            return $attendance->status === 'absent' && 
-                                                   \Carbon\Carbon::parse($attendance->check_in)->month === now()->month &&
-                                                   \Carbon\Carbon::parse($attendance->check_in)->year === now()->year;
-                                        })->count() }}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        @if($staff->attendances->last() && $staff->attendances->last()->check_in && $staff->attendances->last()->check_out)
+                                            {{ \Carbon\Carbon::parse($staff->attendances->last()->check_out)->diffForHumans(\Carbon\Carbon::parse($staff->attendances->last()->check_in), ['parts' => 2]) }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        @php
+                                            $today = now()->format('Y-m-d');
+                                            $todayAttendance = $staff->attendances->where('created_at', '>=', $today.' 00:00:00')
+                                                                                ->where('created_at', '<=', $today.' 23:59:59')
+                                                                                ->first();
+                                        @endphp
+                                        @if($todayAttendance)
+                                            @if($todayAttendance->check_out)
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Completed</span>
+                                            @else
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">On Duty</span>
+                                            @endif
+                                        @else
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Absent</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $staff->attendances->where('status', 'present')->count() + $staff->attendances->where('status', 'late')->count() }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">

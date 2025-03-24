@@ -41,6 +41,35 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
+                                <option value="">Select Status</option>
+                                <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                            </select>
+                            @error('status')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control @error('start_date') is-invalid @enderror" id="start_date" name="start_date" value="{{ old('start_date') }}" required>
+                            @error('start_date')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control @error('end_date') is-invalid @enderror" id="end_date" name="end_date" value="{{ old('end_date') }}" required>
+                            @error('end_date')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="files" class="form-label">Attachments</label>
                             <input type="file" class="form-control @error('files.*') is-invalid @enderror" id="files" name="files[]" multiple>
                             <div class="form-text">You can upload multiple files. Maximum size per file: 10MB</div>

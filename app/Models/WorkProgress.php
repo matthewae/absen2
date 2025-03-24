@@ -15,7 +15,6 @@ class WorkProgress extends Model
 
     protected $fillable = [
         'staff_id',
-        'work_progress_id',
         'company_name',
         'project_topic',
         'work_description',
