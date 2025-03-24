@@ -7,7 +7,7 @@ use App\Models\Staff;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class AttendanceController extends Controller
@@ -78,9 +78,9 @@ class AttendanceController extends Controller
 
         if ($staffId) {
             $query->where('staff_id', $staffId);
-            $filename = Staff::find($staffId)->name . '_attendance_record.xlsx';
+            $filename = Staff::find($staffId)->name . '_attendance_record.xls';
         } else {
-            $filename = 'all_staff_attendance_record.xlsx';
+            $filename = 'all_staff_attendance_record.xls';
         }
 
         $attendances = $query->get();
@@ -98,7 +98,18 @@ class AttendanceController extends Controller
         // Set column formats
         $sheet->getStyle('C2:C' . ($row-1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_YYYYMMDD);
         $sheet->getStyle('E2:F' . ($row-1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_DATE_DATETIME);
-        $sheet->getStyle('G2:G' . ($row-1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_00);
+
+        // Create Xls writer object
+        $writer = new Xls($spreadsheet);
+
+        // Set headers for download
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        // Save file to PHP output
+        $writer->save('php://output');
+        exit();
 
         // Set column alignment
         $sheet->getStyle('A2:G' . ($row-1))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
