@@ -33,9 +33,11 @@ class WorkProgressController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'project_topic' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',
-            'work_description' => 'required|string|min:100',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
             'files.*' => 'nullable|file|max:153600'
         ]);
 
@@ -44,12 +46,13 @@ class WorkProgressController extends Controller
         }
 
         $workProgress = WorkProgress::create([
-            'user_id' => auth()->id(),
             'staff_id' => auth()->user()->staff->id,
-            'project_topic' => $request->project_topic,
             'company_name' => $request->company_name,
-            'work_description' => $request->work_description,
-            'status' => 'pending'
+            'title' => $request->title,
+            'description' => $request->description,
+            'status' => 'pending',
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date
         ]);
 
         if ($request->hasFile('files')) {

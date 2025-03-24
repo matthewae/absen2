@@ -32,6 +32,8 @@ class ProgressController extends Controller
             'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian'])],
             'company_name' => 'required|string|max:255',
             'work_description' => 'required|string|min:100',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after:start_date',
             'files.*' => 'required|file|max:153600' // 150MB max per file
         ]);
 
@@ -52,7 +54,9 @@ class ProgressController extends Controller
             'project_topic' => $request->project_topic,
             'company_name' => $request->company_name,
             'work_description' => $request->work_description,
-            'status' => 'pending'
+            'status' => 'pending',
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date
         ]);
 
         if ($request->hasFile('files')) {

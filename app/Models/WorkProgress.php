@@ -14,13 +14,11 @@ class WorkProgress extends Model
     protected $table = 'work_progress';
 
     protected $fillable = [
-        'user_id',
         'staff_id',
-        'project_topic',
+        'work_progress_id',
         'company_name',
+        'project_topic',
         'work_description',
-        'title',
-        'description',
         'status',
         'start_date',
         'end_date'
@@ -33,9 +31,9 @@ class WorkProgress extends Model
         'file_size' => 'integer'
     ];
 
-    public function user(): BelongsTo
+    public function staff(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Staff::class);
     }
 
     public function files()
@@ -43,8 +41,18 @@ class WorkProgress extends Model
         return $this->hasMany(WorkProgressFile::class);
     }
 
-    public function staff(): BelongsTo
+    public function parentProgress()
     {
-        return $this->belongsTo(Staff::class);
+        return $this->belongsTo(WorkProgress::class, 'work_progress_id');
+    }
+
+    public function childProgress()
+    {
+        return $this->hasMany(WorkProgress::class, 'work_progress_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

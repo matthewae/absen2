@@ -12,8 +12,10 @@ use Illuminate\Validation\Rule;
 
 class WorkProgressController extends Controller
 {
+
     public function __construct()
     {
+        \DB::enableQueryLog();
         // Authentication is handled at dashboard level
     }
 
@@ -33,6 +35,7 @@ class WorkProgressController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Form data:', $request->all());
         $validator = Validator::make($request->all(), [
             'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian'])],
             'company_name' => 'required|string|max:255',
@@ -50,6 +53,8 @@ class WorkProgressController extends Controller
             return back()->with('error', 'No staff record found for your account. Please contact your supervisor.');
         }
 
+        DB::beginTransaction();
+    try {
         if ($request->hasFile('files')) {
             $workProgress = WorkProgress::create([
                 'staff_id' => $staff->id,
@@ -75,9 +80,20 @@ class WorkProgressController extends Controller
                 ]);
             }
 
+            DB::commit();
+
+            \Log::info('Executed Queries:', \DB::getQueryLog());
+
             return redirect()->route('staff.work-progress.index')
                 ->with('success', 'Work progress submitted successfully.');
         }
+
+        return back()->with('error', 'Please upload at least one file.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error('Error saving work progress:', ['message' => $e->getMessage()]);
+        return back()->with('error', 'There was an error submitting your work progress. Please try again later.');
+    }
 
         return back()->with('error', 'Please upload at least one file.');
     }

@@ -113,6 +113,9 @@
     </style>
 </head>
 <body>
+    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+    
+
     <nav class="sidebar">
         <div class="sidebar-sticky">
             <div class="px-3 mb-4">
