@@ -15,7 +15,7 @@ class CreateWorkProgressTable extends Migration
             $table->string('company_name');
             $table->enum('project_topic', ['Perencanaan', 'Pengawasan', 'Kajian']);
             $table->text('work_description');
-            $table->enum('status', ['pending', 'in_progress', 'completed']);
+            $table->enum('status', ['pending', 'in_progress', 'Revision', 'completed']);
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->timestamps();

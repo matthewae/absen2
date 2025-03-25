@@ -140,7 +140,8 @@
                             <thead>
                                 <tr>
                                     <th class="px-4">Date</th>
-                                    <th>Title</th>
+                                    <th>Project Topic</th>
+                                    <th>Company Name</th>
                                     <th>Status</th>
                                     <th>Files</th>
                                     <th class="text-end px-4">Actions</th>
@@ -150,7 +151,8 @@
                                 @forelse($workProgresses as $progress)
                                     <tr>
                                         <td class="px-4">{{ $progress->created_at->format('Y-m-d H:i') }}</td>
-                                        <td>{{ $progress->title }}</td>
+                                        <td>{{ $progress->project_topic }}</td>
+                                        <td>{{ $progress->company_name }}</td>
                                         <td>
                                             <span class="badge rounded-pill bg-{{ $progress->status === 'completed' ? 'success' : ($progress->status === 'revision' ? 'warning' : 'info') }}">
                                                 {{ ucfirst($progress->status) }}
@@ -184,52 +186,6 @@
                 </div>
             </div>
 
-            <div class="card mt-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0">Quick Add Work Progress</h5>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('staff.work-progress.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Project Topic</label>
-                            <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" required>
-                            @error('title')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="company_name" class="form-label">Company Name</label>
-                            <input type="text" class="form-control @error('company_name') is-invalid @enderror" id="company_name" name="company_name" required>
-                            @error('company_name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Work Description</label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3" required></textarea>
-                            @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="mb-3">
-                            <label for="files" class="form-label">Upload Files</label>
-                            <input type="file" class="form-control @error('files.*') is-invalid @enderror" id="files" name="files[]" multiple>
-                            @error('files.*')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>Submit Work Progress
-                        </button>
-                    </form>
-                </div>
-            </div>
-            <div class="mt-4">
-                {{ $workProgresses->links() }}
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

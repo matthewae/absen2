@@ -63,6 +63,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
         Route::get('/work-progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('work-progress.index');
         Route::get('/work-progress/create', [\App\Http\Controllers\Staff\WorkProgressController::class, 'create'])->name('work-progress.create');
         Route::post('/work-progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'store'])->name('work-progress.store');
+        Route::get('/work-progress/{workProgress}', [\App\Http\Controllers\Staff\WorkProgressController::class, 'show'])->name('work-progress.show');
         Route::get('/progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'index'])->name('progress.index');
         Route::get('/progress/create', [\App\Http\Controllers\Staff\WorkProgressController::class, 'create'])->name('progress.create');
         // Route::post('/progress', [\App\Http\Controllers\Staff\WorkProgressController::class, 'store'])->name('progress.store');

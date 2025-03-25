@@ -16,8 +16,8 @@ class WorkProgressController extends Controller
 
     public function __construct()
     {
-        \DB::enableQueryLog();
-        // Authentication is handled at dashboard level
+        $this->middleware('auth:staff');
+        // \DB::enableQueryLog();
     }
 
     public function index()
@@ -36,6 +36,11 @@ class WorkProgressController extends Controller
 
     public function store(Request $request)
     {
+        $user = auth('staff')->user();
+        if (!$user) {
+            return back()->with('error', 'No staff record found for your account. Please contact your supervisor.');
+        }
+
         $validator = Validator::make($request->all(), [
             'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian'])],
             'company_name' => 'required|string|max:255',
@@ -49,18 +54,12 @@ class WorkProgressController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $staff = auth()->user()->staff;
-        if (!$staff) {
-            // dd("test");
-            return back()->with('error', 'No staff record found for your account. Please contact your supervisor.');
-        }
-
         if (!$request->hasFile('files')) {
             return back()->with('error', 'Please upload at least one file.');
         }
         
         $workProgress = WorkProgress::create([
-            'staff_id' => $staff->id,
+            'staff_id' => $user->id,
             'project_topic' => $request->project_topic,
             'company_name' => $request->company_name,
             'work_description' => $request->work_description,
@@ -71,7 +70,7 @@ class WorkProgressController extends Controller
         $workProgress->save();
 
         foreach ($request->file('files') as $file) {
-            $path = $file->store('work-progress/' . $staff->id, 'public');
+            $path = $file->store('work-progress/' . $user->id, 'public');
             
             WorkProgressFile::create([
                 'work_progress_id' => $workProgress->id,
@@ -83,7 +82,7 @@ class WorkProgressController extends Controller
         }
 
         try {
-            dd("test");
+            // dd("test");
             DB::beginTransaction();
 
             DB::commit();

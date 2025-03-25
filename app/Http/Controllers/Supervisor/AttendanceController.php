@@ -104,7 +104,7 @@ class AttendanceController extends Controller
 
         // Set headers for download
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Content-Disposition: attachment;filename="' . $filename . '"')
         header('Cache-Control: max-age=0');
 
         // Save file to PHP output
