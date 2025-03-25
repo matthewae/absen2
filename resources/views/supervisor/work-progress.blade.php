@@ -18,11 +18,12 @@
                 <p class="text-gray-600">{{ $progress->staff->name }}</p>
             </div>
             <span class="px-3 py-1 rounded-full text-sm
-                @if($progress->status == 'complete') bg-green-100 text-green-800
-                @elseif($progress->status == 'revision') bg-red-100 text-red-800
-                @else bg-blue-100 text-blue-800
+                @if($progress->status == 'completed') bg-green-100 text-green-800
+                @elseif($progress->status == 'Revision') bg-yellow-100 text-yellow-800
+                @elseif($progress->status == 'in_progress') bg-blue-100 text-blue-800
+                @else bg-gray-100 text-gray-800
                 @endif">
-                {{ $progress->status }}
+                {{ ucfirst($progress->status) }}
             </span>
         </div>
 
@@ -65,9 +66,10 @@
                 @method('PATCH')
                 <select name="status" onchange="this.form.submit()" 
                         class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    <option value="On progress" {{ $progress->status == 'On progress' ? 'selected' : '' }}>On Progress</option>
-                    <option value="complete" {{ $progress->status == 'complete' ? 'selected' : '' }}>Complete</option>
-                    <option value="revision" {{ $progress->status == 'revision' ? 'selected' : '' }}>Needs Revision</option>
+                    <option value="pending" {{ $progress->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="in_progress" {{ $progress->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="completed" {{ $progress->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="Revision" {{ $progress->status == 'Revision' ? 'selected' : '' }}>Needs Revision</option>
                 </select>
             </form>
         </div>

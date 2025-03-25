@@ -102,4 +102,15 @@ class WorkProgressController extends Controller
         $this->authorize('view', $workProgress);
         return view('staff.work-progress.show', compact('workProgress'));
     }
+
+    public function downloadFile(WorkProgressFile $file)
+    {
+        $this->authorize('view', $file->workProgress);
+
+        if (!Storage::disk('public')->exists($file->file_path)) {
+            return back()->with('error', 'File not found.');
+        }
+
+        return Storage::disk('public')->download($file->file_path, $file->original_name);
+    }
 }

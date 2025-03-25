@@ -138,8 +138,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('staff.leave-requests.index') ? 'active' : '' }}" href="{{ route('staff.leave-requests.index') }}">
-                        <i class="fas fa-calendar-times"></i> Leave Requests
+                    <a class="nav-link {{ request()->routeIs('staff.profile') ? 'active' : '' }}" href="{{ route('staff.profile') }}">
+                        <i class="fas fa-user"></i> Profile
                     </a>
                 </li>
             </ul>
