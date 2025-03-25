@@ -23,6 +23,7 @@ class WorkProgressController extends Controller
     public function index()
     {
         $workProgresses = WorkProgress::with('files')
+            ->where('staff_id', auth('staff')->id())
             ->latest()
             ->paginate(10);
 
