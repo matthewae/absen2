@@ -67,4 +67,17 @@ class WorkProgressController extends Controller
             ->back()
             ->with('success', 'Work progress has been rejected.');
     }
+
+    public function downloadFile(WorkProgressFile $file)
+    {
+        $this->authorize('view', $file->workProgress);
+
+        $path = storage_path('app/' . $file->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File not found');
+        }
+
+        return response()->download($path, $file->original_name);
+    }
 }

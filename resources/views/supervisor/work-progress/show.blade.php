@@ -77,55 +77,54 @@
                 <div class="space-y-6">
                     @forelse($workProgress as $progress)
                         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                            <div class="p-6">
+                            <div class="p-6 border-b border-gray-200">
                                 <div class="flex items-center justify-between mb-4">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="px-2 py-1 text-xs font-semibold rounded-full
-                                            {{ $progress->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                            {{ $progress->status === 'approved' ? 'bg-green-100 text-green-800' : '' }}
-                                            {{ $progress->status === 'rejected' ? 'bg-red-100 text-red-800' : '' }}">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="px-3 py-1 text-sm font-semibold rounded-full
+                                            {{ $progress->status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' : '' }}
+                                            {{ $progress->status === 'approved' ? 'bg-green-100 text-green-800 border border-green-300' : '' }}
+                                            {{ $progress->status === 'rejected' ? 'bg-red-100 text-red-800 border border-red-300' : '' }}">
                                             {{ ucfirst($progress->status) }}
                                         </span>
-                                        <span class="text-sm text-gray-500">{{ $progress->created_at->format('M d, Y H:i') }}</span>
+                                        <span class="text-sm text-gray-500 flex items-center">
+                                            <i class="fas fa-clock mr-2"></i>
+                                            {{ $progress->created_at->format('M d, Y H:i') }}
+                                        </span>
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        @if($progress->status === 'pending')
-                                            <form action="{{ route('supervisor.work-progress.approve', $progress) }}" method="POST" class="inline">
-                                                @csrf
-                                                <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">
-                                                    Approve
-                                                </button>
-                                            </form>
-                                            <button onclick="showRejectModal('{{ $progress->id }}')" class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm">
-                                                Reject
-                                            </button>
-                                        @endif
-                                    </div>
-                                </div>
 
-                                <div class="prose max-w-none text-gray-700">
-                                    <h4 class="text-lg font-medium mb-2">{{ $progress->title }}</h4>
-                                    <p class="text-gray-600">{{ $progress->description }}</p>
                                 </div>
-
+                            </div>
+                            <div class="px-6 py-4 bg-gray-50">
+                                <div class="mb-4">
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Work Description:</h4>
+                                    <p class="text-gray-600 whitespace-pre-line">{{ $progress->work_description }}</p>
+                                </div>
                                 @if($progress->files->count() > 0)
-                                    <div class="mt-4">
-                                        <h5 class="text-sm font-medium text-gray-700 mb-2">Attachments:</h5>
-                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div class="border-t border-gray-200 pt-4">
+                                        <h4 class="text-sm font-medium text-gray-700 mb-3">Attachments:</h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             @foreach($progress->files as $file)
-                                                <a href="{{ Storage::url($file->file_path) }}" target="_blank" 
-                                                   class="flex items-center p-2 border rounded-lg hover:bg-gray-50">
-                                                    <i class="fas fa-file-alt text-indigo-600 mr-2"></i>
-                                                    <span class="text-sm text-gray-600 truncate">{{ $file->original_name }}</span>
-                                                </a>
+                                                <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 transition-colors">
+                                                    <div class="flex items-center space-x-3 overflow-hidden">
+                                                        <i class="fas fa-file text-indigo-600"></i>
+                                                        <span class="text-sm text-gray-600 truncate">{{ $file->original_name }}</span>
+                                                    </div>
+                                                    <a href="{{ route('supervisor.work-progress.download', $file) }}" 
+                                                       class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm flex items-center space-x-1 flex-shrink-0">
+                                                        <i class="fas fa-download"></i>
+                                                        <span>Download</span>
+                                                    </a>
+                                                </div>
                                             @endforeach
                                         </div>
                                     </div>
                                 @endif
-
                                 @if($progress->status === 'rejected' && $progress->rejection_reason)
-                                    <div class="mt-4 p-4 bg-red-50 rounded-lg">
-                                        <h5 class="text-sm font-medium text-red-800 mb-1">Rejection Reason:</h5>
+                                    <div class="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                                        <h5 class="text-sm font-medium text-red-800 mb-1 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            Rejection Reason:
+                                        </h5>
                                         <p class="text-sm text-red-600">{{ $progress->rejection_reason }}</p>
                                     </div>
                                 @endif
@@ -147,42 +146,6 @@
         </div>
     </div>
 
-    <!-- Reject Modal -->
-    <div id="rejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div class="mt-3">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Reject Work Progress</h3>
-                <form id="rejectForm" method="POST">
-                    @csrf
-                    <div class="mb-4">
-                        <label for="rejection_reason" class="block text-sm font-medium text-gray-700 mb-2">Reason for Rejection</label>
-                        <textarea name="rejection_reason" id="rejection_reason" rows="4" 
-                                  class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                  required></textarea>
-                    </div>
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="hideRejectModal()" 
-                                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Cancel</button>
-                        <button type="submit" 
-                                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Reject</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        function showRejectModal(progressId) {
-            const modal = document.getElementById('rejectModal');
-            const form = document.getElementById('rejectForm');
-            form.action = `/supervisor/work-progress/${progressId}/reject`;
-            modal.classList.remove('hidden');
-        }
-
-        function hideRejectModal() {
-            const modal = document.getElementById('rejectModal');
-            modal.classList.add('hidden');
-        }
-    </script>
 </body>
 </html>

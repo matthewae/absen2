@@ -98,6 +98,7 @@ Route::prefix('supervisor')->name('supervisor.')->group(function () {
         Route::get('/leave-requests', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests.index');
         Route::get('/leave-requests/list', [SupervisorDashboardController::class, 'viewLeaveRequests'])->name('leave-requests');
         Route::get('/leave-requests/{leaveRequest}/review', [SupervisorDashboardController::class, 'reviewLeaveRequest'])->name('leave-requests.review');
+        Route::get('/work-progress/file/{file}/download', [\App\Http\Controllers\Supervisor\WorkProgressController::class, 'downloadFile'])->name('work-progress.download');
 
         // Leave request approval routes
         Route::post('/leave-requests/{leaveRequest}/approve', [SupervisorDashboardController::class, 'approveLeaveRequest'])->name('leave-requests.approve');
