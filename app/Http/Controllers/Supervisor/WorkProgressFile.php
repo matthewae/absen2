@@ -17,8 +17,11 @@ class WorkProgressFile extends Controller
      */
     public function __invoke(WorkProgressFileModel $file)
     {
+        // Load the workProgress relationship
+        $file->load('workProgress');
+
         // Verify that the file belongs to a staff member supervised by the current user
-        $this->authorize('view', $file->workProgress()->first());
+        $this->authorize('view', $file->workProgress);
 
         // Verify the file exists
         if (!Storage::exists($file->file_path)) {
