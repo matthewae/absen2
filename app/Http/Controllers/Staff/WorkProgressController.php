@@ -71,15 +71,37 @@ class WorkProgressController extends Controller
         $workProgress->save();
 
         foreach ($request->file('files') as $file) {
-            $path = $file->store('work-progress/' . $user->id, 'public');
-            
-            WorkProgressFile::create([
-                'work_progress_id' => $workProgress->id,
-                'original_name' => $file->getClientOriginalName(),
-                'file_path' => $path,
-                'mime_type' => $file->getMimeType(),
-                'file_size' => $file->getSize()
-            ]);
+            try {
+                // Store the file and get its path
+                $path = $file->store('work-progress/' . $user->id, 'public');
+                
+                // Verify the file was stored successfully
+                if (!Storage::disk('public')->exists($path)) {
+                    throw new \Exception('Failed to store file: ' . $file->getClientOriginalName());
+                }
+                
+                // Verify file integrity
+                $storedSize = Storage::disk('public')->size($path);
+                if ($storedSize !== $file->getSize()) {
+                    Storage::disk('public')->delete($path);
+                    throw new \Exception('File size mismatch for: ' . $file->getClientOriginalName());
+                }
+                
+                // Create the database record
+                WorkProgressFile::create([
+                    'work_progress_id' => $workProgress->id,
+                    'original_name' => $file->getClientOriginalName(),
+                    'file_path' => $path,
+                    'mime_type' => $file->getMimeType() ?: 'application/octet-stream',
+                    'file_size' => $storedSize
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Error storing file:', [
+                    'file' => $file->getClientOriginalName(),
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            }
         }
 
         try {
@@ -112,6 +134,29 @@ class WorkProgressController extends Controller
             return back()->with('error', 'File not found.');
         }
 
-        return Storage::disk('public')->download($file->file_path, $file->original_name);
+        // Verify file integrity before sending
+        $actualSize = Storage::disk('public')->size($file->file_path);
+        if ($actualSize !== $file->file_size) {
+            \Log::error('File size mismatch:', [
+                'file' => $file->original_name,
+                'expected' => $file->file_size,
+                'actual' => $actualSize
+            ]);
+            return back()->with('error', 'File integrity check failed.');
+        }
+
+        // Ensure proper MIME type
+        $mimeType = $file->mime_type ?: 'application/octet-stream';
+
+        // Set up proper headers for download
+        $headers = [
+            'Content-Type' => $mimeType,
+            'Content-Length' => $actualSize,
+            'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"',
+            'Cache-Control' => 'private, no-transform, no-store, must-revalidate'
+        ];
+
+        // Stream the file response
+        return Storage::disk('public')->response($file->file_path, $file->original_name, $headers);
     }
 }

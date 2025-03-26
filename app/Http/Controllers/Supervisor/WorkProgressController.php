@@ -71,10 +71,34 @@ class WorkProgressController extends Controller
 
     public function downloadFile(\App\Models\WorkProgressFile $file)
     {
+        $this->authorize('view', $file->workProgress);
+
         if (!Storage::disk('public')->exists($file->file_path)) {
             abort(404, 'File not found');
         }
 
-        return Storage::disk('public')->download($file->file_path, $file->original_name);
+        try {
+            $filePath = Storage::disk('public')->path($file->file_path);
+            
+            if (!file_exists($filePath)) {
+                abort(404, 'File not found on disk');
+            }
+
+            return response()->file($filePath, [
+                'Content-Type' => $file->mime_type ?: 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="' . $file->original_name . '"',
+                'Content-Length' => $file->file_size,
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('File download error:', [
+                'file_id' => $file->id,
+                'path' => $file->file_path,
+                'error' => $e->getMessage()
+            ]);
+            abort(500, 'Error downloading file');
+        }
     }
 }
