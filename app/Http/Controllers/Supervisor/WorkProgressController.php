@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\WorkProgress;
 use App\Models\Staff;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class WorkProgressController extends Controller
 {
@@ -68,16 +69,12 @@ class WorkProgressController extends Controller
             ->with('success', 'Work progress has been rejected.');
     }
 
-    public function downloadFile(WorkProgressFile $file)
+    public function downloadFile(\App\Models\WorkProgressFile $file)
     {
-        $this->authorize('view', $file->workProgress);
-
-        $path = storage_path('app/' . $file->file_path);
-
-        if (!file_exists($path)) {
+        if (!Storage::disk('public')->exists($file->file_path)) {
             abort(404, 'File not found');
         }
 
-        return response()->download($path, $file->original_name);
+        return Storage::disk('public')->download($file->file_path, $file->original_name);
     }
 }
