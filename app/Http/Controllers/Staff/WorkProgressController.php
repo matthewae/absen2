@@ -80,8 +80,9 @@ class WorkProgressController extends Controller
                     finfo_close($finfo);
                 }
 
-                // Generate a unique filename
-                $filename = uniqid() . '_' . $file->getClientOriginalName();
+                // Generate a unique filename with original extension
+                $extension = $file->getClientOriginalExtension();
+                $filename = uniqid() . '_' . str_replace(['#', '?', '%'], '-', $file->getClientOriginalName());
                 
                 // Store the file with original name preserved
                 $path = $file->storeAs(
@@ -150,51 +151,37 @@ class WorkProgressController extends Controller
             return back()->with('error', 'File integrity check failed.');
         }
 
-        // Get the MIME type using multiple methods for better accuracy
-        $mimeType = $file->mime_type;
-        $storedMimeType = Storage::disk('public')->mimeType($file->file_path);
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $finfoMimeType = finfo_file($finfo, Storage::disk('public')->path($file->file_path));
-        finfo_close($finfo);
+        try {
+            $filePath = Storage::disk('public')->path($file->file_path);
+            
+            if (!file_exists($filePath)) {
+                throw new \Exception('Physical file not found');
+            }
 
-        // Use the most specific MIME type available
-        if ($finfoMimeType && $finfoMimeType !== 'application/octet-stream') {
-            $mimeType = $finfoMimeType;
-        } elseif ($storedMimeType && $storedMimeType !== 'application/octet-stream') {
-            $mimeType = $storedMimeType;
+            // Use readfile for direct output of binary data
+            return response()->stream(
+                function() use ($filePath) {
+                    $handle = fopen($filePath, 'rb');
+                    while (!feof($handle)) {
+                        echo fread($handle, 8192);
+                        flush();
+                    }
+                    fclose($handle);
+                },
+                200,
+                [
+                    'Content-Type' => $file->mime_type,
+                    'Content-Length' => $actualSize,
+                    'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"; filename*=UTF-8\'\''. rawurlencode($file->original_name),
+                    'Cache-Control' => 'private, no-transform, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0'
+                ]
+            );
+            
+        } catch (\Exception $e) {
+            \Log::error('File download failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to download file. Please try again.');
         }
-
-        // Special handling for common file types
-        $extension = strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION));
-        $commonMimeTypes = [
-            'doc' => 'application/msword',
-            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'xls' => 'application/vnd.ms-excel',
-            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'pdf' => 'application/pdf',
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'gif' => 'image/gif',
-            'exe' => 'application/x-msdownload'
-        ];
-
-        if (isset($commonMimeTypes[$extension])) {
-            $mimeType = $commonMimeTypes[$extension];
-        }
-
-        // Set up proper headers for download
-        $headers = [
-            'Content-Type' => $mimeType,
-            'Content-Length' => $actualSize,
-            'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"; filename*=UTF-8\'\''. rawurlencode($file->original_name),
-            'Cache-Control' => 'private, no-transform, no-store, must-revalidate',
-            'Pragma' => 'no-cache',
-            'Expires' => '0',
-            'X-Content-Type-Options' => 'nosniff'
-        ];
-
-        // Stream the file response
-        return Storage::disk('public')->response($file->file_path, $file->original_name, $headers);
     }
-}
+    }

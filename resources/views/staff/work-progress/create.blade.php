@@ -233,6 +233,9 @@
                             <label for="files" class="form-label">Upload Files <span class="text-danger">*</span></label>
                             <input type="file" name="files[]" id="files" class="form-control @error('files.*') is-invalid @enderror" multiple required>
                             <small class="text-muted">Maximum file size: 150MB per file</small>
+                            <div class="progress mt-2 d-none" id="upload-progress">
+                                <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            </div>
                             @error('files.*')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -253,5 +256,54 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="progress mb-3 d-none" id="upload-progress">
+        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+    </div>
 </body>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const progressBar = document.querySelector('#upload-progress');
+    const progressBarInner = progressBar.querySelector('.progress-bar');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        progressBar.classList.remove('d-none');
+        submitBtn.disabled = true;
+
+        const formData = new FormData(this);
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                progressBarInner.style.width = percentComplete + '%';
+                progressBarInner.textContent = Math.round(percentComplete) + '%';
+            }
+        });
+
+        xhr.addEventListener('load', function() {
+            if (xhr.status === 200) {
+                window.location.href = JSON.parse(xhr.response).redirect || '{{ route("staff.work-progress.index") }}';
+            } else {
+                progressBar.classList.add('d-none');
+                submitBtn.disabled = false;
+                alert('Upload failed. Please try again.');
+            }
+        });
+
+        xhr.addEventListener('error', function() {
+            progressBar.classList.add('d-none');
+            submitBtn.disabled = false;
+            alert('Upload failed. Please try again.');
+        });
+
+        xhr.open('POST', form.action);
+        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('input[name="_token"]').value);
+        xhr.send(formData);
+    });
+});
+</script>
 </html>

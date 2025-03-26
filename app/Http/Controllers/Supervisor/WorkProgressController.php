@@ -71,40 +71,67 @@ class WorkProgressController extends Controller
 
     public function downloadFile(\App\Models\WorkProgressFile $file)
     {
+        // Load the workProgress relationship and verify authorization
+        $file->load('workProgress');
         $this->authorize('view', $file->workProgress);
 
+        // Verify file existence
         if (!Storage::disk('public')->exists($file->file_path)) {
+            \Log::error('File not found:', ['file' => $file->original_name, 'path' => $file->file_path]);
             abort(404, 'File not found');
         }
 
-        // Verify file integrity before sending
+        // Get file path and verify readability
+        $filePath = Storage::disk('public')->path($file->file_path);
+        if (!is_readable($filePath)) {
+            \Log::error('File not readable:', ['file' => $file->original_name, 'path' => $filePath]);
+            abort(500, 'File not accessible');
+        }
+
+        // Verify file integrity
         $actualSize = Storage::disk('public')->size($file->file_path);
         if ($actualSize !== $file->file_size) {
             \Log::error('File size mismatch:', [
                 'file' => $file->original_name,
                 'expected' => $file->file_size,
-                'actual' => $actualSize
+                'actual' => $actualSize,
+                'path' => $file->file_path
             ]);
             abort(500, 'File integrity check failed');
         }
 
-        // Get the MIME type from the stored file if not available in the database
+        // Determine MIME type
         $mimeType = $file->mime_type;
         if (!$mimeType || $mimeType === 'application/octet-stream') {
             $mimeType = Storage::disk('public')->mimeType($file->file_path) ?: 'application/octet-stream';
         }
 
-        // Set appropriate headers for the file type
+        // Set secure headers for file download
         $headers = [
             'Content-Type' => $mimeType,
             'Content-Length' => $actualSize,
-            'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"',
+            'Content-Disposition' => 'attachment; filename*=UTF-8\'\''. rawurlencode($file->original_name),
             'Cache-Control' => 'private, no-transform, no-store, must-revalidate',
             'Pragma' => 'no-cache',
-            'Expires' => '0'
+            'Expires' => '0',
+            'X-Content-Type-Options' => 'nosniff'
         ];
 
-        // Stream the file response
-        return Storage::disk('public')->response($file->file_path, $file->original_name, $headers);
+        // Stream the file using readfile for direct binary output
+        return response()->stream(
+            function () use ($filePath) {
+                $handle = fopen($filePath, 'rb');
+                if ($handle === false) {
+                    abort(500, 'Failed to open file');
+                }
+                while (!feof($handle)) {
+                    echo fread($handle, 8192);
+                    flush();
+                }
+                fclose($handle);
+            },
+            200,
+            $headers
+        );
     }
 }
