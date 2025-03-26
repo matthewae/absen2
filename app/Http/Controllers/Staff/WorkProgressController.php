@@ -59,24 +59,38 @@ class WorkProgressController extends Controller
             return back()->with('error', 'Please upload at least one file.');
         }
         
-        $workProgress = WorkProgress::create([
-            'staff_id' => $user->id,
-            'project_topic' => $request->project_topic,
-            'company_name' => $request->company_name,
-            'work_description' => $request->work_description,
-            'status' => $request->status,
-            'start_date' => now()
-        ]);
+        try {
+            DB::beginTransaction();
+            
+            $workProgress = WorkProgress::create([
+                'staff_id' => $user->id,
+                'project_topic' => $request->project_topic,
+                'company_name' => $request->company_name,
+                'work_description' => $request->work_description,
+                'status' => $request->status,
+                'start_date' => now()
+            ]);
 
-        $workProgress->save();
+            foreach ($request->file('files') as $file) {
+                // Get the actual MIME type from the file
+                $mimeType = $file->getMimeType();
+                if (!$mimeType) {
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mimeType = finfo_file($finfo, $file->getPathname());
+                    finfo_close($finfo);
+                }
 
-        foreach ($request->file('files') as $file) {
-            try {
-                // Store the file and get its path
-                $path = $file->store('work-progress/' . $user->id, 'public');
+                // Generate a unique filename
+                $filename = uniqid() . '_' . $file->getClientOriginalName();
                 
-                // Verify the file was stored successfully
-                if (!Storage::disk('public')->exists($path)) {
+                // Store the file with original name preserved
+                $path = $file->storeAs(
+                    'work-progress/' . $user->id,
+                    $filename,
+                    ['disk' => 'public']
+                );
+                
+                if (!$path || !Storage::disk('public')->exists($path)) {
                     throw new \Exception('Failed to store file: ' . $file->getClientOriginalName());
                 }
                 
@@ -87,36 +101,27 @@ class WorkProgressController extends Controller
                     throw new \Exception('File size mismatch for: ' . $file->getClientOriginalName());
                 }
                 
-                // Create the database record
                 WorkProgressFile::create([
                     'work_progress_id' => $workProgress->id,
                     'original_name' => $file->getClientOriginalName(),
                     'file_path' => $path,
-                    'mime_type' => $file->getMimeType() ?: 'application/octet-stream',
-                    'file_size' => $storedSize
+                    'mime_type' => $mimeType ?: 'application/octet-stream',
+                    'file_size' => $file->getSize()
                 ]);
-            } catch (\Exception $e) {
-                \Log::error('Error storing file:', [
-                    'file' => $file->getClientOriginalName(),
-                    'error' => $e->getMessage()
-                ]);
-                throw $e;
             }
-        }
-
-        try {
-            // dd("test");
-            DB::beginTransaction();
-
+            
             DB::commit();
-            return redirect()->route('staff.work-progress.index')
+            
+            return redirect()
+                ->route('staff.work-progress.index')
                 ->with('success', 'Work progress submitted successfully.');
-
+                
         } catch (\Exception $e) {
-            dd($e->getMessage());
             DB::rollBack();
-            \Log::error('Error saving work progress:', ['error' => $e->getMessage()]);
-            return back()->with('error', 'There was an error submitting your work progress. Please try again later.');
+            \Log::error('Work progress submission failed: ' . $e->getMessage());
+            return back()
+                ->with('error', 'Failed to submit work progress. Please try again.')
+                ->withInput();
         }
     }
 
@@ -145,15 +150,48 @@ class WorkProgressController extends Controller
             return back()->with('error', 'File integrity check failed.');
         }
 
-        // Ensure proper MIME type
-        $mimeType = $file->mime_type ?: 'application/octet-stream';
+        // Get the MIME type using multiple methods for better accuracy
+        $mimeType = $file->mime_type;
+        $storedMimeType = Storage::disk('public')->mimeType($file->file_path);
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $finfoMimeType = finfo_file($finfo, Storage::disk('public')->path($file->file_path));
+        finfo_close($finfo);
+
+        // Use the most specific MIME type available
+        if ($finfoMimeType && $finfoMimeType !== 'application/octet-stream') {
+            $mimeType = $finfoMimeType;
+        } elseif ($storedMimeType && $storedMimeType !== 'application/octet-stream') {
+            $mimeType = $storedMimeType;
+        }
+
+        // Special handling for common file types
+        $extension = strtolower(pathinfo($file->original_name, PATHINFO_EXTENSION));
+        $commonMimeTypes = [
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'pdf' => 'application/pdf',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'exe' => 'application/x-msdownload'
+        ];
+
+        if (isset($commonMimeTypes[$extension])) {
+            $mimeType = $commonMimeTypes[$extension];
+        }
 
         // Set up proper headers for download
         $headers = [
             'Content-Type' => $mimeType,
             'Content-Length' => $actualSize,
-            'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"',
-            'Cache-Control' => 'private, no-transform, no-store, must-revalidate'
+            'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"; filename*=UTF-8\'\''. rawurlencode($file->original_name),
+            'Cache-Control' => 'private, no-transform, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+            'X-Content-Type-Options' => 'nosniff'
         ];
 
         // Stream the file response

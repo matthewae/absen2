@@ -77,28 +77,34 @@ class WorkProgressController extends Controller
             abort(404, 'File not found');
         }
 
-        try {
-            $filePath = Storage::disk('public')->path($file->file_path);
-            
-            if (!file_exists($filePath)) {
-                abort(404, 'File not found on disk');
-            }
-
-            return response()->file($filePath, [
-                'Content-Type' => $file->mime_type ?: 'application/octet-stream',
-                'Content-Disposition' => 'attachment; filename="' . $file->original_name . '"',
-                'Content-Length' => $file->file_size,
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0'
+        // Verify file integrity before sending
+        $actualSize = Storage::disk('public')->size($file->file_path);
+        if ($actualSize !== $file->file_size) {
+            \Log::error('File size mismatch:', [
+                'file' => $file->original_name,
+                'expected' => $file->file_size,
+                'actual' => $actualSize
             ]);
-        } catch (\Exception $e) {
-            \Log::error('File download error:', [
-                'file_id' => $file->id,
-                'path' => $file->file_path,
-                'error' => $e->getMessage()
-            ]);
-            abort(500, 'Error downloading file');
+            abort(500, 'File integrity check failed');
         }
+
+        // Get the MIME type from the stored file if not available in the database
+        $mimeType = $file->mime_type;
+        if (!$mimeType || $mimeType === 'application/octet-stream') {
+            $mimeType = Storage::disk('public')->mimeType($file->file_path) ?: 'application/octet-stream';
+        }
+
+        // Set appropriate headers for the file type
+        $headers = [
+            'Content-Type' => $mimeType,
+            'Content-Length' => $actualSize,
+            'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"',
+            'Cache-Control' => 'private, no-transform, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ];
+
+        // Stream the file response
+        return Storage::disk('public')->response($file->file_path, $file->original_name, $headers);
     }
 }
