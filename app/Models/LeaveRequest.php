@@ -33,7 +33,7 @@ class LeaveRequest extends Model
         return $this->belongsTo(Staff::class);
     }
 
-    public function supervisor()
+    public function approved_by()
     {
         return $this->belongsTo(Supervisor::class, 'approved_by');
     }
