@@ -51,7 +51,7 @@
     <nav class="sidebar">
         <div class="mb-4">
             <h4 class="mb-2">Supervisor Portal</h4>
-            <p class="text-muted small mb-0">Staff Management</p>
+            <p class="text-muted small mb-0"></p>
         </div>
         <div class="mb-4">
             <a href="{{ route('supervisor.dashboard') }}" class="nav-link">
@@ -67,14 +67,14 @@
                 <i class="fas fa-clock"></i> Attendance
             </a>
         </div>
-        <div class="mt-auto">
+        <!-- <div class="mt-auto">
             <form action="{{ route('supervisor.logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-outline-light btn-sm w-100">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </form>
-        </div>
+        </div> -->
     </nav>
 
     <!-- Main Content -->
