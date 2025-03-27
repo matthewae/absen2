@@ -34,7 +34,7 @@ class StaffController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:staff,email,' . $staff->id,
-            'phone' => 'required|string|max:20',
+            'phone_number' => 'required|string|max:20',
             'position' => 'required|string|max:255'
         ]);
 

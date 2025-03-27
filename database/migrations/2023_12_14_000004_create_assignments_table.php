@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('submission_notes')->nullable();
             $table->string('attachment')->nullable();
             $table->timestamp('completed_at')->nullable();
+            $table->date('due_date')->nullable();
             $table->timestamps();
         });
     }

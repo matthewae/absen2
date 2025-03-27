@@ -120,8 +120,8 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="phone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ old('phone', $staff->phone) }}">
+                                <label for="phone_number" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ old('phone_number', $staff->phone_number) }}">
                             </div>
 
                             <div class="mb-3">
@@ -154,10 +154,10 @@
                                 <input type="text" class="form-control" id="department" name="department" value="{{ old('department', $staff->department) }}" required>
                             </div>
 
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="join_date" class="form-label">Join Date</label>
                                 <input type="date" class="form-control" id="join_date" name="join_date" value="{{ old('join_date', $staff->join_date?->format('Y-m-d')) }}" required>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
 

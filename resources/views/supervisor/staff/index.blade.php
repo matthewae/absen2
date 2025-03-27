@@ -114,7 +114,7 @@
                                     <td>{{ $member->staff_id }}</td>
                                     <td>{{ $member->name }}</td>
                                     <td>{{ $member->email }}</td>
-                                    <td>{{ $member->phone }}</td>
+                                    <td>{{ $member->phone_number }}</td>
                                     <td>{{ $member->position }}</td>
                                     <td>
                                         <a href="{{ route('supervisor.staff.show', $member) }}" class="btn btn-info btn-sm">

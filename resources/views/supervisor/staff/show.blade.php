@@ -40,22 +40,52 @@
         }
         .profile-section {
             background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .profile-header {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
         }
         .profile-image {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            margin-right: 20px;
+            margin-right: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .profile-info h3 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        .profile-info .text-muted {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+        .table th {
+            width: 30%;
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .table td {
+            color: #4a5568;
+        }
+        .badge {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        .btn-primary {
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -104,59 +134,65 @@
 
             <div class="profile-section">
                 <div class="profile-header">
-                    <img src="{{ $staff->photo_url ?? 'https://via.placeholder.com/100' }}" alt="{{ $staff->name }}" class="profile-image">
-                    <div>
+                    <img src="{{ $staff->photo_url ?? 'https://via.placeholder.com/120' }}" alt="{{ $staff->name }}" class="profile-image">
+                    <div class="profile-info">
                         <h3>{{ $staff->name }}</h3>
-                        <p class="text-muted mb-0">{{ $staff->position }}</p>
+                        <!-- <p class="text-muted mb-1">{{ $staff->position }}</p> -->
                         <p class="text-muted mb-0">Staff ID: {{ $staff->staff_id }}</p>
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row g-4">
                     <div class="col-md-6">
-                        <h4 class="mb-3">Personal Information</h4>
-                        <table class="table">
-                            <tr>
-                                <th width="30%">Email</th>
-                                <td>{{ $staff->email }}</td>
-                            </tr>
-                            <tr>
-                                <th>Phone</th>
-                                <td>{{ $staff->phone }}</td>
-                            </tr>
-                            <tr>
-                                <th>Address</th>
-                                <td>{{ $staff->address }}</td>
-                            </tr>
-                        </table>
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h4 class="card-title mb-3">Personal Information</h4>
+                                <table class="table table-hover">
+                                    <tr>
+                                        <th>Email</th>
+                                        <td>{{ $staff->email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone</th>
+                                        <td>{{ $staff->phone_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address</th>
+                                        <td>{{ $staff->address }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <h4 class="mb-3">Employment Details</h4>
-                        <table class="table">
-                            <tr>
-                                <th width="30%">Department</th>
-                                <td>{{ $staff->department }}</td>
-                            </tr>
-                            <tr>
-                                <th>Join Date</th>
-                                <td>{{ $staff->join_date ? $staff->join_date->format('d F Y') : 'N/A' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Status</th>
-                                <td>
-                                    <span class="badge bg-success">Active</span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h4 class="card-title mb-3">Employment Details</h4>
+                                <table class="table table-hover">
+                                    <tr>
+                                        <th>Department</th>
+                                        <td>{{ $staff->department }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Position</th>
+                                        <td>{{ $staff->position }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Status</th>
+                                        <td>
+                                            <span class="badge bg-success rounded-pill">Active</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <div class="d-flex justify-content-end">
-                        <a href="{{ route('supervisor.staff.edit', $staff) }}" class="btn btn-primary">
-                            <i class="fas fa-edit"></i> Edit Staff Details
-                        </a>
-                    </div>
+                <div class="mt-4 text-end">
+                    <a href="{{ route('supervisor.staff.edit', $staff) }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Staff Details
+                    </a>
                 </div>
             </div>
         </div>

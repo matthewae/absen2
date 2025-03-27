@@ -18,15 +18,16 @@ class Assignment extends Model
         'end_datetime',
         'priority',
         'status',
-        'submission_notes',
-        'attachment',
-        'completed_at'
+        'due_date',
     ];
 
     protected $casts = [
         'start_datetime' => 'datetime',
         'end_datetime' => 'datetime',
-        'completed_at' => 'datetime'
+        'completed_at' => 'datetime',
+        'due_date' => 'date',
+        'submission_notes' => 'string',
+        'attachment' => 'string'
     ];
 
     public function supervisor()
