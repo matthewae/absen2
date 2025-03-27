@@ -34,12 +34,18 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        $leaveRequests = $staff->leaveRequests()
+            ->latest()
+            ->take(5)
+            ->get();
+
         return view('staff.dashboard', compact(
             'staff',
             'latestAttendance',
             'monthlyAttendance',
             'upcomingAssignments',
-            'pendingLeaveRequests'
+            'pendingLeaveRequests',
+            'leaveRequests'
         ));
     }
 

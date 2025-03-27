@@ -218,8 +218,9 @@
                             </div>
                         </div>
                         <div class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
-                            @if($pendingLeaveRequests->count() > 0)
-                                @foreach($pendingLeaveRequests as $request)
+                            @if($leaveRequests->count() > 0)
+                                @foreach($leaveRequests as $request)
+                                    @if($request->end_date >= now())
                                     <div class="p-6 hover:bg-gray-50 transition-colors duration-200">
                                         <div class="flex items-start space-x-4">
                                             <div class="flex-shrink-0 mt-1">
@@ -232,6 +233,12 @@
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $request->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ($request->status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
                                                         {{ ucfirst($request->status) }}
                                                     </span>
+                                                    @if($request->status === 'approved')
+                                                        <span class="ml-2 inline-flex items-center text-sm text-green-600">
+                                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                            Request Approved
+                                                        </span>
+                                                    @endif
                                                     <span class="text-sm font-medium text-gray-900">{{ $request->type }}</span>
                                                 </div>
                                                 <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
@@ -250,6 +257,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
                                 @endforeach
                             @else
                                 <div class="p-6 text-center text-gray-500">No recent leave requests</div>
