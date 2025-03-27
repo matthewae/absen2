@@ -75,11 +75,11 @@
             <h2 class="text-2xl font-bold mb-6">Profile Information</h2>
 
             <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Profile Photo Section -->
                     <div class="text-center">
                         <div class="mb-4">
-                            <img src="{{ $staff->photo_url ?? 'https://via.placeholder.com/200x300' }}" alt="Profile Photo" class="w-full h-96 object-cover border-2 border-indigo-200 rounded-lg shadow-md">
+                            <img src="{{ $staff->photo_url ?? 'https://via.placeholder.com/200x300' }}" alt="Profile Photo" class="w-full max-w-md mx-auto h-96 object-cover border-2 border-indigo-200 rounded-lg shadow-md">
                         </div>
                         <h3 class="text-xl font-semibold mb-1">{{ $staff->name }}</h3>
                         <p class="text-gray-600 mb-1">{{ $staff->position }}</p>
@@ -96,46 +96,46 @@
                     </div>
 
                     <!-- Personal Information -->
-                    <div class="bg-gray-50 rounded-lg p-6 space-y-6">
-                        <div>
+                    <div class="bg-gray-50 rounded-lg p-8 space-y-8">
+                        <div class="border-b border-gray-200 pb-6">
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">FULL NAME</h4>
-                            <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->name }}</p>
+                            <p class="mt-2 text-xl font-medium text-gray-900">{{ $staff->name }}</p>
                         </div>
-                        <div>
+                        <div class="border-b border-gray-200 pb-6">
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">EMAIL</h4>
-                            <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->email }}</p>
+                            <p class="mt-2 text-xl font-medium text-gray-900">{{ $staff->email }}</p>
                         </div>
-                        <div>
+                        <div class="border-b border-gray-200 pb-6">
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">DEPARTMENT</h4>
-                            <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->department }}</p>
+                            <p class="mt-2 text-xl font-medium text-gray-900">{{ $staff->department }}</p>
                         </div>
-                        <div>
+                        <div class="border-b border-gray-200 pb-6">
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">POSITION</h4>
-                            <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->position }}</p>
+                            <p class="mt-2 text-xl font-medium text-gray-900">{{ $staff->position }}</p>
                         </div>
                         <div>
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">BIRTH DATE</h4>
-                            <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->birth_date ? $staff->birth_date->format('d F Y') : 'Not set' }}</p>
-                        </div>
-                    </div>
-
-                    <!-- Leave Information -->
-                    <div class="bg-gray-50 rounded-lg p-6 space-y-6">
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">ANNUAL LEAVE QUOTA</h4>
-                            <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->annual_leave_quota }} days</p>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">REMAINING LEAVE</h4>
-                            <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->remaining_leave }} days</p>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">USED LEAVE</h4>
-                            <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->used_leave }} days</p>
+                            <p class="mt-2 text-xl font-medium text-gray-900">{{ $staff->birth_date ? $staff->birth_date->format('d F Y') : 'Not set' }}</p>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Leave Information -->
+            <!-- <div class="bg-gray-50 rounded-lg p-6 space-y-6">
+                <div>
+                    <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">ANNUAL LEAVE QUOTA</h4>
+                    <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->annual_leave_quota }} days</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">REMAINING LEAVE</h4>
+                    <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->remaining_leave }} days</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider">USED LEAVE</h4>
+                    <p class="mt-2 text-lg font-medium text-gray-900">{{ $staff->used_leave }} days</p>
+                </div>
+            </div> -->
         </div>
     </div>
 </body>
