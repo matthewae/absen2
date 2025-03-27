@@ -140,17 +140,6 @@ class WorkProgressController extends Controller
             return back()->with('error', 'File not found.');
         }
 
-        // Verify file integrity before sending
-        $actualSize = Storage::disk('public')->size($file->file_path);
-        if ($actualSize !== $file->file_size) {
-            \Log::error('File size mismatch:', [
-                'file' => $file->original_name,
-                'expected' => $file->file_size,
-                'actual' => $actualSize
-            ]);
-            return back()->with('error', 'File integrity check failed.');
-        }
-
         try {
             $filePath = Storage::disk('public')->path($file->file_path);
             
@@ -158,7 +147,18 @@ class WorkProgressController extends Controller
                 throw new \Exception('Physical file not found');
             }
 
-            // Use readfile for direct output of binary data
+            // Verify file size before sending
+            $actualSize = filesize($filePath);
+            if ($actualSize !== $file->file_size) {
+                \Log::error('File size mismatch:', [
+                    'file' => $file->original_name,
+                    'expected' => $file->file_size,
+                    'actual' => $actualSize
+                ]);
+                return back()->with('error', 'File integrity check failed.');
+            }
+
+            // Stream the file directly to output
             return response()->stream(
                 function() use ($filePath) {
                     $handle = fopen($filePath, 'rb');
@@ -171,11 +171,10 @@ class WorkProgressController extends Controller
                 200,
                 [
                     'Content-Type' => $file->mime_type,
-                    'Content-Length' => $actualSize,
                     'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"; filename*=UTF-8\'\''. rawurlencode($file->original_name),
+                    'Content-Length' => $actualSize,
                     'Cache-Control' => 'private, no-transform, no-store, must-revalidate',
-                    'Pragma' => 'no-cache',
-                    'Expires' => '0'
+                    'Pragma' => 'public'
                 ]
             );
             
