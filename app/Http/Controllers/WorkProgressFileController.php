@@ -14,9 +14,25 @@ class WorkProgressFileController extends Controller
             return back()->with('error', 'File not found.');
         }
 
-        return Storage::disk('public')->download(
-            $file->file_path,
-            $file->original_name
+        $stream = Storage::disk('public')->readStream($file->file_path);
+        $headers = [
+            'Content-Type' => $file->mime_type,
+            'Content-Length' => Storage::disk('public')->size($file->file_path),
+            'Content-Disposition' => 'attachment; filename="' . $file->original_name . '"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ];
+
+        return response()->stream(
+            function () use ($stream) {
+                fpassthru($stream);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+            },
+            200,
+            $headers
         );
     }
 
@@ -34,13 +50,25 @@ class WorkProgressFileController extends Controller
             abort(404, 'File not found');
         }
 
-        return Storage::disk('public')->response(
-            $file->file_path,
-            $file->original_name,
-            [
-                'Content-Type' => $file->mime_type,
-                'Content-Disposition' => 'inline; filename="' . $file->original_name . '"'
-            ]
+        $stream = Storage::disk('public')->readStream($file->file_path);
+        $headers = [
+            'Content-Type' => $file->mime_type,
+            'Content-Length' => Storage::disk('public')->size($file->file_path),
+            'Content-Disposition' => 'inline; filename="' . $file->original_name . '"',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ];
+
+        return response()->stream(
+            function () use ($stream) {
+                fpassthru($stream);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+            },
+            200,
+            $headers
         );
     }
 }
