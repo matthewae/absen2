@@ -31,13 +31,15 @@ class StaffAttendanceController extends Controller
 
     public function exportAttendance($staff_id)
     {
-        // TODO: Implement attendance export functionality
-        return back()->with('success', 'Attendance records exported successfully.');
+        $staff = Staff::findOrFail($staff_id);
+        $exportController = new StaffAttendanceExportController();
+        return $exportController->export($staff);
     }
 
     public function exportAllAttendance()
     {
-        // TODO: Implement all staff attendance export functionality
-        return back()->with('success', 'All staff attendance records exported successfully.');
+        $staffMembers = Staff::where('supervisor_id', auth()->user()->id)->get();
+        $exportController = new StaffAttendanceExportController();
+        return $exportController->exportAll($staffMembers);
     }
 }

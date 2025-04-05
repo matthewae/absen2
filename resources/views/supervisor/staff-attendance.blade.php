@@ -153,7 +153,7 @@
                                         <form action="{{ route('supervisor.staff.attendance.export', $staff->id) }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit" class="text-indigo-600 hover:text-indigo-900">
-                                                <i class="fas fa-download mr-2"></i>Download Records (.xls)
+                                                <i class="fas fa-download mr-2"></i>Download Records (.xlsx)
                                             </button>
                                         </form>
                                     </td>
