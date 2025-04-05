@@ -15,11 +15,12 @@
             z-index: 0;
         }
         .form-container {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
             position: relative;
             z-index: 1;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .form-container:hover {
             transform: translateY(-5px);
@@ -27,6 +28,7 @@
         }
         .floating-input:focus-within label,
         .floating-input input:not(:placeholder-shown) + label {
+            @apply bg-white text-indigo-600 font-medium;
             transform: translateY(-1.5rem) scale(0.75);
             background-color: white;
             padding: 0 0.25rem;
@@ -52,8 +54,8 @@
             <div class="inline-block p-4 rounded-full bg-white/10 mb-4">
                 <i class="fas fa-building text-4xl text-white"></i>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">PT. Mandajaya</h1>
-            <p class="text-indigo-100 text-sm">Supervisor Portal</p>
+            <h1 class="text-4xl font-bold text-white mb-3 tracking-tight">PT. Mandajaya Rekayasa Konstruksi</h1>
+            <p class="text-indigo-200 text-lg font-medium tracking-wide uppercase">Supervisor Portal</p>
         </div>
 
         <!-- Login Form -->
@@ -98,7 +100,7 @@
                     @endif
                 </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-3 px-4 rounded-lg font-medium hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 flex items-center justify-center space-x-2">
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg">
                     <i class="fas fa-sign-in-alt"></i>
                     <span>Sign In</span>
                 </button>

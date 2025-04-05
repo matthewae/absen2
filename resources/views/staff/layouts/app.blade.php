@@ -113,7 +113,58 @@
         </div>
     </nav>
 
+    <!-- Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="messageModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="messageToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastBody"></div>
+        </div>
+    </div>
+
     <main class="main-content">
+        <!-- Flash Messages -->
+        @if(session('success') || session('error') || session('warning'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const message = '{{ session('success') ?: session('error') ?: session('warning') }}';
+                    const type = '{{ session('success') ? 'success' : (session('error') ? 'error' : 'warning') }}';
+                    
+                    // Show Modal
+                    const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+                    const modalBody = document.getElementById('messageModalBody');
+                    modalBody.className = `alert alert-${type} mb-0`;
+                    modalBody.textContent = message;
+                    messageModal.show();
+                    
+                    // Show Toast
+                    const toast = new bootstrap.Toast(document.getElementById('messageToast'));
+                    const toastBody = document.getElementById('toastBody');
+                    toastBody.className = `toast-body bg-${type} text-white`;
+                    toastBody.textContent = message;
+                    toast.show();
+                });
+            </script>
+        @endif
+
         @yield('content')
     </main>
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Supervisor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Staff;
+use App\Models\LeaveRequest;
 use Illuminate\Http\Request;
 
 class StaffController extends Controller
@@ -13,10 +14,20 @@ class StaffController extends Controller
         $this->middleware('auth:supervisor');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $staff = Staff::all();
-        return view('supervisor.staff.index', compact('staff'));
+        $staff_id = $request->query('staff_id');
+        $query = Staff::query()->with('leaveRequests.approvedBy');
+        
+        if ($staff_id) {
+            $query->where('staff_id', 'like', '%' . $staff_id . '%');
+        }
+        
+        $staff = $query->get();
+        $leaveRequests = LeaveRequest::with(['staff', 'approvedBy'])
+            ->latest()
+            ->get();
+        return view('supervisor.staff.index', compact('staff', 'leaveRequests'));
     }
 
     public function show(Staff $staff)

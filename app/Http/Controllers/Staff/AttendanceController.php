@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\WorkProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -54,6 +55,15 @@ class AttendanceController extends Controller
             
         if (!$attendance) {
             return redirect()->back()->with('error', 'No check-in record found for today.');
+        }
+
+        // Check if staff has submitted work progress for today
+        $hasWorkProgress = WorkProgress::where('staff_id', $staff->id)
+            ->whereDate('created_at', today())
+            ->exists();
+
+        if (!$hasWorkProgress) {
+            return redirect()->back()->with('error', 'Please submit your work progress for today before checking out.');
         }
         
         // Update checkout time with WIB timezone
