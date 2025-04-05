@@ -249,7 +249,7 @@
                                                 </div>
                                                 @if($request->status !== 'pending')
                                                 <div class="mt-2 text-sm">
-                                                    <!-- <p class="text-gray-600"><strong>Reviewed by:</strong> {{ optional($request->approved_by)->name ?: 'Unknown' }}</p>
+                                                    <!-- <p class="text-gray-600"><strong>Reviewed by:</strong> {{ optional($request->approvedBy)->name ?: 'Unknown' }}</p>
                                                     <p class="text-gray-600"><strong>Reviewed at:</strong> {{ $request->approved_at ? $request->approved_at->format('d M Y H:i') : 'N/A' }}</p> -->
                                                 </div>
                                                 @endif

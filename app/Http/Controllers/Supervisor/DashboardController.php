@@ -183,6 +183,7 @@ class DashboardController extends Controller
         $leaveRequest->update([
             'status' => $request->status,
             'supervisor_comments' => $request->comments,
+            'approved_by' => $supervisor->id,
             'reviewed_at' => now()
         ]);
 

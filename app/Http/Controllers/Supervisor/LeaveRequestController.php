@@ -20,6 +20,7 @@ class LeaveRequestController extends Controller
         
         // Query all leave requests
         $query = LeaveRequest::with(['staff', 'approvedBy'])
+            ->whereHas('staff')
             ->latest();
             
         // Filter by status if specified

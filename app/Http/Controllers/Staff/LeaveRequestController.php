@@ -14,7 +14,7 @@ class LeaveRequestController extends Controller
     {
         $staff = Auth::guard('staff')->user();
         $leaveRequests = $staff->leaveRequests()
-            ->with('approved_by')
+            ->with('approvedBy')
             ->latest()
             ->paginate(10);
 
