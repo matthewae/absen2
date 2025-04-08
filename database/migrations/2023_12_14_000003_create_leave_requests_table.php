@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('leave_requests', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('staff_id');
+            $table->string('staff_id');
             $table->foreign('staff_id')->references('staff_id')->on('staff')->onDelete('cascade');
             $table->string('type'); // sick, annual, emergency, etc
             $table->date('start_date');
