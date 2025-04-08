@@ -153,7 +153,7 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($attendanceHistory as $attendance)
                                 <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_in->format('Y-m-d') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_in->format('d-M-Y') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_in->setTimezone('Asia/Jakarta')->format('H:i') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $attendance->check_out ? $attendance->check_out->setTimezone('Asia/Jakarta')->format('H:i') : '-' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
