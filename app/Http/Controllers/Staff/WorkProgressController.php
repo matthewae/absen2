@@ -158,20 +158,12 @@ class WorkProgressController extends Controller
                 return back()->with('error', 'File integrity check failed.');
             }
 
-            // Stream the file directly to output
-            return response()->stream(
-                function() use ($filePath) {
-                    $handle = fopen($filePath, 'rb');
-                    while (!feof($handle)) {
-                        echo fread($handle, 8192);
-                        flush();
-                    }
-                    fclose($handle);
-                },
-                200,
+            // Use Laravel's built-in download response
+            return response()->download(
+                $filePath,
+                $file->original_name,
                 [
                     'Content-Type' => $file->mime_type,
-                    'Content-Disposition' => 'attachment; filename="' . rawurlencode($file->original_name) . '"; filename*=UTF-8\'\''. rawurlencode($file->original_name),
                     'Content-Length' => $actualSize,
                     'Cache-Control' => 'private, no-transform, no-store, must-revalidate',
                     'Pragma' => 'public'
