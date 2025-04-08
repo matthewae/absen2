@@ -222,6 +222,7 @@
                                 <option value="">Select Status</option>
                                 <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                <!-- <option value="revision" {{ old('status') == 'revision' ? 'selected' : '' }}>Revision</option> -->
                                 <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                             </select>
                             @error('status')
