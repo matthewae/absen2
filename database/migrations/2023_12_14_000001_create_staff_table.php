@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreign('supervisor_id')->references('id')->on('supervisors')->onDelete('set null');
             $table->rememberToken();
             $table->timestamps();
+            $table->string('address')->nullable();
         });
     }
 

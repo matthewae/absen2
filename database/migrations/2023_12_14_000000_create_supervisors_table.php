@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamp('profile_picture_updated_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->string('address')->nullable();
         });
     }
 
