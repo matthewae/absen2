@@ -225,49 +225,90 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function searchStaff() {
-            const input = document.getElementById('staffSearch');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('staffTable');
-            const rows = table.getElementsByTagName('tr');
-            const searchTerms = filter.split(' ').filter(term => term.length > 0);
+function searchStaff() {
+    const input = document.getElementById('staffSearch');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('staffTable');
+    const rows = table.getElementsByTagName('tr');
+    const searchTerms = filter.split(' ').filter(term => term.length > 0);
+    let hasResults = false;
 
-            for (let i = 1; i < rows.length; i++) {
-                let found = searchTerms.length === 0;
-                const cells = rows[i].getElementsByTagName('td');
-                
-                if (!found) {
-                    const rowText = Array.from(cells)
-                        .slice(0, -1)
-                        .map(cell => cell.textContent || cell.innerText)
-                        .join(' ')
-                        .toLowerCase();
+    // Remove any existing "no results" message
+    const existingNoResults = document.getElementById('noResultsMessage');
+    if (existingNoResults) {
+        existingNoResults.remove();
+    }
 
-                    found = searchTerms.every(term => rowText.includes(term));
-                }
-                
-                rows[i].style.display = found ? '' : 'none';
-                if (found) {
-                    rows[i].classList.add('animate__animated', 'animate__fadeIn');
-                }
-            }
+    for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        let found = searchTerms.length === 0;
+
+        if (!found) {
+            const rowText = Array.from(cells)
+                .slice(0, -1) // Exclude the actions column
+                .map(cell => cell.textContent || cell.innerText)
+                .join(' ')
+                .toLowerCase();
+
+            found = searchTerms.every(term => rowText.includes(term));
         }
 
-        // Add event listener for real-time search
-        document.getElementById('staffSearch').addEventListener('input', debounce(searchStaff, 300));
-
-        // Debounce function to improve search performance
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
+        if (found) {
+            rows[i].style.display = '';
+            hasResults = true;
+            // Highlight matching terms
+            Array.from(cells).forEach(cell => {
+                let text = cell.textContent || cell.innerText;
+                let highlightedText = text;
+                searchTerms.forEach(term => {
+                    if (term.length > 0) {
+                        const regex = new RegExp(term, 'gi');
+                        highlightedText = highlightedText.replace(regex, match => `<span class="bg-yellow-200">${match}</span>`);
+                    }
+                });
+                if (text !== highlightedText) {
+                    cell.innerHTML = highlightedText;
+                }
+            });
+        } else {
+            rows[i].style.display = 'none';
         }
+    }
+
+    // Show "no results" message if no matches found
+    if (!hasResults && searchTerms.length > 0) {
+        const tbody = table.getElementsByTagName('tbody')[0];
+        const noResultsRow = document.createElement('tr');
+        noResultsRow.id = 'noResultsMessage';
+        noResultsRow.innerHTML = `
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                <div class="flex flex-col items-center justify-center space-y-2">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <p>No staff members found matching "<span class="font-medium">${filter}</span>"</p>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(noResultsRow);
+    }
+}
+
+// Add event listener for real-time search with debounce
+document.getElementById('staffSearch').addEventListener('input', debounce(searchStaff, 300));
+
+// Debounce function to improve search performance
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
     </script>
 </body>
 </html>

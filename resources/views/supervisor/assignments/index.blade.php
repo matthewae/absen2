@@ -135,7 +135,7 @@
                                         <div class="text-sm font-medium text-gray-900">{{ $assignment->title }}</div>
                                         <div class="text-sm text-gray-500">{{ Str::limit($assignment->description, 50) }}</div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap" data-staff-id="{{ $assignment->staff->id }}">
                                         <div class="flex items-center">
                                             <div class="h-8 w-8 rounded-full overflow-hidden bg-gray-100">
                                                 <img src="{{ $assignment->staff->photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($assignment->staff->name).'&background=6366f1&color=fff' }}" 
@@ -243,6 +243,37 @@ function openModal() {
 function closeModal() {
     document.getElementById('assignmentModal').classList.add('hidden');
 }
+
+// Add event listeners for search and filters
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[placeholder="Search assignments..."]');
+    const statusSelect = document.querySelector('select:first-of-type');
+    const staffSelect = document.querySelector('select:last-of-type');
+
+    function updateTable() {
+        const searchQuery = searchInput.value.toLowerCase();
+        const statusFilter = statusSelect.value.toLowerCase();
+        const staffFilter = staffSelect.value;
+
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const title = row.querySelector('td:first-child').textContent.toLowerCase();
+            const status = row.querySelector('td:nth-child(4) span').textContent.trim().toLowerCase();
+            const staffId = row.querySelector('td:nth-child(2)').getAttribute('data-staff-id');
+
+            const matchesSearch = searchQuery === '' || title.includes(searchQuery);
+            const matchesStatus = statusFilter === '' || status.includes(statusFilter);
+            const matchesStaff = staffFilter === '' || staffId === staffFilter;
+
+            row.style.display = (matchesSearch && matchesStatus && matchesStaff) ? '' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', updateTable);
+    statusSelect.addEventListener('change', updateTable);
+    staffSelect.addEventListener('change', updateTable);
+});
 </script>
 </body>
 </html>
+
