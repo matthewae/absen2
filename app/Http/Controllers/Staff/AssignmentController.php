@@ -43,4 +43,24 @@ class AssignmentController extends Controller
         return redirect()->route('staff.schedule')
             ->with('success', 'Assignment created successfully');
     }
+
+    public function destroy(Assignment $assignment)
+    {
+        if ($assignment->staff_id !== Auth::id()) {
+            return response()->json([
+                'message' => 'You are not authorized to delete this assignment'
+            ], 403);
+        }
+
+        $assignment->delete();
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Assignment deleted successfully'
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', 'Assignment deleted successfully');
+    }
 }

@@ -19,7 +19,7 @@
         <div class="bg-indigo-800 text-white w-64 py-6 flex flex-col">
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
-                <h1 class="text-2xl font-bold">PT. Mandajaya Rekayasa Konstruksi</h1>
+                <h1 class="text-2xl font-bold">PT. Mandajaya Rekayasa Konstruksiaa</h1>
             </div>
 
             <!-- Navigation Links -->
@@ -256,40 +256,40 @@
         document.getElementById('assignmentForm').addEventListener('submit', function(e) {
             e.preventDefault();
             showLoading();
-            
+
             // Clear previous errors
             document.querySelectorAll('.text-red-600').forEach(el => el.classList.add('hidden'));
-            
+
             const formData = new FormData(this);
-            
+
             fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    toastr.success('Assignment created successfully');
-                    closeAssignmentPanel();
-                    calendar.refetchEvents();
-                    refreshSchedule();
-                } else if (data.errors) {
-                    Object.keys(data.errors).forEach(field => {
-                        showError(field, data.errors[field][0]);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                toastr.error('An error occurred while creating the assignment');
-            })
-            .finally(() => {
-                hideLoading();
-            });
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr.success('Assignment created successfully');
+                        closeAssignmentPanel();
+                        calendar.refetchEvents();
+                        refreshSchedule();
+                    } else if (data.errors) {
+                        Object.keys(data.errors).forEach(field => {
+                            showError(field, data.errors[field][0]);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toastr.error('An error occurred while creating the assignment');
+                })
+                .finally(() => {
+                    hideLoading();
+                });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -301,7 +301,9 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: {!! json_encode($calendarEvents) !!},
+                events: {
+                    !!json_encode($calendarEvents) !!
+                },
                 eventTimeFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
