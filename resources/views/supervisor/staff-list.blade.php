@@ -14,7 +14,7 @@
             bottom: 0;
             width: 250px;
             background-color: #1a237e;
-            padding: 1rem;
+            padding: 1.5rem;
             overflow-y: auto;
             z-index: 100;
         }
@@ -26,11 +26,14 @@
             border-radius: 0.5rem;
             transition: all 0.3s;
             margin-bottom: 0.5rem;
+            text-decoration: none;
         }
         .nav-link:hover, .nav-link.active {
             background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
         }
         .nav-link i {
+            width: 1.5rem;
             margin-right: 0.75rem;
         }
         .main-content {
@@ -50,29 +53,23 @@
 </head>
 <body class="bg-gray-50">
     <!-- Sidebar -->
-    <nav class="sidebar">
-        <div class="mb-8">
-            <h1 class="text-white text-xl font-bold mb-2">Supervisor Portal</h1>
-            <p class="text-indigo-200 text-sm">Staff Management</p>
-        </div>
-        <ul>
-            <li>
+    <div class="sidebar">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold mb-8">Supervisor Panel</h1>
+            <nav class="space-y-4">
                 <a href="{{ route('supervisor.dashboard') }}" class="nav-link">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
                 </a>
-            </li>
-            <li>
                 <a href="{{ route('supervisor.staff-list') }}" class="nav-link active">
-                    <i class="fas fa-users"></i> Staff List
+                    <i class="fas fa-users"></i>
+                    <span>Staff List</span>
                 </a>
-            </li>
-            <li>
                 <a href="{{ route('supervisor.work-progress.index') }}" class="nav-link">
                     <i class="fas fa-tasks"></i>
-                    Work Progress
+                    <span>Work Progress</span>
                 </a>
-            </li>
-        </ul>
+            </nav>
     </nav>
 
     <!-- Main Content -->

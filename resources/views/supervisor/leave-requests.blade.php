@@ -18,17 +18,29 @@
                         <i class="fas fa-home w-6"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="{{ route('supervisor.staff-list') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
+                    <a href="{{ route('supervisor.staff.index') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
                         <i class="fas fa-users w-6"></i>
                         <span>Staff Management</span>
                     </a>
-                    <a href="#" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
-                        <i class="fas fa-calendar-alt w-6"></i>
-                        <span>Schedule</span>
+                    <a href="{{ route('supervisor.assignments.index') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
+                        <i class="fas fa-tasks w-6"></i>
+                        <span>Assignments</span>
+                    </a>
+                    <a href="{{ route('supervisor.work-progress.index') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
+                        <i class="fas fa-chart-line w-6"></i>
+                        <span>Work Progress</span>
                     </a>
                     <a href="{{ route('supervisor.leave-requests') }}" class="flex items-center space-x-2 text-white bg-indigo-900 rounded-lg p-2">
                         <i class="fas fa-calendar-check w-6"></i>
                         <span>Leave Requests</span>
+                    </a>
+                    <a href="{{ route('supervisor.profile') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
+                        <i class="fas fa-user w-6"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="{{ route('supervisor.settings') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
+                        <i class="fas fa-cog w-6"></i>
+                        <span>Settings</span>
                     </a>
                 </nav>
             </div>

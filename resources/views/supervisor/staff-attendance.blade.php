@@ -19,9 +19,17 @@
                         <i class="fas fa-home w-6"></i>
                         <span>Dashboard</span>
                     </a>
-                    <a href="{{ route('supervisor.staff-list') }}" class="flex items-center space-x-2 text-white bg-indigo-900 rounded-lg p-2">
+                    <a href="{{ route('supervisor.staff-list') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
                         <i class="fas fa-users w-6"></i>
-                        <span>Staff Management</span>
+                        <span>Staff List</span>
+                    </a>
+                    <a href="{{ route('supervisor.assignments.index') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
+                        <i class="fas fa-tasks w-6"></i>
+                        <span>Assignments</span>
+                    </a>
+                    <a href="{{ route('supervisor.attendance.index') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
+                        <i class="fas fa-clock w-6"></i>
+                        <span>Attendance</span>
                     </a>
                 </nav>
             </div>
