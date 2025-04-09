@@ -13,7 +13,7 @@
         <!-- Sidebar -->
         <div class="w-64 bg-indigo-800 text-white fixed h-full">
             <div class="p-6">
-                <h1 class="text-2xl font-bold mb-8">Supervisor Panel</h1>
+                <h1 class="text-2xl font-bold mb-8">Staff Management</h1>
                 <nav class="space-y-4">
                     <a href="{{ route('supervisor.dashboard') }}" class="flex items-center space-x-2 text-indigo-100 hover:text-white">
                         <i class="fas fa-home w-6"></i>
@@ -84,6 +84,18 @@
                             <i class="fas fa-arrow-left mr-2"></i>
                             Back to Staff List
                         </a>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="mb-6">
+                        <div class="max-w-md">
+                            <div class="relative flex items-center">
+                                <input type="text" id="staffSearch" class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-indigo-500" placeholder="Search staff by name...">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Staff List and Attendance Records -->
@@ -171,6 +183,23 @@
                         </table>
                     </div>
 
+                    <script>
+                        document.getElementById('staffSearch').addEventListener('input', function(e) {
+                            const searchTerm = e.target.value.toLowerCase();
+                            const rows = document.querySelectorAll('tbody tr');
+                            
+                            rows.forEach(row => {
+                                const nameCell = row.querySelector('td:first-child .text-gray-900');
+                                const name = nameCell.textContent.toLowerCase();
+                                
+                                if (name.includes(searchTerm)) {
+                                    row.style.display = '';
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                            });
+                        });
+                    </script>
                     <!-- Export Buttons -->
                     <div class="mt-6 flex justify-end space-x-4">
                         <form action="{{ route('supervisor.staff.attendance.export-all') }}" method="POST" class="inline">
