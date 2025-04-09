@@ -91,47 +91,83 @@
                 </div>
             </div>
 
-            <!-- Content Area -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Search and Filters -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
+                        <div class="flex-1 mb-4 md:mb-0">
+                            <div class="relative">
+                                <input type="text" id="searchInput" placeholder="Search staff by name or position..." class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <span class="absolute right-3 top-2.5 text-gray-400">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
+                            <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="">All Status</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                            <select id="sortBy" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="latest">Latest Update</option>
+                                <option value="name">Name A-Z</option>
+                                <option value="position">Position</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="staffGrid">
                     @foreach($staffMembers as $staff)
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300">
+                        <div class="staff-card bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300" 
+                             data-name="{{ strtolower($staff->name) }}" 
+                             data-position="{{ strtolower($staff->position) }}" 
+                             data-status="{{ $staff->workProgress->first() ? strtolower($staff->workProgress->first()->status) : 'no_status' }}">
                             <div class="p-6">
                                 <div class="flex items-center space-x-4 mb-4">
-                                    <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+                                    <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
                                         <img src="{{ $staff->photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($staff->name).'&background=6366f1&color=fff' }}" 
                                              alt="{{ $staff->name }}" 
                                              class="w-full h-full object-cover">
                                     </div>
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-800">{{ $staff->name }}</h3>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="text-lg font-semibold text-gray-800 truncate">{{ $staff->name }}</h3>
                                         <p class="text-sm text-gray-600">{{ $staff->position }}</p>
                                     </div>
                                 </div>
 
                                 <div class="space-y-3">
-                                    <div class="flex justify-between text-sm">
+                                    <div class="flex justify-between items-center text-sm">
                                         <span class="text-gray-600">Latest Update:</span>
                                         <span class="text-gray-900">{{ $staff->workProgress->first() ? $staff->workProgress->first()->created_at->diffForHumans() : 'No updates yet' }}</span>
                                     </div>
-                                    <div class="flex justify-between text-sm">
+                                    <div class="flex justify-between items-center text-sm">
                                         <span class="text-gray-600">Status:</span>
                                         @if($staff->workProgress->first())
                                             @php $status = $staff->workProgress->first()->status @endphp
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                {{ $status === 'completed' ? 'bg-green-100 text-green-800' : '' }}
+                                                {{ $status === 'in_progress' ? 'bg-blue-100 text-blue-800' : '' }}
+                                                {{ $status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}">
                                                 {{ ucfirst($status) }}
-                                            </span>
                                             </span>
                                         @else
                                             <span class="text-gray-500">-</span>
                                         @endif
                                     </div>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-gray-600">Tasks Completed:</span>
+                                        <span class="text-gray-900">{{ $staff->workProgress->where('status', 'completed')->count() }}</span>
+                                    </div>
                                 </div>
 
                                 <div class="mt-6">
                                     <a href="{{ route('supervisor.work-progress.show', $staff) }}" 
-                                       class="w-full inline-flex justify-center items-center px-4 py-2 border border-indigo-600 rounded-md shadow-sm text-sm font-medium text-indigo-600 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        <i class="fas fa-eye mr-2"></i>
+                                       class="w-full inline-flex justify-center items-center px-4 py-2 border border-indigo-600 rounded-md shadow-sm text-sm font-medium text-indigo-600 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                                        <i class="fas fa-chart-line mr-2"></i>
                                         View Progress History
                                     </a>
                                 </div>
@@ -139,8 +175,78 @@
                         </div>
                     @endforeach
                 </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden text-center py-12">
+                    <div class="text-gray-400">
+                        <i class="fas fa-search fa-3x mb-4"></i>
+                        <p class="text-lg font-medium">No staff members found</p>
+                        <p class="text-sm">Try adjusting your search or filter criteria</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const sortBy = document.getElementById('sortBy');
+        const staffGrid = document.getElementById('staffGrid');
+        const emptyState = document.getElementById('emptyState');
+        const staffCards = document.querySelectorAll('.staff-card');
+
+        function filterAndSortCards() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const statusValue = statusFilter.value.toLowerCase();
+            let visibleCards = 0;
+
+            staffCards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const position = card.getAttribute('data-position');
+                const status = card.getAttribute('data-status');
+
+                const matchesSearch = name.includes(searchTerm) || position.includes(searchTerm);
+                const matchesStatus = !statusValue || status === statusValue;
+
+                if (matchesSearch && matchesStatus) {
+                    card.style.display = '';
+                    visibleCards++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Show/hide empty state
+            emptyState.style.display = visibleCards === 0 ? 'block' : 'none';
+            staffGrid.style.display = visibleCards === 0 ? 'none' : 'grid';
+
+            // Sort visible cards
+            const sortValue = sortBy.value;
+            const cardsArray = Array.from(staffCards).filter(card => card.style.display !== 'none');
+
+            cardsArray.sort((a, b) => {
+                if (sortValue === 'name') {
+                    return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+                } else if (sortValue === 'position') {
+                    return a.getAttribute('data-position').localeCompare(b.getAttribute('data-position'));
+                }
+                // For 'latest', we'll keep the default order as it's already sorted by latest update in the backend
+                return 0;
+            });
+
+            cardsArray.forEach(card => staffGrid.appendChild(card));
+        }
+
+        // Add event listeners
+        searchInput.addEventListener('input', filterAndSortCards);
+        statusFilter.addEventListener('change', filterAndSortCards);
+        sortBy.addEventListener('change', filterAndSortCards);
+
+        // Initial filter
+        filterAndSortCards();
+    });
+    </script>
 </body>
 </html>

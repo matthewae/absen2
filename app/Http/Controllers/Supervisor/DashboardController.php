@@ -24,7 +24,7 @@ class DashboardController extends Controller
         $staffCount = $supervisor->getDepartmentStaffCount();
         $pendingLeaveRequests = $supervisor->getPendingLeaveRequests();
 
-        $recentAssignments = $supervisor->assignments()
+        $recentAssignments = Assignment::where('supervisor_id', $supervisor->id)
             ->with(['staff'])
             ->latest()
             ->take(5)

@@ -36,6 +36,7 @@ Route::prefix('staff')->name('staff.')->group(function () {
 
         // Schedule
         Route::get('/schedule', [\App\Http\Controllers\Staff\ScheduleController::class, 'index'])->name('schedule');
+        Route::post('/assignments', [\App\Http\Controllers\Staff\AssignmentController::class, 'store'])->name('assignments.store');
 
         // Attendance
         Route::get('/attendance', [\App\Http\Controllers\Staff\AttendanceController::class, 'index'])->name('attendance');

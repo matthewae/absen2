@@ -8,6 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/toastr@2.1.4/build/toastr.min.js"></script>
 </head>
 
 <body class="bg-gray-100">
@@ -91,6 +94,16 @@
 
             <!-- Page Content -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Create Assignment Button -->
+                <div class="mb-6">
+                    <button type="button" onclick="openAssignmentPanel()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Create Assignment
+                    </button>
+                </div>
+
                 <!-- Calendar -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
                     <div id="calendar"></div>
@@ -139,7 +152,146 @@
         </div>
     </div>
 
+    <!-- Slide-out Assignment Panel -->
+    <div id="assignmentPanel" class="fixed inset-y-0 right-0 w-96 bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-medium text-gray-900">Create New Assignment</h3>
+                <button type="button" onclick="closeAssignmentPanel()" class="text-gray-400 hover:text-gray-500">
+                    <span class="sr-only">Close</span>
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <form id="assignmentForm" action="{{ route('staff.assignments.store') }}" method="POST" class="space-y-4">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title <span class="text-red-500">*</span></label>
+                        <input type="text" name="title" id="title" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter assignment title">
+                        <div id="titleError" class="mt-1 text-sm text-red-600 hidden"></div>
+                    </div>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700">Description <span class="text-red-500">*</span></label>
+                        <textarea name="description" id="description" rows="3" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter assignment description"></textarea>
+                        <div id="descriptionError" class="mt-1 text-sm text-red-600 hidden"></div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-y-4">
+                        <div>
+                            <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date <span class="text-red-500">*</span></label>
+                            <input type="date" name="start_date" id="start_date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <div id="startDateError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        </div>
+                        <div>
+                            <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time <span class="text-red-500">*</span></label>
+                            <input type="time" name="start_time" id="start_time" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <div id="startTimeError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        </div>
+                        <div>
+                            <label for="end_date" class="block text-sm font-medium text-gray-700">End Date <span class="text-red-500">*</span></label>
+                            <input type="date" name="end_date" id="end_date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <div id="endDateError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        </div>
+                        <div>
+                            <label for="end_time" class="block text-sm font-medium text-gray-700">End Time <span class="text-red-500">*</span></label>
+                            <input type="time" name="end_time" id="end_time" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <div id="endTimeError" class="mt-1 text-sm text-red-600 hidden"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                        <span class="normal-state">Create Assignment</span>
+                        <span class="loading-state hidden">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Creating...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        function openAssignmentPanel() {
+            document.getElementById('assignmentPanel').classList.remove('translate-x-full');
+            resetForm();
+        }
+
+        function closeAssignmentPanel() {
+            document.getElementById('assignmentPanel').classList.add('translate-x-full');
+            resetForm();
+        }
+
+        function resetForm() {
+            const form = document.getElementById('assignmentForm');
+            form.reset();
+            document.querySelectorAll('.text-red-600').forEach(el => el.classList.add('hidden'));
+            document.querySelector('.loading-state').classList.add('hidden');
+            document.querySelector('.normal-state').classList.remove('hidden');
+        }
+
+        function showLoading() {
+            document.querySelector('.loading-state').classList.remove('hidden');
+            document.querySelector('.normal-state').classList.add('hidden');
+        }
+
+        function hideLoading() {
+            document.querySelector('.loading-state').classList.add('hidden');
+            document.querySelector('.normal-state').classList.remove('hidden');
+        }
+
+        function showError(field, message) {
+            const errorDiv = document.getElementById(field + 'Error');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('assignmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showLoading();
+            
+            // Clear previous errors
+            document.querySelectorAll('.text-red-600').forEach(el => el.classList.add('hidden'));
+            
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    toastr.success('Assignment created successfully');
+                    closeAssignmentPanel();
+                    calendar.refetchEvents();
+                    refreshSchedule();
+                } else if (data.errors) {
+                    Object.keys(data.errors).forEach(field => {
+                        showError(field, data.errors[field][0]);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toastr.error('An error occurred while creating the assignment');
+            })
+            .finally(() => {
+                hideLoading();
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -157,6 +309,14 @@
                 }
             });
             calendar.render();
+
+            // Configure toastr
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                positionClass: 'toast-top-right',
+                timeOut: 3000
+            };
 
             // Auto-refresh calendar and upcoming assignments every 30 seconds
             function refreshSchedule() {
