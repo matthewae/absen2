@@ -67,8 +67,8 @@
                         <div class="flex items-center space-x-4">
                             <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200">
                                 <img src="{{ $staff->photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($staff->name).'&background=6366f1&color=fff' }}" 
-                                     alt="{{ $staff->name }}" 
-                                     class="w-full h-full object-cover">
+                                        alt="{{ $staff->name }}" 
+                                        class="w-full h-full object-cover">
                             </div>
                             <div>
                                 <h2 class="text-2xl font-semibold text-gray-800">{{ $staff->name }}'s Attendance</h2>
