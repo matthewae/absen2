@@ -114,7 +114,7 @@
 
         <!-- Footer -->
         <p class="text-center mt-6 text-indigo-100 text-sm">
-            &copy; {{ date('Y') }} PT. Mandajaya. All rights reserved.
+            &copy; {{ 2022 }} PT. Mandajaya Rekayasa Konstruksi. All rights reserved.
         </p>
     </div>
     <script>
