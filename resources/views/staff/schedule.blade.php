@@ -116,7 +116,7 @@
                     </div>
                     <div class="divide-y divide-gray-100">
                         @foreach($upcomingAssignments as $assignment)
-                        <div class="p-6 hover:bg-gray-50 transition-colors duration-200">
+                        <div class="p-6 hover:bg-opacity-90 transition-colors duration-200 {{ $assignment->priority === 'high' ? 'bg-red-100' : ($assignment->priority === 'medium' ? 'bg-yellow-100' : 'bg-blue-100') }}">
                             <div class="flex items-start space-x-4">
                                 <div class="flex-shrink-0 mt-1">
                                     <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
@@ -301,13 +301,43 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: {
-                    !!json_encode($calendarEvents) !!
+                events: {!! json_encode($calendarEvents) !!},
+                eventDidMount: function(info) {
+                    // Set background color based on priority
+                    switch(info.event.extendedProps.priority) {
+                        case 'high':
+                            info.el.style.backgroundColor = '#FCA5A5'; // Light red
+                            break;
+                        case 'medium':
+                            info.el.style.backgroundColor = '#FDE68A'; // Light yellow
+                            break;
+                        case 'low':
+                            info.el.style.backgroundColor = '#93C5FD'; // Light blue
+                            break;
+                    }
                 },
-                eventTimeFormat: {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
+                eventClick: function(info) {
+                    // Show event details using toastr
+                    const event = info.event;
+                    const startTime = event.start ? event.start.toLocaleTimeString() : '';
+                    const endTime = event.end ? event.end.toLocaleTimeString() : '';
+                    const title = event.title;
+                    const description = event.extendedProps.description || 'No description available';
+                    const priority = event.extendedProps.priority || 'normal';
+                    
+                    toastr.info(
+                        `<strong>Time:</strong> ${startTime} - ${endTime}<br>
+                        <strong>Description:</strong> ${description}<br>
+                        <strong>Priority:</strong> ${priority}`,
+                        title,
+                        {
+                            closeButton: true,
+                            timeOut: 5000,
+                            extendedTimeOut: 2000,
+                            progressBar: true,
+                            escapeHtml: false
+                        }
+                    );
                 }
             });
             calendar.render();

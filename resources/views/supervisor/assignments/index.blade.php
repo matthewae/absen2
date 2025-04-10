@@ -169,7 +169,7 @@
                                             <a href="{{ route('supervisor.assignments.edit', $assignment) }}" class="text-yellow-600 hover:text-yellow-900">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form method="POST" action="{{ route('supervisor.assignments.destroy', $assignment->id) }}" class="inline">
+                                            <form method="POST" action="{{ route('supervisor.assignments.destroy', $assignment) }}" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this assignment?')">

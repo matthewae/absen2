@@ -26,7 +26,8 @@ class AssignmentController extends Controller
             'description' => 'required|string',
             'staff_id' => 'required|exists:staff,id',
             'start_datetime' => 'required|date',
-            'end_datetime' => 'required|date|after:start_datetime'
+            'end_datetime' => 'required|date|after:start_datetime',
+            'priority' => 'required|in:low,medium,high'
         ]);
 
         $assignment = Assignment::create([
@@ -36,7 +37,8 @@ class AssignmentController extends Controller
             'supervisor_id' => auth()->id(),
             'start_datetime' => $validated['start_datetime'],
             'end_datetime' => $validated['end_datetime'],
-            'status' => 'in_progress'
+            'status' => 'in_progress',
+            'priority' => $validated['priority']
         ]);
 
         return redirect()->route('supervisor.assignments.index')
