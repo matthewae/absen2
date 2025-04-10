@@ -177,13 +177,13 @@
                     </div>
                 </div>
 
-                <div class="mb-4">
+                <!-- <div class="mb-4">
                     <label for="attachment" class="form-label">Attachment (Optional)</label>
                     <input type="file" class="form-control @error('attachment') is-invalid @enderror" id="attachment" name="attachment">
                     @error('attachment')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                </div>
+                </div> -->
 
                 <div class="d-flex justify-content-between">
                     <a href="{{ route('supervisor.assignments.index') }}" class="btn btn-secondary">Back to List</a>

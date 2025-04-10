@@ -152,9 +152,9 @@
                     <i class="fas fa-arrow-left me-2"></i>Back to List
                 </a>
                 <div>
-                    <a href="{{ route('supervisor.assignments.edit', $assignment->id) }}" class="btn btn-primary me-2">
+                    <!-- <a href="{{ route('supervisor.assignments.edit', $assignment->id) }}" class="btn btn-primary me-2">
                         <i class="fas fa-edit me-2"></i>Edit Assignment
-                    </a>
+                    </a> -->
                     <form action="{{ route('supervisor.assignments.destroy', $assignment->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')

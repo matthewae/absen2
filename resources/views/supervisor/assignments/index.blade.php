@@ -166,9 +166,9 @@
                                             <a href="{{ route('supervisor.assignments.show', $assignment) }}" class="text-indigo-600 hover:text-indigo-900">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('supervisor.assignments.edit', $assignment) }}" class="text-yellow-600 hover:text-yellow-900">
+                                            <!-- <a href="{{ route('supervisor.assignments.edit', $assignment) }}" class="text-yellow-600 hover:text-yellow-900">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
+                                            </a> -->
                                             <form method="POST" action="{{ route('supervisor.assignments.destroy', $assignment) }}" class="inline">
                                                 @csrf
                                                 @method('DELETE')

@@ -121,9 +121,17 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="due_date" class="form-label">Due Date</label>
-                        <input type="date" class="form-control @error('due_date') is-invalid @enderror" id="due_date" name="due_date" value="{{ old('due_date', $assignment->due_date ? $assignment->due_date->format('Y-m-d') : '') }}">
-                        @error('due_date')
+                        <label for="start_datetime" class="form-label">Start Date</label>
+                        <input type="datetime-local" class="form-control @error('start_datetime') is-invalid @enderror" id="start_datetime" name="start_datetime" value="{{ old('start_datetime', $assignment->start_datetime ? $assignment->start_datetime->format('Y-m-d\\TH:i') : '') }}" required>
+                        @error('start_datetime')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="end_datetime" class="form-label">End Date</label>
+                        <input type="datetime-local" class="form-control @error('end_datetime') is-invalid @enderror" id="end_datetime" name="end_datetime" value="{{ old('end_datetime', $assignment->end_datetime ? $assignment->end_datetime->format('Y-m-d\\TH:i') : '') }}" required>
+                        @error('end_datetime')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
