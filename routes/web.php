@@ -6,9 +6,9 @@ use App\Http\Controllers\Auth\SupervisorLoginController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboardController;
 
-// Root
+// Root - Redirect to staff login
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('staff.login');
 });
 
 // Redirect root login to staff login

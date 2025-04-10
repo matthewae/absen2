@@ -246,6 +246,12 @@
                     </button>
                 </div>
 
+                <div class="mb-3 text-center">
+                    <a href="{{ route('supervisor.login') }}" class="btn btn-outline-light w-100">
+                        Login as Supervisor
+                    </a>
+                </div>
+
                 @if (Route::has('password.request'))
                 <div class="text-center">
                     <a class="forgot-password" href="{{ route('password.request') }}">

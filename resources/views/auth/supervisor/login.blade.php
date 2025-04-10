@@ -46,7 +46,7 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+<body class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
     <div id="particles-js"></div>
     <div class="w-full max-w-md">
         <!-- Logo and Branding -->
@@ -100,10 +100,15 @@
                     @endif
                 </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg">
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg mb-4">
                     <i class="fas fa-sign-in-alt"></i>
                     <span>Sign In</span>
                 </button>
+
+                <a href="{{ route('staff.login') }}" class="w-full bg-white/10 backdrop-blur-sm text-black py-4 px-6 rounded-xl font-semibold hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/30 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg border border-white/20">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Staff Login</span>
+                </a>
             </form>
         </div>
 
