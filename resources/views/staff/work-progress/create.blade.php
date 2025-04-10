@@ -220,10 +220,10 @@
                             <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                             <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
                                 <option value="">Select Status</option>
-                                <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                <!-- <option value="revision" {{ old('status') == 'revision' ? 'selected' : '' }}>Revision</option> -->
-                                <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="In Progress" {{ old('status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="Revision" {{ old('status') == 'Revision' ? 'selected' : '' }}>Revision</option>
+                                <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
                             </select>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -274,6 +274,10 @@ document.addEventListener('DOMContentLoaded', function() {
         progressBar.classList.remove('d-none');
         submitBtn.disabled = true;
 
+        // Clear previous error messages
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
         const formData = new FormData(this);
         const xhr = new XMLHttpRequest();
 
@@ -286,23 +290,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         xhr.addEventListener('load', function() {
-            if (xhr.status === 200) {
-                window.location.href = JSON.parse(xhr.response).redirect || '{{ route("staff.work-progress.index") }}';
+            const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+            
+            if (xhr.status === 200 || xhr.status === 302) {
+                window.location.href = response.redirect || '{{ route("staff.work-progress.index") }}';
+            } else if (xhr.status === 422) { // Validation errors
+                progressBar.classList.add('d-none');
+                submitBtn.disabled = false;
+                
+                // Display validation errors
+                const errors = response.errors || {};
+                Object.keys(errors).forEach(field => {
+                    const input = document.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        const feedback = input.closest('.form-group').querySelector('.invalid-feedback');
+                        if (feedback) {
+                            feedback.textContent = errors[field][0];
+                            feedback.style.display = 'block';
+                        }
+                    }
+                });
             } else {
                 progressBar.classList.add('d-none');
                 submitBtn.disabled = false;
-                alert('Upload failed. Please try again.');
+                alert(response.message || 'Upload failed. Please try again.');
             }
         });
 
         xhr.addEventListener('error', function() {
             progressBar.classList.add('d-none');
             submitBtn.disabled = false;
-            alert('Upload failed. Please try again.');
+            alert('Network error occurred. Please try again.');
         });
 
         xhr.open('POST', form.action);
         xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('input[name="_token"]').value);
+        xhr.setRequestHeader('Accept', 'application/json');
         xhr.send(formData);
     });
 });

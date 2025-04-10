@@ -46,7 +46,7 @@ class WorkProgressController extends Controller
             'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian'])],
             'company_name' => 'required|string|max:255',
             'work_description' => 'required|string|min:100',
-            'status' => ['required', 'string', Rule::in(['pending', 'in_progress', 'completed'])],
+            'status' => ['required', 'string', Rule::in(['Pending', 'In Progress', 'Revision', 'Completed'])],
             'files' => 'required|array|min:1',
             'files.*' => 'required|file|max:153600' // 150MB max per file
         ]);

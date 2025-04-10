@@ -144,12 +144,11 @@
                 <div class="mb-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-gray-900">{{ $workProgress->project_topic }}</h3>
-                        <span class="px-3 py-1 rounded-full text-sm {{ 
-                                $workProgress->status === 'completed' ? 'bg-green-100 text-green-800' : 
-                                ($workProgress->status === 'revision' ? 'bg-yellow-100 text-yellow-800' : 
-                                ($workProgress->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'))
-                            }}">
-                            {{ ucfirst(str_replace('_', ' ', $workProgress->status)) }}
+                        <span class="px-3 py-1 rounded-full text-sm <?php echo e(($workProgress->status === 'completed') ? 'bg-green-100 text-green-800' : 
+                                (($workProgress->status === 'pending') ? 'bg-gray-100 text-black-800' : 
+                                ($workProgress->status === 'revision' ? 'bg-orange-100 text-orange-800' : 
+                                ($workProgress->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')))); ?>">
+                            <?php echo e(ucfirst(str_replace('_', ' ', $workProgress->status))); ?>
                         </span>
                     </div>
                     <p class="text-sm text-gray-500">Submitted on {{ $workProgress->created_at->format('Y-m-d H:i') }}</p>

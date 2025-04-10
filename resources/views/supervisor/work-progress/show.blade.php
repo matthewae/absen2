@@ -5,7 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $staff->name }}'s Work Progress | Supervisor Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        $(document).ready(function() {
+            function refreshWorkProgress() {
+                $.get(window.location.href, function(data) {
+                    const newContent = $(data).find('.space-y-6').html();
+                    $('.space-y-6').html(newContent);
+                });
+            }
+            
+            setInterval(refreshWorkProgress, 30000); // Refresh every 30 seconds
+        });
+    </script>
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen">
@@ -81,9 +94,10 @@
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center space-x-3">
                                         <span class="px-3 py-1 text-sm font-semibold rounded-full
-                                            {{ $progress->status === 'pending' ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' : '' }}
-                                            {{ $progress->status === 'approved' ? 'bg-green-100 text-green-800 border border-green-300' : '' }}
-                                            {{ $progress->status === 'rejected' ? 'bg-red-100 text-red-800 border border-red-300' : '' }}">
+                                            {{ $progress->status === 'pending' ? 'bg-gray-100 text-gray-800 border border-gray-300' : '' }}
+                                            {{ $progress->status === 'in_progress' ? 'bg-blue-100 text-blue-800 border border-blue-300' : '' }}
+                                            {{ $progress->status === 'revision' ? 'bg-orange-100 text-orange-800 border border-orange-300' : '' }}
+                                            {{ $progress->status === 'completed' ? 'bg-green-100 text-green-800 border border-green-300' : '' }}">
                                             {{ ucfirst($progress->status) }}
                                         </span>
                                         <span class="text-sm text-gray-500 flex items-center">
