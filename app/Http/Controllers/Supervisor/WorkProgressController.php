@@ -14,7 +14,7 @@ class WorkProgressController extends Controller
     {
         $staffMembers = Staff::with(['workProgress' => function($query) {
             $query->latest();
-        }])->get();
+        }])->paginate(6);
 
         return view('supervisor.work-progress.index', compact('staffMembers'));
     }
