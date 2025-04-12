@@ -111,7 +111,7 @@
                             <div class="px-6 py-4 bg-gray-50">
                                 <div class="mb-4">
                                     <h4 class="text-sm font-medium text-gray-700 mb-2">Work Description:</h4>
-                                    <p class="text-gray-600 whitespace-pre-line">{{ $progress->work_description }}</p>
+                                    <p class="text-gray-600 whitespace-pre-line text-justify">{{ $progress->work_description }}</p>
                                 </div>
                                 @if($progress->files->count() > 0)
                                     <div class="border-t border-gray-200 pt-4">

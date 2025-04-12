@@ -34,8 +34,8 @@ class DashboardController extends Controller
                 $query->whereDate('check_in', $today);
                 }])
             ->orderBy('name')
-            ->get()
-            ->map(function($staff) {
+            ->paginate(5)
+            ->through(function($staff) {
                 $todayAttendance = $staff->attendances->first();
                 $staff->attendance_status = $todayAttendance ? 'present' : 'absent';
                 $staff->check_in_time = $todayAttendance ? $todayAttendance->check_in->format('H:i') : null;

@@ -35,6 +35,16 @@ class LeaveRequestController extends Controller
 
     public function update(Request $request, LeaveRequest $leaveRequest)
     {
+        $supervisor = auth('supervisor')->user();
+        if (!$supervisor) {
+            abort(401, 'Please login first.');
+        }
+
+        // Only check if the leave request belongs to a valid staff
+        if (!$leaveRequest->staff_id) {
+            abort(404, 'Staff not found for this leave request.');
+        }
+
         $validated = $request->validate([
             'status' => 'required|in:approved,rejected',
             'supervisor_comment' => 'nullable|string'
@@ -43,11 +53,10 @@ class LeaveRequestController extends Controller
         $leaveRequest->update([
             'status' => $validated['status'],
             'supervisor_comment' => $validated['supervisor_comment'] ?? null,
-            'approved_by' => auth('supervisor')->id(),
+            'approved_by' => $supervisor->id,
             'approved_at' => now()
         ]);
 
-        return redirect()->back()
-            ->with('success', 'Leave request has been ' . $validated['status'] . '.');
+        return redirect()->back()->with('success', 'Leave request has been ' . $validated['status'] . '.');
     }
 }
