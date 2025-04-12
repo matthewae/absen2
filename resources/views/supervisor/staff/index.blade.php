@@ -7,37 +7,47 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --pagination-hover: #fff8e1;
+            --primary-yellow: #ffd700;
+            --secondary-yellow: #ffeb3b;
+            --dark-yellow: #ffc107;
+            --text-black: #212121;
+            --bg-light: #fffde7;
+        }
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
             height: 100vh;
             width: 250px;
-            background: #1a237e;
+            background: var(--text-black);
             padding: 20px;
-            color: white;
+            color: var(--primary-yellow);
             z-index: 1000;
         }
         .main-content {
             margin-left: 250px;
-            padding: 20px;
-            background-color: #f8f9fa;
+            padding: 30px;
+            background-color: var(--bg-light);
             min-height: 100vh;
         }
         .nav-link {
-            color: rgba(255,255,255,0.8);
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 5px;
+            color: var(--primary-yellow);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             text-decoration: none;
             transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
         .nav-link:hover, .nav-link.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
+            background: var(--primary-yellow);
+            color: var(--text-black);
             transform: translateX(5px);
+            border-color: var(--dark-yellow);
         }
         .nav-link i {
             width: 20px;
@@ -45,34 +55,51 @@
         }
         .table th, .table td {
             vertical-align: middle;
-            padding: 1rem;
+            padding: 1.25rem 1rem;
             font-size: 0.95rem;
+            border-bottom: 1px solid var(--dark-yellow);
         }
         .table th {
-            background-color: #f0f2f5;
+            background-color: var(--primary-yellow);
             font-weight: 600;
-            color: #2c3e50;
-            border-bottom: 2px solid #dee2e6;
+            color: var(--text-black);
+            border-bottom: 2px solid var(--text-black);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
         }
         .btn-sm {
-            margin-right: 5px;
-            padding: 0.4rem 0.8rem;
+            margin-right: 8px;
+            padding: 0.5rem 1rem;
             font-size: 0.875rem;
-            border-radius: 0.375rem;
+            border-radius: 0.5rem;
             transition: all 0.2s ease;
+            border: 2px solid transparent;
         }
         .btn-sm:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        .btn-info {
+            background-color: var(--primary-yellow);
+            color: var(--text-black);
+            border-color: var(--dark-yellow);
+        }
+        .btn-primary {
+            background-color: var(--text-black);
+            color: var(--primary-yellow);
+            border-color: var(--primary-yellow);
         }
         .card {
-            border: none;
-            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
-            border-radius: 0.75rem;
+            border: 2px solid var(--dark-yellow);
+            box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
             transition: all 0.3s ease;
+            background-color: white;
         }
         .card:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-yellow);
         }
         .search-box {
             position: relative;
@@ -119,6 +146,56 @@
         .alert-success {
             background-color: #dcfce7;
             color: #166534;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .pagination .page-item {
+            list-style: none;
+            margin: 0;
+        }
+        .pagination .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.5rem;
+            height: 2.5rem;
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--dark-yellow);
+            border-radius: 0.5rem;
+            color: var(--text-black);
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        .pagination .page-item.active .page-link {
+            background: var(--primary-yellow);
+            border-color: var(--dark-yellow);
+            color: var(--text-black);
+            font-weight: 600;
+        }
+        .pagination .page-link:hover {
+            background-color: var(--pagination-hover);
+            border-color: var(--primary-yellow);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(255, 193, 7, 0.15);
+        }
+        .pagination .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            border-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            pointer-events: none;
+            opacity: 0.7;
         }
         @media (max-width: 768px) {
             .main-content {
@@ -186,7 +263,10 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped" id="staffTable">
+                        <div class="mb-3 text-end">
+                            <small class="text-muted">Showing {{ $staff->firstItem() }} to {{ $staff->lastItem() }} of {{ $staff->total() }} entries</small>
+                        </div>
+                        <table class="table table-hover" id="staffTable">
                             <thead>
                                 <tr>
                                     <th>Staff ID</th>
@@ -217,6 +297,40 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    <div class="pagination-container mt-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted">
+                                Showing {{ $staff->firstItem() }} to {{ $staff->lastItem() }} of {{ $staff->total() }} entries
+                            </div>
+                            <div class="pagination">
+                                @if ($staff->onFirstPage())
+                                    <span class="page-item disabled">
+                                        <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                                    </span>
+                                @else
+                                    <a class="page-item" href="{{ $staff->previousPageUrl() }}">
+                                        <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                                    </a>
+                                @endif
+                            
+                                @foreach ($staff->getUrlRange(1, $staff->lastPage()) as $page => $url)
+                                    <a class="page-item {{ $page == $staff->currentPage() ? 'active' : '' }}" href="{{ $url }}">
+                                        <span class="page-link">{{ $page }}</span>
+                                    </a>
+                                @endforeach
+                            
+                                @if ($staff->hasMorePages())
+                                    <a class="page-item" href="{{ $staff->nextPageUrl() }}">
+                                        <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                                    </a>
+                                @else
+                                    <span class="page-item disabled">
+                                        <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -312,3 +426,53 @@ function debounce(func, wait) {
     </script>
 </body>
 </html>
+
+<style>
+.pagination-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.pagination {
+    margin: 0;
+    gap: 0.5rem;
+}
+
+.page-item .page-link {
+    border: 2px solid var(--dark-yellow);
+    color: var(--text-black);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary-yellow);
+    border-color: var(--dark-yellow);
+    color: var(--text-black);
+    font-weight: 600;
+}
+
+.page-item .page-link:hover {
+    background-color: var(--pagination-hover);
+    border-color: var(--primary-yellow);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(255, 193, 7, 0.15);
+}
+
+.page-item.disabled .page-link {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #adb5bd;
+    pointer-events: none;
+    opacity: 0.7;
+}
+</style>

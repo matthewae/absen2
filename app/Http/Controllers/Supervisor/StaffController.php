@@ -23,7 +23,7 @@ class StaffController extends Controller
             $query->where('staff_id', 'like', '%' . $staff_id . '%');
         }
         
-        $staff = $query->get();
+        $staff = $query->paginate(10);
         $leaveRequests = LeaveRequest::with(['staff', 'approvedBy'])
             ->latest()
             ->get();

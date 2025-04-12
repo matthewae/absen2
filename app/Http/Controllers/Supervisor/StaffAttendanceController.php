@@ -14,7 +14,10 @@ class StaffAttendanceController extends Controller
             $staff = Staff::findOrFail($staff_id);
             $staffMembers = collect([$staff]);
         } else {
-            $staffMembers = Staff::where('supervisor_id', auth()->user()->id)->get();
+            $perPage = 10;
+            $page = $request->input('page', 1);
+            $staffMembers = Staff::where('supervisor_id', auth()->user()->id)
+                ->paginate($perPage);
         }
 
         // Eager load attendances to avoid N+1 queries
@@ -25,7 +28,8 @@ class StaffAttendanceController extends Controller
 
         return view('supervisor.staff-attendance', [
             'staffMembers' => $staffMembers,
-            'staff' => $staff_id ? $staff : null
+            'staff' => $staff_id ? $staff : null,
+            'page' => $page
         ]);
     }
 

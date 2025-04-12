@@ -8,10 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<body class="bg-gray-50">
+    <style>
+        :root {
+            --primary-yellow: #ffd700;
+            --secondary-yellow: #ffeb3b;
+            --dark-yellow: #ffc107;
+            --text-black: #212121;
+            --bg-light: #fffde7;
+        }
+    </style>
+<body class="bg-[var(--bg-light)]">
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-indigo-800 text-white fixed h-full">
+        <div class="w-64 bg-[var(--text-black)] text-[var(--primary-yellow)] fixed h-full">
             <div class="p-6">
                 <h1 class="text-2xl font-bold mb-8">Staff Management</h1>
                 <nav class="space-y-4">
@@ -60,7 +69,7 @@
 
             <!-- Content Area -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="bg-white shadow rounded-lg p-6">
+                <div class="bg-white shadow-lg rounded-lg p-6 border border-[var(--dark-yellow)]">
                     <!-- Staff Info Header -->
                     <div class="flex justify-between items-center mb-6">
                         @if($staff)
@@ -70,10 +79,10 @@
                                         alt="{{ $staff->name }}" 
                                         class="w-full h-full object-cover">
                             </div>
-                            <div>
+                            <!-- <div>
                                 <h2 class="text-2xl font-semibold text-gray-800">{{ $staff->name }}'s Attendance</h2>
                                 <p class="text-sm text-gray-600 mt-1">{{ $staff->position }} - {{ $staff->department }}</p>
-                            </div>
+                            </div> -->
                         </div>
                         @else
                         <div>
@@ -101,7 +110,7 @@
                     <!-- Staff List and Attendance Records -->
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white rounded-lg overflow-hidden">
-                            <thead class="bg-gray-100">
+                            <thead class="bg-[var(--dark-yellow)] text-[var(--text-black)]">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
@@ -115,7 +124,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200">
                                 @foreach($staffMembers as $staff)
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-[var(--bg-light)] transition-colors duration-200">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="h-10 w-10 flex-shrink-0">
@@ -183,6 +192,35 @@
                         </table>
                     </div>
 
+                    <!-- Pagination -->
+                    <div class="mt-6">
+                        @if(!$staff)
+                            <div class="flex justify-center">
+                                {{ $staffMembers->links() }}
+                            </div>
+                            <style>
+                                nav[role="navigation"] {
+                                    @apply mt-4;
+                                }
+                                nav[role="navigation"] > div {
+                                    @apply flex justify-between items-center;
+                                }
+                                nav[role="navigation"] span.relative {
+                                    @apply relative inline-flex items-center px-4 py-2 text-sm font-medium border;
+                                }
+                                nav[role="navigation"] span.relative:not(.text-gray-500) {
+                                    @apply bg-[var(--dark-yellow)] text-[var(--text-black)] border-[var(--dark-yellow)];
+                                }
+                                nav[role="navigation"] span.relative.text-gray-500 {
+                                    @apply bg-white border-gray-300 hover:bg-[var(--dark-yellow)] hover:text-[var(--text-black)];
+                                }
+                                nav[role="navigation"] span[aria-disabled="true"] {
+                                    @apply bg-gray-100 text-gray-400 cursor-not-allowed;
+                                }
+                            </style>
+                        @endif
+                    </div>
+
                     <script>
                         document.getElementById('staffSearch').addEventListener('input', function(e) {
                             const searchTerm = e.target.value.toLowerCase();
@@ -204,7 +242,7 @@
                     <div class="mt-6 flex justify-end space-x-4">
                         <form action="{{ route('supervisor.staff.attendance.export-all') }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+                            <button type="submit" class="px-4 py-2 bg-[var(--dark-yellow)] text-[var(--text-black)] rounded-lg hover:bg-[var(--primary-yellow)] transition-colors flex items-center font-semibold">
                                 <i class="fas fa-download mr-2"></i> Export All Staff Records
                             </button>
                         </form>
