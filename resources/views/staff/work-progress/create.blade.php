@@ -8,27 +8,36 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #1a237e;
-            --secondary-color: #34495e;
-            --accent-color: #3498db;
-            --light-bg: #f8f9fa;
-            --border-color: #e9ecef;
+            --primary-color: rgb(250, 233, 135);
+            --secondary-color: #000000;
+            --text-light: #ffffff;
+            --text-dark: #000000;
         }
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--light-bg);
+            background-color: var(--primary-color);
+            min-height: 100vh;
+            position: relative;
         }
         .sidebar {
             position: fixed;
             top: 0;
             bottom: 0;
-            left: 0;
-            z-index: 100;
+            left: -250px;
+            z-index: 1000;
             padding: 48px 0 0;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            background-color: var(--primary-color);
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+            background-color: var(--secondary-color);
             width: 250px;
-            transition: all 0.3s ease;
+            transition: left 0.3s ease-in-out;
+        }
+        .sidebar.show {
+            left: 0;
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                left: 0;
+            }
         }
         .sidebar-sticky {
             position: relative;
@@ -40,7 +49,7 @@
         }
         .sidebar .nav-link {
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--primary-color);
             padding: 0.875rem 1.5rem;
             display: flex;
             align-items: center;
@@ -56,24 +65,38 @@
             background-color: var(--accent-color);
         }
         .main-content {
-            margin-left: 250px;
+            margin-left: 0;
             padding: 2rem;
             min-height: 100vh;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 250px;
+            }
         }
         .navbar {
             position: fixed;
             top: 0;
             right: 0;
-            left: 250px;
+            left: 0;
             z-index: 99;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             background-color: #fff;
-            padding: 0.75rem 2rem;
+            padding: 0.75rem 1rem;
+        }
+        @media (min-width: 768px) {
+            .navbar {
+                left: 250px;
+                padding: 0.75rem 2rem;
+            }
         }
         .card {
-            border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 2px solid var(--secondary-color);
+            background-color: var(--text-light);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
             border-radius: 0.5rem;
+            overflow: hidden;
         }
         .card-body {
             padding: 2rem;
@@ -91,14 +114,18 @@
             box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
         }
         .btn-primary {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
+            background-color: var(--primary-color);
+            border-color: var(--secondary-color);
             padding: 0.625rem 1.25rem;
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--secondary-color);
         }
         .btn-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
         .btn-secondary {
             background-color: #95a5a6;
@@ -114,6 +141,9 @@
 </head>
 <body>
     <input type="hidden" name="_token" value="{{ csrf_token() }}">
+    <button id="sidebarToggle" class="btn btn-link d-md-none position-fixed" style="top: 0.5rem; left: 0.5rem; z-index: 1001;">
+        <i class="fas fa-bars text-dark"></i>
+    </button>
     
 
     <nav class="sidebar">
@@ -264,6 +294,24 @@
 </html>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar toggle functionality
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('show');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        if (window.innerWidth < 768 && 
+            !sidebar.contains(event.target) && 
+            !sidebarToggle.contains(event.target) && 
+            sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+        }
+    });
     const form = document.querySelector('form');
     const progressBar = document.querySelector('#upload-progress');
     const progressBarInner = progressBar.querySelector('.progress-bar');

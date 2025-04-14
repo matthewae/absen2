@@ -8,22 +8,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
+        :root {
+            --primary-color: rgb(250, 233, 135);
+            --secondary-color: #000000;
+            --text-light: #ffffff;
+            --text-dark: #000000;
         }
-
+        body {
+            background-color: var(--primary-color);
+            min-height: 100vh;
+            position: relative;
+        }
         .sidebar {
             position: fixed;
             top: 0;
             bottom: 0;
-            left: 0;
-            z-index: 100;
+            left: -250px;
+            z-index: 1000;
             padding: 48px 0 0;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            background-color: #1a237e;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+            background-color: var(--secondary-color);
             width: 250px;
+            transition: left 0.3s ease-in-out;
         }
-
+        .sidebar.show {
+            left: 0;
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                left: 0;
+            }
+        }
         .sidebar-sticky {
             position: relative;
             top: 0;
@@ -32,76 +47,76 @@
             overflow-x: hidden;
             overflow-y: auto;
         }
-
         .sidebar .nav-link {
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--primary-color);
             padding: 0.875rem 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-
         .sidebar .nav-link:hover {
-            color: #fff;
+            color: var(--text-light);
             background-color: rgba(255, 255, 255, 0.1);
         }
-
         .sidebar .nav-link.active {
-            color: #fff;
+            color: var(--text-light);
             background-color: rgba(255, 255, 255, 0.1);
         }
-
         .main-content {
-            margin-left: 250px;
+            margin-left: 0;
+            transition: margin-left 0.3s ease-in-out;
+            padding: 1rem;
         }
-
-        .page-header {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 250px;
+                padding: 2rem;
+            }
         }
-
-        .card {
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 767px) {
+            .table th, .table td {
+                min-width: 120px;
+            }
+            .table td:last-child {
+                min-width: 100px;
+            }
+        }
+        .menu-toggle {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
             border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            border-radius: 0.5rem;
-        }
-
-        .table th {
-            font-weight: 600;
-            color: #495057;
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .badge {
-            padding: 0.5em 1em;
-            font-weight: 500;
-        }
-
-        .btn-action {
-            padding: 0.375rem 1rem;
+            padding: 0.5rem;
             border-radius: 0.375rem;
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
-
-        .btn-action:hover {
-            transform: translateY(-1px);
-        }
-
-        .alert {
-            border-radius: 0.5rem;
+        @media (min-width: 768px) {
+            .menu-toggle {
+                display: none;
+            }
         }
     </style>
 </head>
 
 <body>
-    <nav class="sidebar">
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    <nav class="sidebar" id="sidebar">
         <div class="sidebar-sticky">
             <div class="px-6 mb-8">
-                <h1 class="text-2xl font-bold text-white">Staff Dashboard</h1>
+                <h1 class="text-2xl font-bold" style="color: var(--primary-color)">Staff Dashboard</h1>
             </div>
             <nav class="space-y-2">
                 <a href="{{ route('staff.dashboard') }}" class="nav-link {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
@@ -125,12 +140,12 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 ml-64">
+    <div class="main-content">
         <!-- Top Bar -->
-        <div class="bg-white shadow-sm sticky top-0 z-10 backdrop-blur-sm bg-white/90">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="bg-white shadow-sm sticky top-0 z-10 backdrop-blur-sm bg-white/90 mb-6 rounded-lg page-header">
+            <div class="px-4 py-4">
                 <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-800">Work Progress Details</h2>
+                    <h2 class="text-xl font-semibold" style="color: var(--secondary-color)">Work Progress Details</h2>
                     <div class="flex items-center space-x-4">
                         <span class="text-sm text-gray-500">{{ now()->format('l, F j, Y') }}</span>
                     </div>
@@ -140,7 +155,7 @@
 
         <!-- Page Content -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="bg-white rounded-lg shadow p-6">
+            <div class="bg-white rounded-lg shadow p-6 card">
                 <div class="mb-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-gray-900">{{ $workProgress->project_topic }}</h3>
@@ -204,6 +219,12 @@
         </div>
     </div>
     </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+    </script>
 </body>
 
 </html>

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PT. Mandajaya - Staff Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,8 +16,8 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(45deg, #1a237e, #0d47a1);
-            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(45deg, #ffd700, #000000);
+            font-family: 'Poppins', sans-serif;
             overflow: hidden;
         }
 
@@ -33,7 +34,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, #1a237e, #0d47a1);
+            background: linear-gradient(45deg, #ffd700, #000000);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -75,13 +76,13 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 550px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .login-header {
@@ -91,23 +92,27 @@
         }
 
         .login-header h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
             margin-bottom: 0.5rem;
         }
 
         .form-control {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid #ffd700;
             border-radius: 8px;
-            padding: 12px;
-            color: white;
+            padding: 15px;
+            color: #ffd700;
+            font-size: 16px;
             transition: all 0.3s ease;
         }
 
         .form-control:focus {
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: none;
-            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 0 2px #ffd700;
+            color: #ffd700;
         }
 
         .form-label {
@@ -115,17 +120,19 @@
         }
 
         .btn-login {
-            background: #3498db;
+            background: #ffd700;
             border: none;
-            padding: 12px;
+            padding: 15px;
             width: 100%;
             border-radius: 8px;
             font-weight: 600;
+            color: #000000;
+            font-size: 16px;
             transition: all 0.3s ease;
         }
 
         .btn-login:hover {
-            background: #2980b9;
+            background: #ffed4a;
             transform: translateY(-2px);
         }
 
@@ -134,13 +141,16 @@
         }
 
         .forgot-password {
-            color: #3498db;
+            color: #ffd700;
             text-decoration: none;
             transition: all 0.3s ease;
+            font-size: 14px;
+            padding: 10px;
+            display: inline-block;
         }
 
         .forgot-password:hover {
-            color: #2980b9;
+            color: #ffed4a;
         }
 
         @keyframes fadeIn {
@@ -190,7 +200,7 @@
     <!-- Splash Screen -->
     <div class="splash-screen">
         <div class="splash-content">
-            <div class="splash-logo">PT. Mandajaya Rekayasa Konstruksi</div>
+            <div class="splash-logo" style="font-family: 'Poppins', sans-serif;">PT. Mandajaya Rekayasa Konstruksi</div>
             <div class="splash-spinner"></div>
         </div>
     </div>

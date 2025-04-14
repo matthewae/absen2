@@ -7,19 +7,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color:rgb(250, 233, 135);
+            --secondary-color: #000000;
+            --text-light: #ffffff;
+            --text-dark: #000000;
+        }
         body {
-            background-color: #f8f9fa;
+            background-color: var(--primary-color);
+            min-height: 100vh;
+            position: relative;
         }
         .sidebar {
             position: fixed;
             top: 0;
             bottom: 0;
-            left: 0;
-            z-index: 100;
+            left: -250px;
+            z-index: 1000;
             padding: 48px 0 0;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            background-color: #1a237e;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+            background-color: var(--secondary-color);
             width: 250px;
+            transition: left 0.3s ease-in-out;
+        }
+        .sidebar.show {
+            left: 0;
         }
         .sidebar-sticky {
             position: relative;
@@ -31,51 +43,142 @@
         }
         .sidebar .nav-link {
             font-weight: 500;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--primary-color);
             padding: 0.875rem 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: all 0.2s ease;
         }
         .sidebar .nav-link:hover {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            background-color: var(--primary-color);
         }
         .sidebar .nav-link.active {
-            color: #fff;
-            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-dark);
+            background-color: var(--primary-color);
         }
         .main-content {
-            margin-left: 250px;
+            margin-left: 0;
+            transition: margin-left 0.3s ease-in-out;
+            padding: 1rem;
+        }
+        @media (min-width: 992px) {
+            .sidebar {
+                left: 0;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+        .toggle-sidebar {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background-color: var(--primary-color);
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 992px) {
+            .toggle-sidebar {
+                display: none;
+            }
         }
         .page-header {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             padding: 1.5rem 0;
             margin-bottom: 2rem;
         }
         .card {
-            border: none;
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+            border: 2px solid var(--secondary-color);
+            background-color: var(--text-light);
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.2);
             border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        .table {
+            margin-bottom: 0;
         }
         .table th {
             font-weight: 600;
-            color: #495057;
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
+            color: var(--text-dark);
+            background-color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            white-space: nowrap;
+            padding: 1rem;
+        }
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        .table tr:hover {
+            background-color: rgba(255, 215, 0, 0.05);
         }
         .badge {
-            padding: 0.5em 1em;
+            padding: 0.5em 1.2em;
             font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: capitalize;
+        }
+        .badge.bg-success {
+            background-color: #28a745 !important;
+        }
+        .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #000;
+        }
+        .badge.bg-info {
+            background-color: #17a2b8 !important;
+        }
+        .file-attachment {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background-color: rgba(255, 215, 0, 0.1);
+            border-radius: 0.5rem;
+            color: var(--text-dark);
+        }
+        .file-attachment i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
         }
         .btn-action {
-            padding: 0.375rem 1rem;
-            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
             transition: all 0.2s;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+            font-weight: 600;
         }
         .btn-action:hover {
             transform: translateY(-1px);
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        @media (max-width: 768px) {
+            .table {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .table td {
+                min-width: 120px;
+            }
+            .table td:first-child {
+                min-width: 150px;
+            }
         }
         .alert {
             border-radius: 0.5rem;
@@ -83,6 +186,9 @@
     </style>
 </head>
 <body>
+    <button class="toggle-sidebar" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
     <nav class="sidebar">
         <div class="sidebar-sticky">
             <div class="px-3 mb-4">
@@ -159,8 +265,8 @@
                                             </span>
                                         </td>
                                         <td>
-                                            <span class="d-inline-flex align-items-center">
-                                                <i class="fas fa-paperclip me-2 text-muted"></i>
+                                            <span class="file-attachment">
+                                                <i class="fas fa-paperclip"></i>
                                                 {{ $progress->files->count() }}
                                             </span>
                                         </td>
@@ -188,5 +294,21 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.querySelector('.toggle-sidebar');
+            if (window.innerWidth < 992 && 
+                !sidebar.contains(event.target) && 
+                !toggleBtn.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>
