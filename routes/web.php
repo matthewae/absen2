@@ -23,6 +23,10 @@ Route::prefix('staff')->name('staff.')->group(function () {
     Route::post('/login', [StaffLoginController::class, 'login']);
     Route::post('/logout', [StaffLoginController::class, 'logout'])->name('logout');
 
+    // Password Reset
+    Route::get('/password/reset', [\App\Http\Controllers\Auth\StaffForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/password/reset', [\App\Http\Controllers\Auth\StaffForgotPasswordController::class, 'reset'])->name('password.request');
+
     Route::middleware('auth:staff')->group(function () {
         Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
 

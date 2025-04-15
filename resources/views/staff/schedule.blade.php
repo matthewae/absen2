@@ -26,7 +26,7 @@
 
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
-                <h1 class="text-2xl font-bold">PT. Mandajaya Rekayasa Konstruksiaa</h1>
+                <img src="{{ asset('images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">
             </div>
 
             <!-- Navigation Links -->
@@ -309,6 +309,13 @@
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 events: {!! json_encode($calendarEvents) !!},
+                dayCellDidMount: function(info) {
+                    // Check if the day is Sunday (0)
+                    if (info.date.getDay() === 0) {
+                        info.el.style.backgroundColor = '#FEE2E2'; // Light red background
+                        info.el.style.color = '#DC2626'; // Red text
+                    }
+                },
                 eventDidMount: function(info) {
                     // Set background color based on priority
                     switch(info.event.extendedProps.priority) {

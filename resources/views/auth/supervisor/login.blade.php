@@ -51,9 +51,9 @@
     <div class="w-full max-w-md">
         <!-- Logo and Branding -->
         <div class="text-center mb-8">
-            <div class="inline-block p-4 rounded-full bg-white/10 mb-4">
+            <!-- <div class="inline-block p-4 rounded-full bg-white/10 mb-4">
                 <i class="fas fa-building text-4xl text-white"></i>
-            </div>
+            </div> -->
             <h1 class="text-4xl font-bold text-white mb-3 tracking-tight">PT. Mandajaya Rekayasa Konstruksi</h1>
             <p class="text-indigo-200 text-lg font-medium tracking-wide uppercase">Supervisor Portal</p>
         </div>
@@ -96,7 +96,7 @@
                         <span class="text-gray-600 group-hover:text-gray-800">Remember me</span>
                     </label>
                     @if (Route::has('supervisor.password.request'))
-                        <a href="{{ route('supervisor.password.request') }}" class="text-indigo-600 hover:text-indigo-800 hover:underline">Forgot password?</a>
+                        <!-- <a href="{{ route('supervisor.password.request') }}" class="text-indigo-600 hover:text-indigo-800 hover:underline">Forgot password?</a> -->
                     @endif
                 </div>
 

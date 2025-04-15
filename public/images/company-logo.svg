@@ -1,0 +1,10 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Rectangle -->
+  <rect width="200" height="60" fill="transparent"/>
+  
+  <!-- MRK Letters (stylized) -->
+  <path d="M10 45 L10 15 L25 15 L40 30 L55 15 L70 15 L70 45 M80 45 L80 15 L95 15 L110 30 L110 45 M120 45 L120 15 L150 15 L150 25 L130 25 L130 45" fill="none" stroke="#FCD34D" stroke-width="3"/>
+  
+  <!-- Konstruksi text -->
+  <text x="100" y="55" font-family="Arial" font-size="12" fill="#FCD34D" text-anchor="middle">REKAYASA KONSTRUKSI</text>
+</svg>

@@ -12,7 +12,7 @@
         <div class="bg-black text-yellow-300 w-64 py-6 flex flex-col">
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
-                <h1 class="text-2xl font-bold">PT. Mandajaya Rekayasa Konstruksi</h1>
+            <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">
             </div>
 
             <!-- Navigation Links -->
@@ -140,10 +140,10 @@
                                             {{ $staff->name }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $staff->check_in_time ?? '-' }}
+                                            {{ $staff->latestAttendance?->check_in?->format('H:i') ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $staff->attendances->first()?->check_out?->format('H:i') ?? '-' }}
+                                            {{ $staff->latestAttendance?->check_out?->format('H:i') ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($staff->attendance_status === 'present')

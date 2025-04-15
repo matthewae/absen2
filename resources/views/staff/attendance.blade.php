@@ -13,7 +13,7 @@
         <div class="bg-black text-yellow-300 w-full md:w-64 py-4 md:py-6 flex flex-col">
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
-                <h1 class="text-2xl font-bold">PT. Mandajaya Rekayasa Konstruksi</h1>
+                <img src="{{ asset('images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">
             </div>
 
             <!-- Navigation Links -->

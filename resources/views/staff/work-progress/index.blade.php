@@ -191,8 +191,8 @@
     </button>
     <nav class="sidebar">
         <div class="sidebar-sticky">
-            <div class="px-3 mb-4">
-                <h5 class="text-white fw-bold">Staff Dashboard</h5>
+            <div class="px-3 mb-4 text-center">
+                <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="Company Logo" class="img-fluid" style="max-width: 100px; height: auto;">
             </div>
             <ul class="nav flex-column">
                 <li class="nav-item">

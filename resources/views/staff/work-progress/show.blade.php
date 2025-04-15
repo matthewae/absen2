@@ -116,7 +116,7 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-sticky">
             <div class="px-6 mb-8">
-                <h1 class="text-2xl font-bold" style="color: var(--primary-color)">Staff Dashboard</h1>
+                <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="Company Logo" class="img-fluid" style="max-width: 100px; height: auto;">
             </div>
             <nav class="space-y-2">
                 <a href="{{ route('staff.dashboard') }}" class="nav-link {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">

@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PT. Mandajaya - Staff Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -17,8 +18,13 @@
         body {
             min-height: 100vh;
             background: linear-gradient(45deg, #ffd700, #000000);
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Times New Roman', serif;
             overflow: hidden;
+            letter-spacing: -0.011em;
+        }
+
+        body * {
+            font-family: inherit;
         }
 
         #particles-js {
@@ -48,10 +54,13 @@
         }
 
         .splash-logo {
-            font-size: 2.5rem;
-            font-weight: bold;
+            font-size: 2.25rem;
+            font-weight: 700;
             margin-bottom: 1rem;
             animation: scaleIn 1s ease-in-out;
+            font-family: 'Times New Roman', serif;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
         }
 
         .splash-spinner {
@@ -81,7 +90,7 @@
             border-radius: 15px;
             padding: 1.5rem;
             width: 90%;
-            max-width: 550px;
+            max-width: 600px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
@@ -91,12 +100,13 @@
             margin-bottom: 2rem;
         }
 
-        .login-header h1 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
+        .login-header h1, .splash-logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            line-height: 1.25;
+            margin-bottom: 0.75rem;
+            font-family: 'Times New Roman', serif;
         }
 
         .form-control {
@@ -105,8 +115,10 @@
             border-radius: 8px;
             padding: 15px;
             color: #ffd700;
-            font-size: 16px;
+            font-size: 1rem;
+            font-weight: 500;
             transition: all 0.3s ease;
+            letter-spacing: -0.01em;
         }
 
         .form-control:focus {
@@ -117,6 +129,9 @@
 
         .form-label {
             color: white;
+            font-weight: 500;
+            font-size: 0.9375rem;
+            letter-spacing: -0.01em;
         }
 
         .btn-login {
@@ -200,7 +215,7 @@
     <!-- Splash Screen -->
     <div class="splash-screen">
         <div class="splash-content">
-            <div class="splash-logo" style="font-family: 'Poppins', sans-serif;">PT. Mandajaya Rekayasa Konstruksi</div>
+            <div class="splash-logo">PT. MANDAJAYA REKAYASA KONSTRUKSI</div>
             <div class="splash-spinner"></div>
         </div>
     </div>
@@ -212,7 +227,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h1>PT. Mandajaya Rekayasa Konstruksi</h1>
+                <h1 style="font-family: 'Dancing Script', cursive; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">PT. MANDAJAYA REKAYASA KONSTRUKSI</h1>
             </div>
 
             <form method="POST" action="{{ route('staff.login') }}">
@@ -231,8 +246,13 @@
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
-                        name="password" required autocomplete="current-password">
+                    <div class="input-group">
+                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
+                            name="password" required autocomplete="current-password">
+                        <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     @error('password')
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $message }}</strong>
@@ -262,18 +282,32 @@
                     </a>
                 </div>
 
-                @if (Route::has('password.request'))
                 <div class="text-center">
-                    <a class="forgot-password" href="{{ route('password.request') }}">
+                    <!-- <a class="forgot-password" href="{{ route('staff.password.request') }}">
                         Forgot Your Password?
-                    </a>
+                    </a> -->
                 </div>
-                @endif
             </form>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
     <script>
         particlesJS('particles-js', {
             particles: {
