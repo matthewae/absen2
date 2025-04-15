@@ -4,224 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assignment Details - Supervisor Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            transition: all 0.3s ease;
-        }
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 250px;
-            background-color: #1a237e;
-            padding: 1rem;
-            overflow-y: auto;
-            z-index: 100;
-            transition: transform 0.3s ease;
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-250px);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0 !important;
-                padding: 1rem !important;
-            }
-            .detail-container {
-                padding: 15px !important;
-            }
-            .status-badge, .priority-badge {
-                display: inline-block;
-                margin-top: 10px;
-                width: 100%;
-                text-align: center;
-            }
-            .priority-badge {
-                margin-left: 0 !important;
-            }
-        }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            color: #fff;
-            border-radius: 0.5rem;
-            transition: all 0.3s;
-            margin-bottom: 0.5rem;
-            text-decoration: none;
-        }
-        .nav-link:hover, .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: #fff;
-        }
-        .nav-link i {
-            margin-right: 0.75rem;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 2rem;
-        }
-        .header {
-            background-color: #fff;
-            padding: 15px 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-        .detail-container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 25px;
-            margin: 20px 0;
-        }
-        .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-weight: 500;
-        }
-        .priority-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-weight: 500;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-light">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h4 class="text-white mb-4">PT. Mandajaya</h4>
-        <nav>
-            <a class="nav-link" href="{{ route('supervisor.dashboard') }}">
-                <i class="fas fa-home"></i> Dashboard
-            </a>
-            <a class="nav-link active" href="{{ route('supervisor.assignments.index') }}">
-                <i class="fas fa-tasks"></i> Assignments
-            </a>
-            <a class="nav-link" href="{{ route('supervisor.staff-list') }}">
-                <i class="fas fa-users"></i> Staff
-            </a>
-        </nav>
-        <div class="mt-auto pt-3 border-top">
-            <div class="text-white mb-2">{{ Auth::user() ? Auth::user()->name : 'Unknown User' }}</div>
-            <form action="{{ route('supervisor.logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-outline-light btn-sm w-100">Logout</button>
-            </form>
-        </div>
-    </div>
+<body class="bg-yellow-50">
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden fixed top-4 right-4 z-20 bg-yellow-600 text-black p-2 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header -->
-        <div class="header d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Assignment Details</h4>
-            <div class="d-flex align-items-center">
-                <span class="me-3">{{ Auth::user() ? Auth::user()->name : 'Unknown User' }}</span>
+        <!-- Sidebar -->
+        <div id="sidebar" class="bg-black text-yellow-300 w-full md:w-64 py-6 flex flex-col fixed md:relative z-10 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+            <!-- Company Logo/Name -->
+            <div class="px-6 mb-8">
+                <img src="{{ asset('images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1">
+                <a href="{{ route('supervisor.dashboard') }}" class="flex items-center px-6 py-3 hover:bg-yellow-500 hover:text-black transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="{{ route('supervisor.assignments.index') }}" class="flex items-center px-6 py-3 bg-yellow-600 text-black font-semibold">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Assignments
+                </a>
+                <a href="{{ route('supervisor.staff-list') }}" class="flex items-center px-6 py-3 hover:bg-yellow-500 hover:text-black transition-colors duration-200">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    Staff
+                </a>
+            </nav>
+
+            <!-- Logout Button -->
+            <div class="px-6 py-4 border-t border-yellow-600">
+                <form action="{{ route('supervisor.logout') }}" method="POST" class="w-full">
+                    @csrf
+                    <button type="submit" class="flex items-center w-full px-4 py-2 text-sm hover:bg-yellow-500 hover:text-black rounded-lg transition-colors duration-200">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                        Logout
+                    </button>
+                </form>
             </div>
         </div>
 
-        <!-- Assignment Details Container -->
-        <div class="detail-container">
-            <div class="row mb-4">
-                <div class="col-md-8">
-                    <h2 class="mb-3">{{ $assignment->title }}</h2>
-                    <p class="text-muted">Assigned to: {{ $assignment->staff->name }}</p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <span class="status-badge {{ $assignment->status == 'completed' ? 'bg-success' : ($assignment->status == 'in_progress' ? 'bg-warning' : 'bg-secondary') }} text-white">
-                        {{ ucfirst(str_replace('_', ' ', $assignment->status)) }}
-                    </span>
-                    <span class="priority-badge ms-2 {{ $assignment->priority == 'high' ? 'bg-danger' : ($assignment->priority == 'medium' ? 'bg-warning' : 'bg-info') }} text-white">
-                        {{ ucfirst($assignment->priority) }} Priority
-                    </span>
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <h5>Description</h5>
-                    <p>{{ $assignment->description }}</p>
-                </div>
-                <div class="col-md-6">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5>Start Date & Time</h5>
-                            <p>{{ $assignment->start_datetime->format('M d, Y h:i A') }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h5>End Date & Time</h5>
-                            <p>{{ $assignment->end_datetime->format('M d, Y h:i A') }}</p>
+        <!-- Main Content -->
+        <div class="flex-1 md:ml-0 mt-16 md:mt-0">
+            <!-- Header -->
+            <div class="bg-yellow-100 shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-semibold text-gray-800">Assignment Details</h2>
+                        <div class="flex items-center space-x-4">
+                            <span class="text-sm text-gray-500">{{ now()->format('l, F j, Y') }}</span>
+                            <span class="text-sm font-medium text-gray-900">{{ Auth::user() ? Auth::user()->name : 'Unknown User' }}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            @if($assignment->attachment)
-            <div class="mb-4">
-                <h5>Attachment</h5>
-                <a href="{{ Storage::url($assignment->attachment) }}" class="btn btn-outline-primary" target="_blank">
-                    <i class="fas fa-download me-2"></i>Download Attachment
-                </a>
-            </div>
-            @endif
+            <!-- Assignment Details Container -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="mb-6">
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ $assignment->title }}</h1>
+                        <p class="text-gray-600">Assigned to: {{ $assignment->staff->name }}</p>
+                        <div class="mt-4 flex gap-2">
+                            <span class="px-3 py-1 rounded-full text-sm font-medium {{ $assignment->status == 'completed' ? 'bg-green-100 text-green-800' : ($assignment->status == 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800') }}">
+                                {{ ucfirst(str_replace('_', ' ', $assignment->status)) }}
+                            </span>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium {{ $assignment->priority == 'high' ? 'bg-red-100 text-red-800' : ($assignment->priority == 'medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800') }}">
+                                {{ ucfirst($assignment->priority) }} Priority
+                            </span>
+                        </div>
+                    </div>
 
-            <div class="d-flex justify-content-between">
-                <a href="{{ route('supervisor.assignments.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to List
-                </a>
-                <div>
-                    <!-- <a href="{{ route('supervisor.assignments.edit', $assignment->id) }}" class="btn btn-primary me-2">
-                        <i class="fas fa-edit me-2"></i>Edit Assignment
-                    </a> -->
-                    <form action="{{ route('supervisor.assignments.destroy', $assignment->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this assignment?')">
-                            <i class="fas fa-trash me-2"></i>Delete
-                        </button>
-                    </form>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900 mb-2">Description</h2>
+                            <p class="text-gray-600">{{ $assignment->description }}</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900 mb-2">Start Date & Time</h2>
+                                <p class="text-gray-600">{{ $assignment->start_datetime->format('M d, Y h:i A') }}</p>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900 mb-2">End Date & Time</h2>
+                                <p class="text-gray-600">{{ $assignment->end_datetime->format('M d, Y h:i A') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if($assignment->attachment)
+                    <div class="mb-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-2">Attachment</h2>
+                        <a href="{{ Storage::url($assignment->attachment) }}" class="inline-flex items-center px-4 py-2 border border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white rounded-lg transition-colors duration-200" target="_blank">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Download Attachment
+                        </a>
+                    </div>
+                    @endif
+
+                    <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+                        <a href="{{ route('supervisor.assignments.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors duration-200">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Back to List
+                        </a>
+                        <form action="{{ route('supervisor.assignments.destroy', $assignment->id) }}" method="POST" class="inline-block">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors duration-200" onclick="return confirm('Are you sure you want to delete this assignment?')">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Delete
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Toggle sidebar on mobile
         document.addEventListener('DOMContentLoaded', function() {
-            const toggleBtn = document.createElement('button');
-            toggleBtn.className = 'btn btn-primary d-md-none position-fixed';
-            toggleBtn.style.cssText = 'top: 10px; left: 10px; z-index: 1000;';
-            toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
-            document.body.appendChild(toggleBtn);
-        
-            const sidebar = document.querySelector('.sidebar');
-            const mainContent = document.querySelector('.main-content');
-        
-            toggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('show');
-            });
-        
-            // Close sidebar when clicking outside
-            mainContent.addEventListener('click', function() {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('show');
-                }
-            });
-        
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                if (window.innerWidth > 768) {
-                    sidebar.classList.remove('show');
-                }
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
             });
         });
     </script>

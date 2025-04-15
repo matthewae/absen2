@@ -162,7 +162,7 @@
                         <span class="px-3 py-1 rounded-full text-sm <?php echo e(($workProgress->status === 'completed') ? 'bg-green-100 text-green-800' : 
                                 (($workProgress->status === 'pending') ? 'bg-gray-100 text-black-800' : 
                                 ($workProgress->status === 'revision' ? 'bg-orange-100 text-orange-800' : 
-                                ($workProgress->status === 'in_progress' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')))); ?>">
+                                ($workProgress->status === 'pnprogress' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')))); ?>">
                             <?php echo e(ucfirst(str_replace('_', ' ', $workProgress->status))); ?>
                         </span>
                     </div>

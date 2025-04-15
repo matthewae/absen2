@@ -241,7 +241,7 @@
                         <div class="form-group">
                             <label for="work_description" class="form-label">Work Description <span class="text-danger">*</span></label>
                             <textarea name="work_description" id="work_description" rows="5" class="form-control @error('work_description') is-invalid @enderror" required>{{ old('work_description') }}</textarea>
-                            <small class="text-muted">Minimum 100 characters required</small>
+                            <small class="text-muted">Minimum 50 characters required</small>
                             @error('work_description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -252,7 +252,7 @@
                             <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
                                 <option value="">Select Status</option>
                                 <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="In Progress" {{ old('status') == 'OnProgress' ? 'selected' : '' }}>On Progress</option>
+                                <option value="OnProgress" {{ old('status') == 'OnProgress' ? 'selected' : '' }}>On Progress</option>
                                 <option value="Revision" {{ old('status') == 'Revision' ? 'selected' : '' }}>Revision</option>
                                 <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
                             </select>

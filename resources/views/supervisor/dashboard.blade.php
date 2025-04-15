@@ -102,7 +102,7 @@
                 <!-- Supervisor Info -->
                 <div class="bg-gradient-to-r from-yellow-400 to-black shadow-lg rounded-xl p-6 mb-8">
                     <h2 class="text-3xl font-bold text-white mb-2">Welcome, {{ $supervisor->name }}</h2>
-                    <p class="text-indigo-100 text-sm">{{ now()->format('l, F j, Y') }}</p>
+                    <p class="text-black-100 text-sm">{{ now()->format('l, F j, Y') }}</p>
                 </div>
 
                 <!-- Quick Stats -->
