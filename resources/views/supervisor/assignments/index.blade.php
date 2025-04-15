@@ -8,9 +8,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-yellow-50">
-    <div class="flex h-screen">
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-button" class="md:hidden fixed top-4 right-4 z-20 bg-yellow-600 text-black p-2 rounded-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+    <div class="min-h-screen flex flex-col md:flex-row">
         <!-- Sidebar -->
-        <div class="bg-black text-yellow-300 w-64 py-6 flex flex-col h-full fixed">
+        <div id="sidebar" class="bg-black text-yellow-300 w-64 py-6 flex flex-col fixed h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
             <div class="px-6 mb-8">
                 <h1 class="text-2xl font-bold">PT. Mandajaya Rekayasa Konstruksi</h1>
             </div>
@@ -75,7 +81,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 ml-64">
+        <div class="flex-1 md:ml-64 w-full">
             <!-- Header -->
             <div class="bg-white shadow-sm">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -95,11 +101,11 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <!-- Filters -->
                 <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-                    <div class="flex items-center space-x-4">
+                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                         <div class="flex-1">
                             <input type="text" placeholder="Search assignments..." class="w-full px-4 py-2 border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
                         </div>
-                        <div class="flex items-center space-x-4">
+                        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                             <select class="px-4 py-2 border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500">
                                 <option value="">All Status</option>
                                 <option value="pending">Pending</option>
@@ -139,8 +145,8 @@
                                         <div class="flex items-center">
                                             <div class="h-8 w-8 rounded-full overflow-hidden bg-gray-100">
                                                 <img src="{{ $assignment->staff->photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($assignment->staff->name).'&background=6366f1&color=fff' }}" 
-                                                     alt="{{ $assignment->staff->name }}" 
-                                                     class="h-full w-full object-cover">
+                                                    alt="{{ $assignment->staff->name }}" 
+                                                    class="h-full w-full object-cover">
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900">{{ $assignment->staff->name }}</div>
@@ -249,6 +255,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.querySelector('input[placeholder="Search assignments..."]');
     const statusSelect = document.querySelector('select:first-of-type');
     const staffSelect = document.querySelector('select:last-of-type');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.querySelector('.flex-1');
 
     function updateTable() {
         const searchQuery = searchInput.value.toLowerCase();
@@ -269,9 +278,49 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Mobile menu toggle
+    function toggleMobileMenu(event) {
+        event.stopPropagation();
+        sidebar.classList.toggle('-translate-x-full');
+        document.body.classList.toggle('overflow-hidden');
+    }
+
+    function closeMobileMenu() {
+        if (window.innerWidth < 768) {
+            sidebar.classList.add('-translate-x-full');
+            document.body.classList.remove('overflow-hidden');
+        }
+    }
+
+    mobileMenuButton.addEventListener('click', toggleMobileMenu);
+    document.addEventListener('click', function(event) {
+        if (!sidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            closeMobileMenu();
+        }
+    });
+
     searchInput.addEventListener('input', updateTable);
     statusSelect.addEventListener('change', updateTable);
     staffSelect.addEventListener('change', updateTable);
+});
+
+            !sidebar.contains(event.target) && 
+            !mobileMenuButton.contains(event.target)) {
+            sidebar.classList.add('-translate-x-full');
+        }
+    }
+
+    mobileMenuButton.addEventListener('click', toggleMobileMenu);
+    document.addEventListener('click', closeMobileMenu);
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+            sidebar.classList.remove('-translate-x-full');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+        }
+    });
 });
 </script>
 </body>

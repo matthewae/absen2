@@ -16,10 +16,10 @@
                         <form action="{{ route('work-progress.index') }}" method="GET" class="d-flex gap-2">
                             <select name="status" class="form-select w-auto">
                                 <option value="">All Status</option>
-                                <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
-                                <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="On Progress" {{ request('status') === 'On Progress' ? 'selected' : '' }}>On Progress</option>
+                                <option value="Revision" {{ request('status') === 'Revision' ? 'selected' : '' }}>Revision</option>
+                                <option value="Completed" {{ request('status') === 'Completed' ? 'selected' : '' }}>Completed</option>
                             </select>
                             <button type="submit" class="btn btn-secondary">Filter</button>
                         </form>

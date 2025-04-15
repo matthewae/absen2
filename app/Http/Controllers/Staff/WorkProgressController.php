@@ -43,10 +43,10 @@ class WorkProgressController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian'])],
+            'project_topic' => ['required', 'string', Rule::in(['Perencanaan', 'Pengawasan', 'Kajian', 'Other'])],
             'company_name' => 'required|string|max:255',
-            'work_description' => 'required|string|min:100',
-            'status' => ['required', 'string', Rule::in(['Pending', 'In Progress', 'Revision', 'Completed'])],
+            'work_description' => 'required|string|min:20',
+            'status' => ['required', 'string', Rule::in(['Pending', 'OnProgress', 'Revision', 'Completed'])],
             'files' => 'required|array|min:1',
             'files.*' => 'required|file|max:153600' // 150MB max per file
         ]);

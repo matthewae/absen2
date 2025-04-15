@@ -138,22 +138,27 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $staff->department }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        @if($staff->attendances->last())
-                                            {{ \Carbon\Carbon::parse($staff->attendances->last()->check_in)->format('H:i:s') }}
+                                        @php
+                                            $todayAttendance = $staff->attendances->where('created_at', '>=', now()->startOfDay())
+                                                                                ->where('created_at', '<=', now()->endOfDay())
+                                                                                ->first();
+                                        @endphp
+                                        @if($todayAttendance)
+                                            {{ \Carbon\Carbon::parse($todayAttendance->check_in)->format('H:i:s') }}
                                         @else
                                             -
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        @if($staff->attendances->last() && $staff->attendances->last()->check_out)
-                                            {{ \Carbon\Carbon::parse($staff->attendances->last()->check_out)->format('H:i:s') }}
+                                        @if($todayAttendance && $todayAttendance->check_out)
+                                            {{ \Carbon\Carbon::parse($todayAttendance->check_out)->format('H:i:s') }}
                                         @else
                                             -
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        @if($staff->attendances->last() && $staff->attendances->last()->check_in && $staff->attendances->last()->check_out)
-                                            {{ \Carbon\Carbon::parse($staff->attendances->last()->check_out)->diffForHumans(\Carbon\Carbon::parse($staff->attendances->last()->check_in), ['parts' => 2]) }}
+                                        @if($todayAttendance && $todayAttendance->check_in && $todayAttendance->check_out)
+                                            {{ \Carbon\Carbon::parse($todayAttendance->check_out)->diffForHumans(\Carbon\Carbon::parse($todayAttendance->check_in), ['parts' => 2]) }}
                                         @else
                                             -
                                         @endif

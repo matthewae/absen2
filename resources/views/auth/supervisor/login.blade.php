@@ -3,166 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supervisor Login | PT. Mandajaya</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <title>PT. Mandajaya - Supervisor Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(45deg, #ffd700, #000000);
+            font-family: 'Times New Roman', serif;
+            overflow: hidden;
+            letter-spacing: -0.011em;
+        }
+
+        body * {
+            font-family: inherit;
+        }
+
         #particles-js {
             position: absolute;
             width: 100%;
             height: 100%;
-            z-index: 0;
-        }
-        .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            position: relative;
             z-index: 1;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 45px rgba(255, 215, 0, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.25);
+        }
+
+        .login-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 12px;
+            padding: 15px;
+            color: #ffd700;
+            font-size: 1.1rem;
+            font-weight: 500;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.5px;
         }
-        .form-container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+        .form-control:focus {
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 0 2px #ffd700;
+            color: #ffd700;
         }
-        .floating-input:focus-within label,
-        .floating-input input:not(:placeholder-shown) + label {
-            @apply bg-white text-indigo-600 font-medium;
-            transform: translateY(-1.5rem) scale(0.75);
-            background-color: white;
-            padding: 0 0.25rem;
+
+        .form-label {
+            color: white;
+            font-weight: 500;
+            font-size: 0.9375rem;
         }
-        .floating-label {
-            transform-origin: 0 0;
-            transition: transform 0.2s ease-in-out;
+
+        .btn-login {
+            background: linear-gradient(45deg, #ffd700, #ffed4a);
+            border: none;
+            padding: 16px;
+            width: 100%;
+            border-radius: 12px;
+            font-weight: 700;
+            color: #000000;
+            font-size: 18px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
         }
+
+        .btn-login:hover {
+            background: #ffed4a;
+            transform: translateY(-2px);
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-        .fade-in {
-            animation: fadeIn 0.6s ease-out forwards;
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 min-h-screen flex items-center justify-center p-4 relative overflow-y-auto">
-    <div id="particles-js"></div>
-    <div class="w-full max-w-md">
-        <!-- Logo and Branding -->
-        <div class="text-center mb-8">
-            <!-- <div class="inline-block p-4 rounded-full bg-white/10 mb-4">
-                <i class="fas fa-building text-4xl text-white"></i>
-            </div> -->
-            <h1 class="text-4xl font-bold text-white mb-3 tracking-tight">PT. Mandajaya Rekayasa Konstruksi</h1>
-            <p class="text-indigo-200 text-lg font-medium tracking-wide uppercase">Supervisor Portal</p>
-        </div>
+<body>
 
-        <!-- Login Form -->
-        <div class="form-container rounded-2xl p-8 shadow-xl">
-            <div class="mb-6 text-center">
-                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-user-shield text-2xl text-indigo-600"></i>
-                </div>
-                <h2 class="text-2xl font-semibold text-gray-800">Welcome Back</h2>
-                <p class="text-gray-500 text-sm mt-1">Please sign in to your supervisor account</p>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Login Form -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1 style="font-family: 'Times New Roman', serif; font-size: 2rem; font-weight: 700; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6); letter-spacing: 0.5px;">PT. MANDAJAYA REKAYASA KONSTRUKSI</h1>
+                <p class="text-warning mt-2">Supervisor Portal</p>
             </div>
 
-            <form method="POST" action="{{ route('supervisor.login') }}" class="space-y-6">
+            <form method="POST" action="{{ route('supervisor.login') }}">
                 @csrf
-                <div class="floating-input relative">
-                    <input id="supervisor_id" type="text" name="supervisor_id" class="peer w-full px-4 py-3 rounded-lg border @error('supervisor_id') border-red-500 @else border-gray-300 @enderror bg-white/50 backdrop-blur-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder-transparent" placeholder=" " value="{{ old('supervisor_id') }}" required autofocus>
-                    <label for="supervisor_id" class="floating-label absolute left-4 top-3 text-gray-500 pointer-events-none">
-                        <i class="fas fa-id-card mr-2"></i>Supervisor ID
-                    </label>
+                <div class="mb-3">
+                    <label for="supervisor_id" class="form-label">Supervisor ID</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-2 border-warning text-warning"><i class="fas fa-id-card"></i></span>
+                        <input id="supervisor_id" type="text" class="form-control @error('supervisor_id') is-invalid @enderror" name="supervisor_id" value="{{ old('supervisor_id') }}" required autofocus>
+                    </div>
                     @error('supervisor_id')
-                        <p class="text-red-500 text-sm mt-1"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
+                        <div class="invalid-feedback d-block">
+                            <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                        </div>
                     @enderror
                 </div>
 
-                <div class="floating-input relative">
-                    <input id="password" type="password" name="password" class="peer w-full px-4 py-3 rounded-lg border @error('password') border-red-500 @else border-gray-300 @enderror bg-white/50 backdrop-blur-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder-transparent" placeholder=" " required>
-                    <label for="password" class="floating-label absolute left-4 top-3 text-gray-500 pointer-events-none">
-                        <i class="fas fa-lock mr-2"></i>Password
-                    </label>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-2 border-warning text-warning"><i class="fas fa-lock"></i></span>
+                        <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required>
+                        <button type="button" class="btn btn-outline-warning" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     @error('password')
-                        <p class="text-red-500 text-sm mt-1"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
+                        <div class="invalid-feedback d-block">
+                            <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                        </div>
                     @enderror
                 </div>
 
-                <div class="flex items-center justify-between text-sm">
-                    <label class="flex items-center space-x-2 cursor-pointer group">
-                        <input type="checkbox" name="remember" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                        <span class="text-gray-600 group-hover:text-gray-800">Remember me</span>
-                    </label>
-                    @if (Route::has('supervisor.password.request'))
-                        <!-- <a href="{{ route('supervisor.password.request') }}" class="text-indigo-600 hover:text-indigo-800 hover:underline">Forgot password?</a> -->
-                    @endif
-                </div>
-
-                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-4 focus:ring-indigo-500/50 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg mb-4">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>Sign In</span>
+                <button type="submit" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
                 </button>
 
-                <a href="{{ route('staff.login') }}" class="w-full bg-white/10 backdrop-blur-sm text-black py-4 px-6 rounded-xl font-semibold hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/30 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg border border-white/20">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>Back to Staff Login</span>
+                <a href="{{ route('staff.login') }}" class="btn btn-outline-warning w-100">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Staff Login
                 </a>
             </form>
         </div>
-
-        <!-- Footer -->
-        <p class="text-center mt-6 text-indigo-100 text-sm">
-            &copy; {{ 2022 }} PT. Mandajaya Rekayasa Konstruksi. All rights reserved.
-        </p>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            particlesJS('particles-js', {
-                particles: {
-                    number: { value: 80, density: { enable: true, value_area: 800 } },
-                    color: { value: '#ffffff' },
-                    shape: { type: 'circle' },
-                    opacity: { value: 0.5, random: false },
-                    size: { value: 3, random: true },
-                    line_linked: {
-                        enable: true,
-                        distance: 150,
-                        color: '#ffffff',
-                        opacity: 0.4,
-                        width: 1
-                    },
-                    move: {
-                        enable: true,
-                        speed: 2,
-                        direction: 'none',
-                        random: false,
-                        straight: false,
-                        out_mode: 'bounce',
-                        bounce: true
-                    }
-                },
-                interactivity: {
-                    detect_on: 'canvas',
-                    events: {
-                        onhover: { enable: true, mode: 'grab' },
-                        onclick: { enable: true, mode: 'push' },
-                        resize: true
-                    },
-                    modes: {
-                        grab: {
-                            distance: 140,
-                            line_linked: { opacity: 0.8 }
-                        },
-                        push: { particles_nb: 4 }
-                    }
-                },
-                retina_detect: true
-            });
 
-            // Add fade-in class to elements
-            document.querySelector('.form-container').classList.add('fade-in');
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 100, density: { enable: true, value_area: 1000 } },
+                color: { value: '#ffd700' },
+                shape: { type: ['circle', 'triangle', 'star'] },
+                opacity: { value: 0.6, random: true },
+                size: { value: 4, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#ffd700',
+                    opacity: 0.3,
+                    width: 1.5
+                },
+                move: {
+                    enable: true,
+                    speed: 3,
+                    direction: 'none',
+                    random: true,
+                    straight: false,
+                    out_mode: 'bounce',
+                    bounce: true
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'repulse' },
+                    onclick: { enable: true, mode: 'push' },
+                    resize: true
+                }
+            },
+            retina_detect: true
         });
     </script>
 </body>

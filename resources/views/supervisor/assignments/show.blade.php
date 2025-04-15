@@ -9,6 +9,7 @@
     <style>
         body {
             background-color: #f8f9fa;
+            transition: all 0.3s ease;
         }
         .sidebar {
             position: fixed;
@@ -20,6 +21,31 @@
             padding: 1rem;
             overflow-y: auto;
             z-index: 100;
+            transition: transform 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+            }
+            .detail-container {
+                padding: 15px !important;
+            }
+            .status-badge, .priority-badge {
+                display: inline-block;
+                margin-top: 10px;
+                width: 100%;
+                text-align: center;
+            }
+            .priority-badge {
+                margin-left: 0 !important;
+            }
         }
         .nav-link {
             display: flex;
@@ -176,10 +202,26 @@
             toggleBtn.style.cssText = 'top: 10px; left: 10px; z-index: 1000;';
             toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
             document.body.appendChild(toggleBtn);
-
+        
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+        
             toggleBtn.addEventListener('click', function() {
-                const sidebar = document.querySelector('.sidebar');
-                sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 'translateX(-250px)' : 'translateX(0px)';
+                sidebar.classList.toggle('show');
+            });
+        
+            // Close sidebar when clicking outside
+            mainContent.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('show');
+                }
+            });
+        
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('show');
+                }
             });
         });
     </script>

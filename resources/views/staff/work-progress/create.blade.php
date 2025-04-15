@@ -223,6 +223,7 @@
                                 <option value="Perencanaan" {{ old('project_topic') == 'Perencanaan' ? 'selected' : '' }}>Perencanaan</option>
                                 <option value="Pengawasan" {{ old('project_topic') == 'Pengawasan' ? 'selected' : '' }}>Pengawasan</option>
                                 <option value="Kajian" {{ old('project_topic') == 'Kajian' ? 'selected' : '' }}>Kajian</option>
+                                <option value="Other" {{ old('project_topic') == 'Other' ? 'selected' : '' }}>Other</option>
                             </select>
                             @error('project_topic')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -251,7 +252,7 @@
                             <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
                                 <option value="">Select Status</option>
                                 <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="In Progress" {{ old('status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                                <option value="In Progress" {{ old('status') == 'OnProgress' ? 'selected' : '' }}>On Progress</option>
                                 <option value="Revision" {{ old('status') == 'Revision' ? 'selected' : '' }}>Revision</option>
                                 <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
                             </select>
@@ -261,12 +262,21 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="files" class="form-label">Upload Files <span class="text-danger">*</span></label>
-                            <input type="file" name="files[]" id="files" class="form-control @error('files.*') is-invalid @enderror" multiple required>
-                            <small class="text-muted">Maximum file size: 150MB per file</small>
-                            <div class="progress mt-2 d-none" id="upload-progress">
-                                <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            <label class="form-label">Upload Files <span class="text-danger">*</span></label>
+                            <div id="file-upload-container">
+                                <div class="file-input-group mb-2">
+                                    <div class="input-group">
+                                        <input type="file" name="files[]" class="form-control @error('files.*') is-invalid @enderror" required>
+                                        <button type="button" class="btn btn-danger remove-file" style="display: none;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
+                            <button type="button" class="btn btn-primary mt-2" id="add-file-btn">
+                                <i class="fas fa-plus me-2"></i>Add Another File
+                            </button>
+                            <small class="text-muted d-block mt-2">Maximum file size: 150MB per file</small>
                             @error('files.*')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -276,7 +286,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-2"></i> Submit Work Progress
                             </button>
-                            <a href="{{ route('staff.work-progress.index') }}" class="btn btn-secondary ms-2">
+                            <a href="{{ route('staff.work-progress.index') }}" class="btn btn-danger ms-2">
                                 <i class="fas fa-times me-2"></i> Cancel
                             </a>
                         </div>
@@ -377,6 +387,140 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.send(formData);
     });
+});
+</script>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar toggle functionality
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('show');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        if (window.innerWidth < 768 && 
+            !sidebar.contains(event.target) && 
+            !sidebarToggle.contains(event.target) && 
+            sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+        }
+    });
+    const form = document.querySelector('form');
+    const progressBar = document.querySelector('#upload-progress');
+    const progressBarInner = progressBar.querySelector('.progress-bar');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        progressBar.classList.remove('d-none');
+        submitBtn.disabled = true;
+
+        // Clear previous error messages
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+        const formData = new FormData(this);
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                progressBarInner.style.width = percentComplete + '%';
+                progressBarInner.textContent = Math.round(percentComplete) + '%';
+            }
+        });
+
+        xhr.addEventListener('load', function() {
+            const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+            
+            if (xhr.status === 200 || xhr.status === 302) {
+                window.location.href = response.redirect || '{{ route("staff.work-progress.index") }}';
+            } else if (xhr.status === 422) { // Validation errors
+                progressBar.classList.add('d-none');
+                submitBtn.disabled = false;
+                
+                // Display validation errors
+                const errors = response.errors || {};
+                Object.keys(errors).forEach(field => {
+                    const input = document.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        const feedback = input.closest('.form-group').querySelector('.invalid-feedback');
+                        if (feedback) {
+                            feedback.textContent = errors[field][0];
+                            feedback.style.display = 'block';
+                        }
+                    }
+                });
+            } else {
+                progressBar.classList.add('d-none');
+                submitBtn.disabled = false;
+                alert(response.message || 'Upload failed. Please try again.');
+            }
+        });
+
+        xhr.addEventListener('error', function() {
+            progressBar.classList.add('d-none');
+            submitBtn.disabled = false;
+            alert('Network error occurred. Please try again.');
+        });
+
+        xhr.open('POST', form.action);
+        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('input[name="_token"]').value);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.send(formData);
+    });
+});
+</script>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileContainer = document.getElementById('file-upload-container');
+    const addFileBtn = document.getElementById('add-file-btn');
+
+    function createFileInput() {
+        const div = document.createElement('div');
+        div.className = 'file-input-group mb-2';
+        div.innerHTML = `
+            <div class="input-group">
+                <input type="file" name="files[]" class="form-control" required>
+                <button type="button" class="btn btn-danger remove-file">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+
+        div.querySelector('.remove-file').addEventListener('click', function() {
+            div.remove();
+            updateRemoveButtons();
+        });
+
+        return div;
+    }
+
+    function updateRemoveButtons() {
+        const removeButtons = document.querySelectorAll('.remove-file');
+        const firstRemoveButton = removeButtons[0];
+        
+        if (removeButtons.length === 1) {
+            firstRemoveButton.style.display = 'none';
+        } else {
+            firstRemoveButton.style.display = 'block';
+        }
+    }
+
+    addFileBtn.addEventListener('click', function() {
+        fileContainer.appendChild(createFileInput());
+        updateRemoveButtons();
+    });
+
+    // Initialize the first remove button state
+    updateRemoveButtons();
 });
 </script>
 </html>

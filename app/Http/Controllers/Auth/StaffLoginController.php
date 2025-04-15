@@ -28,8 +28,15 @@ class StaffLoginController extends Controller
 
         $staff = Staff::where('staff_id', $request->staff_id)->first();
 
-        if ($staff && $staff->password === $request->password) {
-            Auth::guard('staff')->login($staff, $request->remember);
+        if (!$staff) {
+            return redirect()->back()
+                ->withInput($request->only('staff_id', 'remember'))
+                ->withErrors(['staff_id' => 'These credentials do not match our records.']);
+        }
+
+        if ($staff->password === $request->password) {
+            Auth::guard('staff')->login($staff, $request->filled('remember'));
+            $request->session()->regenerate();
             return redirect()->intended(route('staff.dashboard'));
         }
 

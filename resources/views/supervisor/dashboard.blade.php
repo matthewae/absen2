@@ -7,9 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-yellow-50">
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden fixed top-4 right-4 z-20 bg-yellow-600 text-black p-2 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
         <!-- Sidebar -->
-        <div class="bg-black text-yellow-300 w-64 py-6 flex flex-col">
+        <div id="sidebar" class="bg-black text-yellow-300 w-full md:w-64 py-6 flex flex-col fixed md:relative z-10 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
             <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">
@@ -77,7 +83,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1">
+        <div class="flex-1 md:ml-0 mt-16 md:mt-0">
             <!-- Top Bar -->
             <div class="bg-yellow-100 shadow-sm">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -100,7 +106,7 @@
                 </div>
 
                 <!-- Quick Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
                     <div class="bg-yellow-50 p-6 rounded-xl shadow-sm border border-yellow-200 hover:shadow-md transition-shadow duration-300">
                         <h3 class="text-lg font-medium text-gray-700">Department Staff</h3>
                         <p class="text-2xl font-semibold text-gray-900 mt-2">{{ $staffCount }}</p>
@@ -123,27 +129,35 @@
                         <h2 class="text-xl font-semibold text-gray-800">Today's Staff Attendance</h2>
                         <a href="{{ route('supervisor.staff.index') }}" class="text-yellow-600 hover:text-black font-semibold">View All Staff</a>
                     </div>
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto -mx-4 sm:mx-0">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-yellow-100">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Name</th>
+                                    <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Check In</th>
+                                    <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Check Out</th>
+                                    <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-yellow-50 divide-y divide-yellow-200">
                                 @foreach($staffAttendanceToday as $staff)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             {{ $staff->name }}
+                                            <div class="sm:hidden text-xs text-gray-500 mt-1">
+                                                @php
+                                                    $todayAttendance = $staff->attendances->where('created_at', '>=', now()->startOfDay())
+                                                                                        ->where('created_at', '<=', now()->endOfDay())
+                                                                                        ->first();
+                                                @endphp
+                                                In: {{ $todayAttendance?->check_in?->format('H:i') ?? '-' }} | Out: {{ $todayAttendance?->check_out?->format('H:i') ?? '-' }}
+                                            </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $staff->latestAttendance?->check_in?->format('H:i') ?? '-' }}
+                                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                                            {{ $todayAttendance?->check_in?->format('H:i') ?? '-' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $staff->latestAttendance?->check_out?->format('H:i') ?? '-' }}
+                                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                                            {{ $todayAttendance?->check_out?->format('H:i') ?? '-' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($staff->attendance_status === 'present')
@@ -160,8 +174,8 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        <div class="mt-4 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-                            <div class="flex-1 flex justify-between sm:hidden">
+                        <div class="mt-4 px-4 sm:px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                            <div class="flex-1 flex justify-between sm:hidden space-x-3">
                                 @if ($staffAttendanceToday->onFirstPage())
                                     <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default rounded-md">
                                         Previous
@@ -272,5 +286,23 @@
             </div>
         </div>
     </div>
+<script>
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('-translate-x-full');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        
+        if (!sidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+    });
+</script>
 </body>
 </html>
