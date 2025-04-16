@@ -48,7 +48,7 @@ class WorkProgressController extends Controller
             'work_description' => 'required|string|min:50',
             'status' => ['required', 'string', Rule::in(['Pending', 'OnProgress', 'Revision', 'Completed'])],
             'files' => 'required|array|min:1',
-            'files.*' => 'required|file|max:153600' // 150MB max per file
+            'files.*' => 'required|file|max:512000' // 500MB max per file
         ]);
 
         if ($validator->fails()) {

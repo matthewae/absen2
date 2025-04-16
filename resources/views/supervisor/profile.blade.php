@@ -80,8 +80,8 @@
                 <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
                     <div class="flex flex-col items-center space-y-6">
                         <div class="w-56 h-56 rounded-xl overflow-hidden shadow-xl ring-4 ring-yellow-100">
-                            @if($supervisor->profile_picture)
-                                <img src="{{ asset('storage/' . $supervisor->profile_picture) }}" alt="Profile Picture" class="w-full h-full object-cover">
+                            @if($supervisor->profile_picture && Storage::disk('public')->exists($supervisor->profile_picture))
+                                <img src="{{ Storage::disk('public')->url($supervisor->profile_picture) }}" alt="Profile Picture" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center">
                                     <svg class="w-28 h-28 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,16 +90,52 @@
                                 </div>
                             @endif
                         </div>
-                        <form action="{{ route('supervisor.update-photo') }}" method="POST" enctype="multipart/form-data" class="w-full max-w-sm">
+                        <form id="updatePhotoForm" action="{{ route('supervisor.update-photo') }}" method="POST" enctype="multipart/form-data" class="w-full max-w-sm">
                             @csrf
                             <div class="flex flex-col space-y-3">
                                 <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-yellow-100 file:text-black hover:file:bg-yellow-200 transition-colors duration-200" name="profile_picture" accept="image/*" required>
                                 <button type="submit" class="w-full py-2.5 px-5 bg-black text-yellow-300 text-sm font-bold rounded-xl hover:bg-yellow-600 hover:text-black transition-all duration-200 transform hover:scale-105">Update Photo</button>
                             </div>
+                            <div id="updatePhotoMessage" class="mt-3 text-sm font-medium hidden"></div>
                             @error('profile_picture')
                                 <p class="mt-3 text-sm text-red-600 font-medium">{{ $message }}</p>
                             @enderror
                         </form>
+                        
+                        <script>
+                        document.getElementById('updatePhotoForm').addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            
+                            const formData = new FormData(this);
+                            const messageDiv = document.getElementById('updatePhotoMessage');
+                            
+                            fetch(this.action, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                messageDiv.classList.remove('hidden');
+                                if (data.success) {
+                                    messageDiv.className = 'mt-3 text-sm text-green-600 font-medium';
+                                    messageDiv.textContent = data.message;
+                                    // Reload the page to show the updated image
+                                    setTimeout(() => window.location.reload(), 1000);
+                                } else {
+                                    messageDiv.className = 'mt-3 text-sm text-red-600 font-medium';
+                                    messageDiv.textContent = data.message;
+                                }
+                            })
+                            .catch(error => {
+                                messageDiv.classList.remove('hidden');
+                                messageDiv.className = 'mt-3 text-sm text-red-600 font-medium';
+                                messageDiv.textContent = 'An error occurred while updating the photo.';
+                            });
+                        });
+                        </script>
                     </div>
                     <div class="flex-1 md:ml-8">
                         <h2 class="text-4xl font-extrabold text-gray-900 mb-3">{{ $supervisor->name }}</h2>

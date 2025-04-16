@@ -75,12 +75,15 @@ class ProfileController extends Controller
                 Storage::delete('public/staff_photos/' . basename($staff->photo_url));
             }
             
+            // Ensure storage directory exists
+            Storage::makeDirectory('public/staff_photos');
+            
             // Store new photo
             $fileName = time() . '_' . $staff->id . '.' . $request->photo->extension();
             $request->photo->storeAs('public/staff_photos', $fileName);
             
-            // Update staff photo URL
-            $staff->photo_url = Storage::url('staff_photos/' . $fileName);
+            // Update staff photo URL using the public storage path
+            $staff->photo_url = '/storage/staff_photos/' . $fileName;
             $staff->save();
         }
 

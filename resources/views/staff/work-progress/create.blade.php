@@ -241,7 +241,10 @@
                         <div class="form-group">
                             <label for="work_description" class="form-label">Work Description <span class="text-danger">*</span></label>
                             <textarea name="work_description" id="work_description" rows="5" class="form-control @error('work_description') is-invalid @enderror" required>{{ old('work_description') }}</textarea>
-                            <small class="text-muted">Minimum 50 characters required</small>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <small class="text-muted">Minimum 50 characters required</small>
+                                <small id="charCount" class="text-muted">0 characters</small>
+                            </div>
                             @error('work_description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -276,7 +279,7 @@
                             <button type="button" class="btn btn-primary mt-2" id="add-file-btn">
                                 <i class="fas fa-plus me-2"></i>Add Another File
                             </button>
-                            <small class="text-muted d-block mt-2">Maximum file size: 150MB per file</small>
+                            <small class="text-muted d-block mt-2">Maximum file size: 500MB per file</small>
                             @error('files.*')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -297,6 +300,9 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="progress mb-3 d-none" id="upload-progress">
+        <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+    </div>
     <div class="progress mb-3 d-none" id="upload-progress">
         <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
     </div>
@@ -322,13 +328,105 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebar.classList.remove('show');
         }
     });
+
+    // File upload handling
     const form = document.querySelector('form');
     const progressBar = document.querySelector('#upload-progress');
     const progressBarInner = progressBar.querySelector('.progress-bar');
     const submitBtn = form.querySelector('button[type="submit"]');
+    const fileContainer = document.querySelector('#file-upload-container');
+    const addFileBtn = document.querySelector('#add-file-btn');
+    const maxFileSize = 512000000; // 500MB in bytes
 
+    // File input validation
+    function validateFiles() {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        let isValid = true;
+        let totalSize = 0;
+
+        fileInputs.forEach(input => {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                totalSize += file.size;
+
+                // Check file size
+                if (file.size > maxFileSize) {
+                    isValid = false;
+                    input.classList.add('is-invalid');
+                    const feedback = input.closest('.file-input-group').querySelector('.invalid-feedback');
+                    if (!feedback) {
+                        const div = document.createElement('div');
+                        div.className = 'invalid-feedback';
+                        div.textContent = 'File size exceeds 500MB limit';
+                        input.parentNode.appendChild(div);
+                    }
+                } else {
+                    input.classList.remove('is-invalid');
+                    const feedback = input.closest('.file-input-group').querySelector('.invalid-feedback');
+                    if (feedback) feedback.remove();
+                }
+            }
+        });
+
+        return isValid;
+    }
+
+    // Add file input
+    addFileBtn.addEventListener('click', function() {
+        const fileGroup = document.createElement('div');
+        fileGroup.className = 'file-input-group mb-2';
+        fileGroup.innerHTML = `
+            <div class="input-group">
+                <input type="file" name="files[]" class="form-control" required>
+                <button type="button" class="btn btn-danger remove-file">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        fileContainer.appendChild(fileGroup);
+
+        // Show remove button for all file inputs except the first one
+        document.querySelectorAll('.remove-file').forEach(btn => btn.style.display = 'block');
+
+        // Add event listener for the new file input
+        const newInput = fileGroup.querySelector('input[type="file"]');
+        newInput.addEventListener('change', validateFiles);
+    });
+
+    // Remove file input
+    fileContainer.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-file')) {
+            e.target.closest('.file-input-group').remove();
+            // Hide remove button if only one file input remains
+            const fileInputs = document.querySelectorAll('.file-input-group');
+            if (fileInputs.length === 1) {
+                fileInputs[0].querySelector('.remove-file').style.display = 'none';
+            }
+        }
+    });
+
+    // Form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+
+        // Validate files before submission
+        if (!validateFiles()) {
+            alert('Please check file sizes. Maximum allowed size per file is 500MB.');
+            return;
+        }
+
+        // Check if at least one file is selected
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        let hasFiles = false;
+        fileInputs.forEach(input => {
+            if (input.files.length > 0) hasFiles = true;
+        });
+
+        if (!hasFiles) {
+            alert('Please select at least one file to upload.');
+            return;
+        }
+
         progressBar.classList.remove('d-none');
         submitBtn.disabled = true;
 
@@ -348,11 +446,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         xhr.addEventListener('load', function() {
-            const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
-            
             if (xhr.status === 200 || xhr.status === 302) {
-                window.location.href = response.redirect || '{{ route("staff.work-progress.index") }}';
+                const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+                window.location.href = response.redirect || form.getAttribute('action');
             } else if (xhr.status === 422) { // Validation errors
+                const response = JSON.parse(xhr.responseText);
                 progressBar.classList.add('d-none');
                 submitBtn.disabled = false;
                 
@@ -372,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 progressBar.classList.add('d-none');
                 submitBtn.disabled = false;
-                alert(response.message || 'Upload failed. Please try again.');
+                alert('Upload failed. Please try again.');
             }
         });
 
@@ -387,6 +485,9 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.send(formData);
     });
+
+    // Add event listener for initial file input
+    document.querySelector('input[type="file"]').addEventListener('change', validateFiles);
 });
 </script>
 </html>
@@ -410,13 +511,105 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebar.classList.remove('show');
         }
     });
+
+    // File upload handling
     const form = document.querySelector('form');
     const progressBar = document.querySelector('#upload-progress');
     const progressBarInner = progressBar.querySelector('.progress-bar');
     const submitBtn = form.querySelector('button[type="submit"]');
+    const fileContainer = document.querySelector('#file-upload-container');
+    const addFileBtn = document.querySelector('#add-file-btn');
+    const maxFileSize = 512000000; // 500MB in bytes
 
+    // File input validation
+    function validateFiles() {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        let isValid = true;
+        let totalSize = 0;
+
+        fileInputs.forEach(input => {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                totalSize += file.size;
+
+                // Check file size
+                if (file.size > maxFileSize) {
+                    isValid = false;
+                    input.classList.add('is-invalid');
+                    const feedback = input.closest('.file-input-group').querySelector('.invalid-feedback');
+                    if (!feedback) {
+                        const div = document.createElement('div');
+                        div.className = 'invalid-feedback';
+                        div.textContent = 'File size exceeds 500MB limit';
+                        input.parentNode.appendChild(div);
+                    }
+                } else {
+                    input.classList.remove('is-invalid');
+                    const feedback = input.closest('.file-input-group').querySelector('.invalid-feedback');
+                    if (feedback) feedback.remove();
+                }
+            }
+        });
+
+        return isValid;
+    }
+
+    // Add file input
+    addFileBtn.addEventListener('click', function() {
+        const fileGroup = document.createElement('div');
+        fileGroup.className = 'file-input-group mb-2';
+        fileGroup.innerHTML = `
+            <div class="input-group">
+                <input type="file" name="files[]" class="form-control" required>
+                <button type="button" class="btn btn-danger remove-file">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        fileContainer.appendChild(fileGroup);
+
+        // Show remove button for all file inputs except the first one
+        document.querySelectorAll('.remove-file').forEach(btn => btn.style.display = 'block');
+
+        // Add event listener for the new file input
+        const newInput = fileGroup.querySelector('input[type="file"]');
+        newInput.addEventListener('change', validateFiles);
+    });
+
+    // Remove file input
+    fileContainer.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-file')) {
+            e.target.closest('.file-input-group').remove();
+            // Hide remove button if only one file input remains
+            const fileInputs = document.querySelectorAll('.file-input-group');
+            if (fileInputs.length === 1) {
+                fileInputs[0].querySelector('.remove-file').style.display = 'none';
+            }
+        }
+    });
+
+    // Form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+
+        // Validate files before submission
+        if (!validateFiles()) {
+            alert('Please check file sizes. Maximum allowed size per file is 500MB.');
+            return;
+        }
+
+        // Check if at least one file is selected
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        let hasFiles = false;
+        fileInputs.forEach(input => {
+            if (input.files.length > 0) hasFiles = true;
+        });
+
+        if (!hasFiles) {
+            alert('Please select at least one file to upload.');
+            return;
+        }
+
         progressBar.classList.remove('d-none');
         submitBtn.disabled = true;
 
@@ -436,11 +629,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         xhr.addEventListener('load', function() {
-            const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
-            
             if (xhr.status === 200 || xhr.status === 302) {
-                window.location.href = response.redirect || '{{ route("staff.work-progress.index") }}';
+                const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+                window.location.href = response.redirect || form.getAttribute('action');
             } else if (xhr.status === 422) { // Validation errors
+                const response = JSON.parse(xhr.responseText);
                 progressBar.classList.add('d-none');
                 submitBtn.disabled = false;
                 
@@ -460,7 +653,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 progressBar.classList.add('d-none');
                 submitBtn.disabled = false;
-                alert(response.message || 'Upload failed. Please try again.');
+                alert('Upload failed. Please try again.');
             }
         });
 
@@ -475,6 +668,9 @@ document.addEventListener('DOMContentLoaded', function() {
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.send(formData);
     });
+
+    // Add event listener for initial file input
+    document.querySelector('input[type="file"]').addEventListener('change', validateFiles);
 });
 </script>
 </html>
@@ -521,6 +717,256 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the first remove button state
     updateRemoveButtons();
+});
+</script>
+</html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar toggle functionality
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('show');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        if (window.innerWidth < 768 && 
+            !sidebar.contains(event.target) && 
+            !sidebarToggle.contains(event.target) && 
+            sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+        }
+    });
+
+    // File upload handling
+    const form = document.querySelector('form');
+    const progressBar = document.querySelector('#upload-progress');
+    const progressBarInner = progressBar.querySelector('.progress-bar');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const fileContainer = document.querySelector('#file-upload-container');
+    const addFileBtn = document.querySelector('#add-file-btn');
+    const maxFileSize = 512000000; // 500MB in bytes
+
+    // File input validation
+    function validateFiles() {
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        let isValid = true;
+        let totalSize = 0;
+
+        fileInputs.forEach(input => {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                totalSize += file.size;
+
+                // Check file size
+                if (file.size > maxFileSize) {
+                    isValid = false;
+                    input.classList.add('is-invalid');
+                    const feedback = input.closest('.file-input-group').querySelector('.invalid-feedback');
+                    if (!feedback) {
+                        const div = document.createElement('div');
+                        div.className = 'invalid-feedback';
+                        div.textContent = 'File size exceeds 500MB limit';
+                        input.parentNode.appendChild(div);
+                    }
+                } else {
+                    input.classList.remove('is-invalid');
+                    const feedback = input.closest('.file-input-group').querySelector('.invalid-feedback');
+                    if (feedback) feedback.remove();
+                }
+            }
+        });
+
+        return isValid;
+    }
+
+    // Add file input
+    addFileBtn.addEventListener('click', function() {
+        const fileGroup = document.createElement('div');
+        fileGroup.className = 'file-input-group mb-2';
+        fileGroup.innerHTML = `
+            <div class="input-group">
+                <input type="file" name="files[]" class="form-control" required>
+                <button type="button" class="btn btn-danger remove-file">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        fileContainer.appendChild(fileGroup);
+
+        // Show remove button for all file inputs except the first one
+        document.querySelectorAll('.remove-file').forEach(btn => btn.style.display = 'block');
+
+        // Add event listener for the new file input
+        const newInput = fileGroup.querySelector('input[type="file"]');
+        newInput.addEventListener('change', validateFiles);
+    });
+
+    // Remove file input
+    fileContainer.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-file')) {
+            e.target.closest('.file-input-group').remove();
+            // Hide remove button if only one file input remains
+            const fileInputs = document.querySelectorAll('.file-input-group');
+            if (fileInputs.length === 1) {
+                fileInputs[0].querySelector('.remove-file').style.display = 'none';
+            }
+        }
+    });
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Validate files before submission
+        if (!validateFiles()) {
+            alert('Please check file sizes. Maximum allowed size per file is 500MB.');
+            return;
+        }
+
+        // Check if at least one file is selected
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        let hasFiles = false;
+        fileInputs.forEach(input => {
+            if (input.files.length > 0) hasFiles = true;
+        });
+
+        if (!hasFiles) {
+            alert('Please select at least one file to upload.');
+            return;
+        }
+
+        progressBar.classList.remove('d-none');
+        submitBtn.disabled = true;
+
+        // Clear previous error messages
+        document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+        const formData = new FormData(this);
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                progressBarInner.style.width = percentComplete + '%';
+                progressBarInner.textContent = Math.round(percentComplete) + '%';
+            }
+        });
+
+        xhr.addEventListener('load', function() {
+            if (xhr.status === 200 || xhr.status === 302) {
+                const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+                window.location.href = response.redirect || form.getAttribute('action');
+            } else if (xhr.status === 422) { // Validation errors
+                const response = JSON.parse(xhr.responseText);
+                progressBar.classList.add('d-none');
+                submitBtn.disabled = false;
+                
+                // Display validation errors
+                const errors = response.errors || {};
+                Object.keys(errors).forEach(field => {
+                    const input = document.querySelector(`[name="${field}"]`);
+                    if (input) {
+                        input.classList.add('is-invalid');
+                        const feedback = input.closest('.form-group').querySelector('.invalid-feedback');
+                        if (feedback) {
+                            feedback.textContent = errors[field][0];
+                            feedback.style.display = 'block';
+                        }
+                    }
+                });
+            } else {
+                progressBar.classList.add('d-none');
+                submitBtn.disabled = false;
+                alert('Upload failed. Please try again.');
+            }
+        });
+
+        xhr.addEventListener('error', function() {
+            progressBar.classList.add('d-none');
+            submitBtn.disabled = false;
+            alert('Network error occurred. Please try again.');
+        });
+
+        xhr.open('POST', form.action);
+        xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('input[name="_token"]').value);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.send(formData);
+    });
+
+    // Add event listener for initial file input
+    document.querySelector('input[type="file"]').addEventListener('change', validateFiles);
+});
+</script>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileContainer = document.getElementById('file-upload-container');
+    const addFileBtn = document.getElementById('add-file-btn');
+
+    function createFileInput() {
+        const div = document.createElement('div');
+        div.className = 'file-input-group mb-2';
+        div.innerHTML = `
+            <div class="input-group">
+                <input type="file" name="files[]" class="form-control" required>
+                <button type="button" class="btn btn-danger remove-file">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+
+        div.querySelector('.remove-file').addEventListener('click', function() {
+            div.remove();
+            updateRemoveButtons();
+        });
+
+        return div;
+    }
+
+    function updateRemoveButtons() {
+        const removeButtons = document.querySelectorAll('.remove-file');
+        const firstRemoveButton = removeButtons[0];
+        
+        if (removeButtons.length === 1) {
+            firstRemoveButton.style.display = 'none';
+        } else {
+            firstRemoveButton.style.display = 'block';
+        }
+    }
+
+    addFileBtn.addEventListener('click', function() {
+        fileContainer.appendChild(createFileInput());
+        updateRemoveButtons();
+    });
+
+    // Initialize the first remove button state
+    updateRemoveButtons();
+});
+</script>
+</html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter for work description
+    const workDescription = document.getElementById('work_description');
+    const charCount = document.getElementById('charCount');
+    const minChars = 50;
+
+    function updateCharCount() {
+        const count = workDescription.value.length;
+        charCount.textContent = count + ' characters';
+        charCount.classList.toggle('text-danger', count < minChars);
+        charCount.classList.toggle('text-success', count >= minChars);
+    }
+
+    workDescription.addEventListener('input', updateCharCount);
+    updateCharCount(); // Initial count
 });
 </script>
 </html>

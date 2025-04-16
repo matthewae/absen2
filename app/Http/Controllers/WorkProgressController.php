@@ -38,7 +38,7 @@ class WorkProgressController extends Controller
             'description' => 'required|string',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'files.*' => 'nullable|file|max:153600'
+            'files.*' => 'nullable|file|max:512000'
         ]);
 
         if ($validator->fails()) {
@@ -95,7 +95,7 @@ class WorkProgressController extends Controller
             'description' => 'required|string',
             'status' => ['required', Rule::in(['pending', 'in_progress', 'completed', 'rejected'])],
             'feedback' => 'nullable|string',
-            'files.*' => 'nullable|file|max:10240'
+            'files.*' => 'nullable|file|max:512000'
         ]);
 
         if ($validator->fails()) {
