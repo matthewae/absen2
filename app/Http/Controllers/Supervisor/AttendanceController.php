@@ -74,19 +74,46 @@ class AttendanceController extends Controller
         $sheet->getStyle('A1:G1')->applyFromArray($headerStyle);
 
         $row = 2;
-        $query = Attendance::with('staff')->orderBy('check_in', 'desc');
+        $query = Attendance::with('staff')
+            ->whereMonth('check_in', now()->month)
+            ->whereYear('check_in', now()->year)
+            ->orderBy('check_in', 'asc');
 
         if ($staffId) {
             $query->where('staff_id', $staffId);
-            $filename = Staff::find($staffId)->name . '_attendance_record.xls';
+            $filename = Staff::find($staffId)->name . '_attendance_record_' . now()->format('F_Y') . '.xls';
         } else {
-            $filename = 'all_staff_attendance_record.xls';
+            $filename = 'all_staff_attendance_record_' . now()->format('F_Y') . '.xls';
         }
 
         $attendances = $query->get();
+        $weeklyAttendances = $attendances->groupBy(function($attendance) {
+            return $attendance->check_in->format('W'); // Group by week number
+        });
 
-        foreach ($attendances as $attendance) {
-            $this->writeAttendanceRow($sheet, $row, $attendance->staff, $attendance);
+        // Style for week header
+        $weekHeaderStyle = [
+            'font' => ['bold' => true],
+            'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'color' => ['rgb' => 'B8CCE4']],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER]
+        ];
+
+        foreach ($weeklyAttendances as $weekNumber => $weekAttendances) {
+            // Add week header
+            $firstDate = $weekAttendances->first()->check_in->startOfWeek()->format('d/m/Y');
+            $lastDate = $weekAttendances->first()->check_in->endOfWeek()->format('d/m/Y');
+            $sheet->mergeCells("A{$row}:G{$row}");
+            $sheet->setCellValue("A{$row}", "Minggu {$weekNumber} ({$firstDate} - {$lastDate})");
+            $sheet->getStyle("A{$row}:G{$row}")->applyFromArray($weekHeaderStyle);
+            $row++;
+
+            // Add attendance records for the week
+            foreach ($weekAttendances as $attendance) {
+                $this->writeAttendanceRow($sheet, $row, $attendance->staff, $attendance);
+                $row++;
+            }
+
+            // Add empty row between weeks
             $row++;
         }
 

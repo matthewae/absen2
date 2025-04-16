@@ -22,47 +22,64 @@ class StaffAttendanceExportController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // Set headers
-        $sheet->setCellValue('A1', 'Staff Name');
-        $sheet->setCellValue('B1', 'Date');
-        $sheet->setCellValue('C1', 'Check In');
-        $sheet->setCellValue('D1', 'Check Out');
-        $sheet->setCellValue('E1', 'Duration (Hours)');
-        $sheet->setCellValue('F1', 'Status');
-        $sheet->setCellValue('G1', 'Location');
-        $sheet->setCellValue('H1', 'Work Progress');
-        $sheet->setCellValue('I1', 'Work Submitted');
+        $sheet->setCellValue('A1', 'Week');
+        $sheet->setCellValue('B1', 'Staff Name');
+        $sheet->setCellValue('C1', 'Date');
+        $sheet->setCellValue('D1', 'Check In');
+        $sheet->setCellValue('E1', 'Check Out');
+        $sheet->setCellValue('F1', 'Duration (Hours)');
+        $sheet->setCellValue('G1', 'Status');
+        $sheet->setCellValue('H1', 'Location');
+        $sheet->setCellValue('I1', 'Work Progress');
+        $sheet->setCellValue('J1', 'Work Submitted');
 
         // Style headers
-        $sheet->getStyle('A1:I1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
 
         $row = 2;
+        $currentMonth = Carbon::now();
+        $startOfMonth = $currentMonth->copy()->startOfMonth();
+        $endOfMonth = $currentMonth->copy()->endOfMonth();
+
         foreach ($staffMembers as $staff) {
             $records = Attendance::where('staff_id', $staff->id)
-                ->whereMonth('check_in', Carbon::now()->month)
-                ->whereYear('check_in', Carbon::now()->year)
+                ->whereBetween('check_in', [$startOfMonth, $endOfMonth])
                 ->orderBy('check_in')
                 ->get();
 
-            foreach ($records as $record) {
-                $sheet->setCellValue('A' . $row, $staff->name);
-                $sheet->setCellValue('B' . $row, $record->check_in->format('Y-m-d'));
-                $sheet->setCellValue('C' . $row, $record->check_in->format('H:i:s'));
-                $sheet->setCellValue('D' . $row, $record->check_out ? $record->check_out->format('H:i:s') : '-');
-                $sheet->setCellValue('E' . $row, $record->check_out ? number_format($record->check_in->diffInHours($record->check_out), 2) : '-');
-                $sheet->setCellValue('F' . $row, ucfirst($record->status));
-                $sheet->setCellValue('G' . $row, $record->location ?? '-');
-                $sheet->setCellValue('H' . $row, $record->work_progress ?? '-');
-                $sheet->setCellValue('I' . $row, $record->is_work_submitted ? 'Yes' : 'No');
+            // Group records by week
+            $weeklyRecords = $records->groupBy(function($record) {
+                return Carbon::parse($record->check_in)->weekOfMonth;
+            });
+
+            foreach ($weeklyRecords as $week => $weekRecords) {
+                foreach ($weekRecords as $record) {
+                    $sheet->setCellValue('A' . $row, 'Week ' . $week);
+                    $sheet->setCellValue('B' . $row, $staff->name);
+                    $sheet->setCellValue('C' . $row, $record->check_in->format('Y-m-d'));
+                    $sheet->setCellValue('D' . $row, $record->check_in->format('H:i:s'));
+                    $sheet->setCellValue('E' . $row, $record->check_out ? $record->check_out->format('H:i:s') : '-');
+                    $sheet->setCellValue('F' . $row, $record->check_out ? number_format($record->check_in->diffInHours($record->check_out), 2) : '-');
+                    $sheet->setCellValue('G' . $row, ucfirst($record->status));
+                    $sheet->setCellValue('H' . $row, $record->location ?? '-');
+                    $sheet->setCellValue('I' . $row, $record->work_progress ?? '-');
+                    $sheet->setCellValue('J' . $row, $record->is_work_submitted ? 'Yes' : 'No');
+                    $row++;
+                }
+                // Add a blank row between weeks
                 $row++;
             }
         }
 
         // Format date and time columns
-        $sheet->getStyle('B2:B' . ($row-1))->getNumberFormat()->setFormatCode('yyyy-mm-dd');
-        $sheet->getStyle('C2:D' . ($row-1))->getNumberFormat()->setFormatCode('hh:mm:ss');
+        $sheet->getStyle('C2:C' . ($row-1))->getNumberFormat()->setFormatCode('yyyy-mm-dd');
+        $sheet->getStyle('D2:E' . ($row-1))->getNumberFormat()->setFormatCode('hh:mm:ss');
+
+        // Style week column
+        $sheet->getStyle('A2:A' . ($row-1))->getFont()->setBold(true);
 
         // Auto size columns
-        foreach (range('A', 'I') as $col) {
+        foreach (range('A', 'J') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
