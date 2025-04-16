@@ -228,7 +228,7 @@
                 <i class="fas fa-home"></i> Dashboard
             </a>
             <a href="{{ route('supervisor.staff.index') }}" class="nav-link active">
-                <i class="fas fa-users"></i> Staff List
+                <i class="fas fa-users"></i> Staff Management
             </a>
             <a href="{{ route('supervisor.assignments.index') }}" class="nav-link">
                 <i class="fas fa-tasks"></i> Assignments

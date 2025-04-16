@@ -24,11 +24,13 @@
             bottom: 0;
             left: -250px;
             z-index: 1000;
-            padding: 48px 0 0;
+            padding: 20px 0;
             box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
             background-color: var(--secondary-color);
             width: 250px;
             transition: left 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
         }
         .sidebar.show {
             left: 0;
@@ -42,21 +44,32 @@
             overflow-y: auto;
         }
         .sidebar .nav-link {
-            font-weight: 500;
             color: var(--primary-color);
-            padding: 0.875rem 1.5rem;
+            padding: 12px 20px;
+            margin: 4px 12px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border-radius: 8px;
+            text-decoration: none;
         }
         .sidebar .nav-link:hover {
-            color: var(--text-light);
             background-color: var(--primary-color);
+            color: var(--secondary-color);
+            transform: translateX(5px);
         }
         .sidebar .nav-link.active {
-            color: var(--text-dark);
             background-color: var(--primary-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .sidebar .nav-link i {
+            width: 20px;
+            margin-right: 10px;
+            text-align: center;
         }
         .main-content {
             margin-left: 0;
@@ -65,10 +78,11 @@
         }
         @media (min-width: 992px) {
             .sidebar {
-                left: 0;
+                left: 0 !important;
             }
             .main-content {
                 margin-left: 250px;
+                padding-top: 20px;
             }
         }
         .toggle-sidebar {
@@ -192,30 +206,36 @@
     <nav class="sidebar">
         <div class="sidebar-sticky">
             <div class="px-3 mb-4 text-center">
-                <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="Company Logo" class="img-fluid" style="max-width: 100px; height: auto;">
+                <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="Company Logo" style="max-width: 120px; margin: 0 auto 20px;">
             </div>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}" href="{{ route('staff.dashboard') }}">
-                        <i class="fas fa-home"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('staff.work-progress.*') ? 'active' : '' }}" href="{{ route('staff.work-progress.index') }}">
-                        <i class="fas fa-tasks"></i> Work Progress
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('staff.attendance') ? 'active' : '' }}" href="{{ route('staff.attendance') }}">
-                        <i class="fas fa-calendar-check"></i> Attendance
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('staff.profile') ? 'active' : '' }}" href="{{ route('staff.profile') }}">
-                        <i class="fas fa-user"></i> Profile
-                    </a>
-                </li>
-            </ul>
+            <nav class="nav flex-column">
+                <a href="{{ route('staff.dashboard') }}" class="nav-link {{ request()->routeIs('staff.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="{{ route('staff.attendance') }}" class="nav-link {{ request()->routeIs('staff.attendance') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-check"></i> Attendance
+                </a>
+                <a href="{{ route('staff.schedule') }}" class="nav-link {{ request()->routeIs('staff.schedule') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard"></i> Schedule
+                </a>
+                <a href="{{ route('staff.work-progress.index') }}" class="nav-link {{ request()->routeIs('staff.work-progress.*') ? 'active' : '' }}">
+                    <i class="fas fa-tasks"></i> Work Progress
+                </a>
+                <a href="{{ route('staff.profile') }}" class="nav-link {{ request()->routeIs('staff.profile') ? 'active' : '' }}">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="{{ route('staff.settings') }}" class="nav-link {{ request()->routeIs('staff.settings') ? 'active' : '' }}">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </nav>
+            <div class="mt-auto px-3 py-3 border-t border-yellow-300">
+                <form action="{{ route('staff.logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="nav-link w-100 text-center">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
         </div>
     </nav>
 
