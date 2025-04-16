@@ -43,6 +43,5 @@ class AssignmentsController extends Controller
     }
 }
 
-}
 
-}
+
