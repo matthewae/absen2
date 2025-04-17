@@ -22,19 +22,73 @@
             height: 100vh;
             width: 250px;
             background: var(--text-black);
-            padding: 20px;
+            padding: 10px;
             color: var(--primary-yellow);
-            z-index: 1000;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .nav {
+            flex: 1;
+            padding-bottom: 8px;
+        }
+        
+        .nav-link {
+            margin-bottom: 2px;
+            padding: 6px 10px;
+            font-size: 0.875rem;
+            gap: 8px;
+        }
+        
+        .mt-auto {
+            margin-top: auto;
+            padding: 10px !important;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                backdrop-filter: blur(4px);
+                width: 280px;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+                box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .navbar-toggler {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 45px;
+                height: 45px;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 1002;
+                background: var(--primary-yellow);
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
         }
         .main-content {
-            margin-left: 250px;
+            margin-left: 220px;
             padding: 30px;
             background-color: var(--bg-light);
             min-height: 100vh;
         }
         .nav-link {
             color: var(--primary-yellow);
-            padding: 12px 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             margin-bottom: 8px;
             display: flex;
@@ -42,16 +96,20 @@
             text-decoration: none;
             transition: all 0.3s ease;
             border: 1px solid transparent;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            gap: 10px;
+            font-size: 1rem;
         }
         .nav-link:hover, .nav-link.active {
-            background: var(--primary-yellow);
+            background-color: var(--primary-yellow);
             color: var(--text-black);
-            transform: translateX(5px);
-            border-color: var(--dark-yellow);
         }
         .nav-link i {
-            width: 20px;
-            margin-right: 10px;
+            width: 15px;
+            text-align: center;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
         .table th, .table td {
             vertical-align: middle;
@@ -219,11 +277,13 @@
 <body>
     <!-- Sidebar -->
     <nav class="sidebar">
-        <div class="mb-4">
-            <h4 class="mb-2">Staff Management</h4>
-            <p class="text-muted small mb-0"></p>
+        <!-- Company Logo/Name -->
+        <div class="text-center mb-4 p-4">
+            <img src="{{ asset('images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="img-fluid" style="max-width: 100px;">
         </div>
-        <div class="mb-4">
+
+        <!-- Navigation Links -->
+        <div class="nav flex-column mb-4">
             <a href="{{ route('supervisor.dashboard') }}" class="nav-link">
                 <i class="fas fa-home"></i> Dashboard
             </a>
@@ -236,6 +296,28 @@
             <a href="{{ route('supervisor.attendance.index') }}" class="nav-link">
                 <i class="fas fa-clock"></i> Attendance
             </a>
+            <a href="{{ route('supervisor.work-progress.index') }}" class="nav-link">
+                <i class="fas fa-chart-line"></i> Work Progress
+            </a>
+            <a href="{{ route('supervisor.leave-requests.index') }}" class="nav-link">
+                <i class="fas fa-calendar-alt"></i> Leave Requests
+            </a>
+            <a href="{{ route('supervisor.profile') }}" class="nav-link">
+                <i class="fas fa-user"></i> Profile
+            </a>
+            <a href="{{ route('supervisor.settings') }}" class="nav-link">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="mt-auto p-3 border-top border-warning">
+            <form action="{{ route('supervisor.logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-warning w-100 d-flex align-items-center justify-content-center gap-2">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
         </div>
     </nav>
 
@@ -459,6 +541,79 @@ function debounce(func, wait) {
     border-color: var(--dark-yellow);
     color: var(--text-black);
     font-weight: 600;
+}
+
+.page-item .page-link:hover {
+    background-color: var(--pagination-hover);
+    border-color: var(--primary-yellow);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(255, 193, 7, 0.15);
+}
+
+.page-item.disabled .page-link {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: #adb5bd;
+    pointer-events: none;
+    opacity: 0.7;
+}
+</style>
+
+<!-- Add this button before the main content div -->
+<button class="navbar-toggler d-md-none" type="button" onclick="toggleSidebar()" aria-label="Toggle navigation">
+    <i class="fas fa-bars" style="font-size: 1.25rem; color: var(--text-black);"></i>
+</button>
+
+<script>
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const toggler = document.querySelector('.navbar-toggler');
+    sidebar.classList.toggle('show');
+    
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!sidebar.contains(event.target) && !toggler.contains(event.target) && sidebar.classList.contains('show')) {
+            sidebar.classList.remove('show');
+        }
+    });
+}
+</script>
+</body>
+</html>
+
+<style>
+.pagination-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.pagination {
+    margin: 0;
+    gap: 0.5rem;
+}
+
+.page-item .page-link {
+    border: 2px solid var(--dark-yellow);
+    color: var(--text-black);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.page-item.active .page-link {
+    background: var(--primary-yellow);
+    color: var(--text-black);
+    transform: translateX(3px);
+    border-color: var(--dark-yellow);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .page-item .page-link:hover {

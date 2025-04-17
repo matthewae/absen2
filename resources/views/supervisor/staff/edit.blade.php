@@ -19,8 +19,7 @@
         <div id="sidebar" class="bg-black text-yellow-300 w-64 py-6 flex flex-col fixed h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
-                <h4 class="text-xl font-bold mb-2">Supervisor Portal</h4>
-                <p class="text-sm text-yellow-200">Staff Management</p>
+                <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">
             </div>
 
             <!-- Navigation Links -->
