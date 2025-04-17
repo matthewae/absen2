@@ -8,12 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-yellow-50">
-    <!-- Mobile Menu Button -->
-    <button id="mobile-menu-button" class="md:hidden fixed top-4 right-4 z-20 bg-yellow-600 text-black p-2 rounded-lg">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-    </button>
     <div class="min-h-screen flex flex-col md:flex-row">
         <!-- Sidebar -->
         <div id="sidebar" class="bg-black text-yellow-300 w-64 py-6 flex flex-col fixed h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
@@ -86,10 +80,16 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div class="flex items-center justify-between">
                         <h2 class="text-xl font-semibold text-gray-800">Assignments</h2>
-                        <div class="flex items-center space-x-4">
-                            <button onclick="window.location.href='{{ route('supervisor.assignments.create') }}'" class="bg-yellow-600 text-black px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors flex items-center space-x-2">
-                                <i class="fas fa-plus"></i>
+                        <div class="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                            <button onclick="window.location.href='{{ route('supervisor.assignments.create') }}'" class="bg-yellow-600 text-black px-3 py-1.5 rounded-lg hover:bg-yellow-700 transition-colors flex items-center space-x-1 text-sm">
+                                <i class="fas fa-plus text-xs"></i>
                                 <span>New Assignment</span>
+                            </button>
+                            <!-- Mobile Menu Button -->
+                            <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-50 bg-yellow-600 text-black p-1.5 rounded-lg shadow-lg hover:bg-yellow-700 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -258,6 +258,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.querySelector('.flex-1');
 
+    // Mobile menu toggle
+    mobileMenuButton.addEventListener('click', function(event) {
+        event.stopPropagation();
+        sidebar.classList.toggle('-translate-x-full');
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!sidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            sidebar.classList.add('-translate-x-full');
+        }
+    });
+
     function updateTable() {
         const searchQuery = searchInput.value.toLowerCase();
         const statusFilter = statusSelect.value.toLowerCase();
@@ -277,49 +290,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Mobile menu toggle
-    function toggleMobileMenu(event) {
-        event.stopPropagation();
-        sidebar.classList.toggle('-translate-x-full');
-        document.body.classList.toggle('overflow-hidden');
-    }
-
-    function closeMobileMenu() {
-        if (window.innerWidth < 768) {
-            sidebar.classList.add('-translate-x-full');
-            document.body.classList.remove('overflow-hidden');
-        }
-    }
-
-    mobileMenuButton.addEventListener('click', toggleMobileMenu);
-    document.addEventListener('click', function(event) {
-        if (!sidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-            closeMobileMenu();
-        }
-    });
-
     searchInput.addEventListener('input', updateTable);
     statusSelect.addEventListener('change', updateTable);
     staffSelect.addEventListener('change', updateTable);
-});
-
-            !sidebar.contains(event.target) && 
-            !mobileMenuButton.contains(event.target)) {
-            sidebar.classList.add('-translate-x-full');
-        }
-    }
-
-    mobileMenuButton.addEventListener('click', toggleMobileMenu);
-    document.addEventListener('click', closeMobileMenu);
-
-    // Handle window resize
-    window.addEventListener('resize', function() {
-        if (window.innerWidth >= 768) {
-            sidebar.classList.remove('-translate-x-full');
-        } else {
-            sidebar.classList.add('-translate-x-full');
-        }
-    });
 });
 </script>
 </body>

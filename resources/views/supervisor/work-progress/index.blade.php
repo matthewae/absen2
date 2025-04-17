@@ -8,12 +8,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-yellow-50">
-    <div class="flex h-screen">
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-50 bg-yellow-600 text-black p-2 rounded-lg shadow-lg hover:bg-yellow-700 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
         <!-- Sidebar -->
-        <div class="bg-black text-yellow-300 w-64 py-6 flex flex-col fixed h-full">
+        <div id="sidebar" class="bg-black text-yellow-300 w-64 py-6 flex flex-col fixed h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
-                <h1 class="text-2xl font-bold">PT. Mandajaya Rekayasa Konstruksi</h1>
+                <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">
             </div>
 
             <!-- Navigation Links -->
@@ -78,7 +84,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 ml-64">
+        <div class="flex-1 md:ml-64 w-full">
             <!-- Header -->
             <div class="bg-white shadow-sm">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -278,6 +284,21 @@
             window.location.href = window.location.pathname + '?sort=' + this.value;
         });
     });
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+
+        mobileMenuButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
     </script>
 </body>
 </html>

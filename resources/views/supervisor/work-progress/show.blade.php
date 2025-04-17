@@ -21,11 +21,17 @@
     </script>
 </head>
 <body class="bg-yellow-50">
-    <div class="flex h-screen">
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-50 bg-yellow-600 text-black p-2 rounded-lg shadow-lg hover:bg-yellow-700 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
         <!-- Sidebar -->
-        <div class="w-64 bg-black text-yellow-300 fixed h-full">
+        <div id="sidebar" class="bg-black text-yellow-300 w-64 py-6 flex flex-col fixed h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
             <div class="p-6">
-                <h1 class="text-2xl font-bold mb-8">Supervisor Panel</h1>
+                <img src="{{ asset('images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto mb-8">
                 <nav class="space-y-4">
                     <a href="{{ route('supervisor.dashboard') }}" class="flex items-center space-x-2 text-yellow-300 hover:bg-yellow-500 hover:text-black transition-colors duration-200">
                         <i class="fas fa-home w-6"></i>
@@ -53,7 +59,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 ml-64">
+        <div class="flex-1 md:ml-64 w-full">
             <!-- Header -->
             <div class="bg-gradient-to-r from-yellow-400 to-black shadow-lg">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -76,8 +82,8 @@
                     <div class="flex items-center space-x-4">
                         <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200">
                             <img src="{{ $staff->photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($staff->name).'&background=6366f1&color=fff' }}" 
-                                 alt="{{ $staff->name }}" 
-                                 class="w-full h-full object-cover">
+                                alt="{{ $staff->name }}" 
+                                class="w-full h-full object-cover">
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold text-gray-800">{{ $staff->name }}</h3>
@@ -161,5 +167,18 @@
     </div>
 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        });
+    </script>
 </body>
 </html>
+            <div class="p-6">
+                <img src="{{ asset('images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto mb-8">
+                <nav class="space-y-4">

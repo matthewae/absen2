@@ -7,9 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-yellow-50">
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-50 bg-yellow-600 text-black p-2 rounded-lg shadow-lg hover:bg-yellow-700 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+
         <!-- Sidebar -->
-        <div class="bg-black text-yellow-300 w-64 py-6 flex flex-col">
+        <div id="sidebar" class="bg-black text-yellow-300 w-64 py-6 flex flex-col fixed h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
             <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">            </div>
@@ -74,16 +81,16 @@
             </div>
         </div>
 
-        <div class="flex-1 p-8 bg-yellow-50">
+        <div class="flex-1 md:ml-64 p-8 bg-yellow-50 w-full">
             <div class="bg-white rounded-xl shadow-xl p-8 mb-8 transform hover:scale-[1.02] transition-transform duration-300">
                 <div class="flex flex-col md:flex-row items-start md:items-center gap-8">
                     <div class="flex flex-col items-center space-y-6">
-                        <div class="w-56 h-56 rounded-xl overflow-hidden shadow-xl ring-4 ring-yellow-100">
+                        <div class="w-64 h-64 rounded-xl overflow-hidden shadow-xl ring-4 ring-yellow-100">
                             @if($supervisor->profile_picture && Storage::disk('public')->exists($supervisor->profile_picture))
                                 <img src="{{ Storage::disk('public')->url($supervisor->profile_picture) }}" alt="Profile Picture" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center">
-                                    <svg class="w-28 h-28 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-32 h-32 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                 </div>
@@ -92,8 +99,10 @@
                         <form id="updatePhotoForm" action="{{ route('supervisor.update-photo') }}" method="POST" enctype="multipart/form-data" class="w-full max-w-sm">
                             @csrf
                             <div class="flex flex-col space-y-3">
-                                <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-yellow-100 file:text-black hover:file:bg-yellow-200 transition-colors duration-200" name="profile_picture" accept="image/*" required>
-                                <button type="submit" class="w-full py-2.5 px-5 bg-black text-yellow-300 text-sm font-bold rounded-xl hover:bg-yellow-600 hover:text-black transition-all duration-200 transform hover:scale-105">Update Photo</button>
+                                <div class="relative">
+                                    <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-yellow-100 file:text-black hover:file:bg-yellow-200 transition-colors duration-200" name="profile_picture" accept="image/*" required>
+                                </div>
+                                <button type="submit" class="w-full py-3 px-6 bg-black text-yellow-300 text-sm font-bold rounded-xl hover:bg-yellow-600 hover:text-black transition-all duration-200 transform hover:scale-105 shadow-lg">Update Photo</button>
                             </div>
                             <div id="updatePhotoMessage" class="mt-3 text-sm font-medium hidden"></div>
                             @error('profile_picture')
@@ -189,5 +198,26 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.querySelector('.flex-1');
+
+        // Mobile menu toggle
+        mobileMenuButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+    });
+    </script>
 </body>
 </html>
