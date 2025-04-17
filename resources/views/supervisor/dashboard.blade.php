@@ -9,13 +9,13 @@
 <body class="bg-yellow-50">
     <div class="min-h-screen flex flex-col md:flex-row">
         <!-- Mobile Menu Button -->
-        <button id="mobile-menu-button" class="md:hidden fixed top-4 right-4 z-20 bg-yellow-600 text-black p-2 rounded-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="mobile-menu-button" class="md:hidden fixed top-4 left-4 z-50 bg-yellow-600 text-black p-1.5 rounded-lg shadow-lg hover:bg-yellow-700 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
         <!-- Sidebar -->
-        <div id="sidebar" class="bg-black text-yellow-300 w-full md:w-64 py-6 flex flex-col fixed md:relative z-10 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+        <div id="sidebar" class="bg-black text-yellow-300 w-64 py-6 flex flex-col fixed h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out overflow-y-auto">
             <!-- Company Logo/Name -->
             <div class="px-6 mb-8">
             <img src="{{ asset(path: 'images/logo fix2.png') }}" alt="PT. Mandajaya Rekayasa Konstruksi" class="w-1/2 mx-auto h-auto">
@@ -83,7 +83,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 md:ml-0 mt-16 md:mt-0">
+        <div class="flex-1 md:ml-64 w-full">
             <!-- Top Bar -->
             <div class="bg-yellow-100 shadow-sm">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

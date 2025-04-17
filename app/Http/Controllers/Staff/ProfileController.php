@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -19,7 +18,7 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $staff = Auth::user();
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:staff,email,' . $staff->id,
@@ -28,21 +27,19 @@ class ProfileController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
+        // Handle profile picture upload (store to DB as binary)
         if ($request->hasFile('profile_picture')) {
-            if ($staff->profile_picture) {
-                Storage::delete('public/profile_pictures/' . $staff->profile_picture);
-            }
-            
-            $fileName = time() . '.' . $request->profile_picture->extension();
-            $request->profile_picture->storeAs('public/profile_pictures', $fileName);
-            $staff->profile_picture = $fileName;
+            $image = $request->file('profile_picture');
+            $imageData = file_get_contents($image->getRealPath());
+            $staff->profile_picture = $imageData;
         }
 
         $staff->name = $request->name;
         $staff->email = $request->email;
-        $staff->phone = $request->phone;
+        $staff->phone_number = $request->phone;
         $staff->address = $request->address;
-        
+
+        // Handle password update
         if ($request->filled('current_password') && $request->filled('new_password')) {
             $request->validate([
                 'current_password' => 'required|string',
@@ -70,20 +67,9 @@ class ProfileController extends Controller
         $staff = Auth::user();
 
         if ($request->hasFile('photo')) {
-            // Delete old photo if exists
-            if ($staff->photo_url) {
-                Storage::delete('public/staff_photos/' . basename($staff->photo_url));
-            }
-            
-            // Ensure storage directory exists
-            Storage::makeDirectory('public/staff_photos');
-            
-            // Store new photo
-            $fileName = time() . '_' . $staff->id . '.' . $request->photo->extension();
-            $request->photo->storeAs('public/staff_photos', $fileName);
-            
-            // Update staff photo URL using the public storage path
-            $staff->photo_url = '/storage/staff_photos/' . $fileName;
+            $image = $request->file('photo');
+            $imageData = file_get_contents($image->getRealPath());
+            $staff->profile_picture = $imageData;
             $staff->save();
         }
 

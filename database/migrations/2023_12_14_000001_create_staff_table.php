@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('department');
             $table->string('phone_number')->nullable();
             $table->date('birth_date')->nullable();
-            $table->string('profile_picture')->nullable();
+            $table->longblob('profile_picture')->nullable();
             $table->unsignedBigInteger('supervisor_id')->nullable();
             $table->foreign('supervisor_id')->references('id')->on('supervisors')->onDelete('set null');
             $table->rememberToken();

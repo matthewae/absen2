@@ -45,7 +45,7 @@ class SupervisorController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Profile picture updated successfully',
-                    'path' => Storage::url($path)
+                    'path' => Storage::url($path)   
                 ]);
             }
 
